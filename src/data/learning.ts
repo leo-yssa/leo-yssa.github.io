@@ -173,6 +173,179 @@ for result in results:
 `
                     }
                 ]
+            },
+            {
+                id: 'backend',
+                title: 'Backend Architecture',
+                topics: [
+                    {
+                        id: 'sync-vs-async',
+                        title: 'Sync vs Async & Blocking vs Non-blocking',
+                        description: 'Architectural comparison between Spring MVC (Thread-per-request) and Node.js (Event Loop).',
+                        content: `
+### 1. Sync vs Async / Blocking vs Non-blocking
+- **Synchronous**: Requestor waits for the result.
+- **Asynchronous**: Requestor continues work and gets notified later (Callback/Future).
+- **Blocking**: Thread is held until I/O completes.
+- **Non-blocking**: Thread returns immediately and handles I/O completion via events.
+
+### 2. Spring MVC (Classic) vs Node.js
+#### Spring MVC (Blocking I/O)
+- **Model**: Thread-per-request.
+- **Pros**: Easy to debug, stable, rich ecosystem.
+- **Cons**: High concurrency requires many threads (Context switching overhead).
+- **Use Case**: CPU-intensive tasks, traditional enterprise apps.
+
+#### Node.js / Spring WebFlux (Non-blocking I/O)
+- **Model**: Single Thread Event Loop (Node.js) / Event-driven.
+- **Pros**: Handles high concurrency with few threads.
+- **Cons**: Callback hell (mitigated by Async/Await), CPU-intensive tasks block the loop.
+- **Use Case**: I/O-bound apps (Chat, Streaming, Gateway).
+`
+                    },
+                    {
+                        id: 'grpc-vs-rest',
+                        title: 'gRPC vs REST API',
+                        description: 'Why use gRPC? Protocol Buffers vs JSON and HTTP/2 benefits.',
+                        content: `
+### 1. Comparison
+
+| Feature | REST API | gRPC |
+| :--- | :--- | :--- |
+| **Protocol** | HTTP/1.1 (Text-based) | HTTP/2 (Binary-based) |
+| **Data Format** | JSON (Human readable, larger size) | Protocol Buffers (Binary, compact, strongly typed) |
+| **Communication** | Unary (Request/Response) | Unary, Server/Client Streaming, Bidirectional Streaming |
+| **Browser Support** | Native support | Requires gRPC-Web proxy |
+
+### 2. Why gRPC?
+- **Performance**: Protobuf is 3-10x smaller and faster to serialize/deserialize than JSON.
+- **Strong Typing**: .proto files define the contract strictly, reducing integration errors.
+- **Polyglot**: Generate client/server code for Go, Java, Python, etc., automatically.
+
+### 3. Use Case
+- Internal **Microservices communication** (Low latency is critical).
+- Mobile clients (Bandwidth saving).
+`
+                    },
+                    {
+                        id: 'msa-patterns',
+                        title: 'MSA Patterns',
+                        description: 'Decomposition, Saga Pattern for distributed transactions, and Circuit Breakers.',
+                        content: `
+### 1. Decomposition Strategies
+- **By Business Capability**: e.g., Order Service, Inventory Service.
+- **By Subdomain (DDD)**: Core, Supporting, Generic subdomains.
+
+### 2. Distributed Transactions (Saga Pattern)
+In MSA, traditional ACID transactions (2PC) are often too slow or brittle.
+- **Choreography**: Events trigger actions in other services directly (Decentralized).
+- **Orchestration**: A central coordinator (Orchestrator) tells participants what to do.
+
+### 3. Resilience (Circuit Breaker)
+Prevents cascading failures when a downstream service is down.
+- **Closed**: Normal operation.
+- **Open**: Fails fast without calling the downstream service (after error threshold).
+- **Half-Open**: Allows a few requests to test if the service has recovered.
+`
+                    },
+                    {
+                        id: 'high-traffic',
+                        title: 'Handling High Traffic',
+                        description: 'Caching strategies with Redis and Event-Driven Architecture with Kafka.',
+                        content: `
+### 1. Caching Strategies (Redis)
+- **Look Aside (Lazy Loading)**: App checks Cache -> Miss -> DB -> Update Cache.
+- **Write Back**: Write to Cache -> Async flush to DB (High performance, risk of data loss).
+- **Redis Structures**:
+    - **String**: Simple Key-Value (Session, Auth tokens).
+    - **Sorted Set**: Real-time Leaderboards.
+    - **Pub/Sub**: Real-time messaging.
+
+### 2. Message Queues (Kafka vs RabbitMQ)
+- **Kafka**: Log-based, high throughput, persistent, consumer pulls data. Good for **Event Streaming** and **Log Aggregation**.
+- **RabbitMQ**: Traditional Broker, complex routing (Exchanges), push-based. Good for **Task Queues**.
+`
+                    }
+                ]
+            },
+            {
+                id: 'blockchain',
+                title: 'Blockchain',
+                topics: [
+                    {
+                        id: 'public-vs-private',
+                        title: 'Public vs Private Blockchain',
+                        description: 'Architecture comparison: Ethereum vs Hyperledger Fabric.',
+                        content: `
+### 1. Comparison
+
+| Feature | Public (Ethereum) | Private/Consortium (Hyperledger Fabric) |
+| :--- | :--- | :--- |
+| **Access** | Permissionless (Anyone can join) | Permissioned (MSP - Membership Service Provider) |
+| **Consensus** | PoS (Proof of Stake) | Pluggable (Raft, Kafka - Crash Fault Tolerance) |
+| **Privacy** | Transactions are public | Channels (Private data collections) separate visibility |
+| **Performance** | Low (~15-20 TPS), Finality issues | High (3000+ TPS), Immediate finality |
+| **Cost** | Gas Fees | Infrastructure maintenance costs |
+
+### 2. Architecture Differences
+- **Ethereum**: EVM (World State), Smart Contracts (Solidity), Account-based model.
+- **Fabric**: Peers (Endorser, Committer), Orderer (Consensus), Chaincode (Go/Java/Node), Ledger (World State + Blockchain).
+`
+                    },
+                    {
+                        id: 'smart-contract-security',
+                        title: 'Smart Contract Security',
+                        description: 'Common vulnerabilities in Solidity and best practices.',
+                        content: `
+### 1. Reentrancy Attack
+- **Vulnerability**: Attacker's contract calls back into the victim contract before the first invocation is finished (e.g., withdrawing funds repeatedly).
+- **Fix**: **Checks-Effects-Interactions** pattern. Update state *before* sending Ether. Use \`ReentrancyGuard\`.
+
+### 2. Overflow/Underflow
+- **Vulnerability**: Exceeding max value of uint256 wraps around to 0.
+- **Fix**: Use Solidity 0.8+ (Built-in checks) or OpenZeppelin's \`SafeMath\`.
+
+### 3. Access Control
+- ensuring only \`owner\` or authorized roles can call critical functions (Using modifiers like \`onlyOwner\`).
+`
+                    },
+                    {
+                        id: 'zkp',
+                        title: 'Zero-Knowledge Proof (ZKP)',
+                        description: 'Proving possession of knowledge without revealing the information itself.',
+                        content: `
+### 1. Concept
+**ZKP**: A method where a Prover convinces a Verifier that they know a value $x$, without revealing $x$.
+- **Completeness**: If statement is true, honest verifier is convinced.
+- **Soundness**: Cheating prover cannot convince verifier.
+- **Zero-Knowledge**: Verifier learns nothing else.
+
+### 2. Use Cases
+- **Privacy Transactions**: Zcash, Tornado Cash (Mixers).
+- **Scalability**: zk-Rollups (Compressing many transactions into one proof on Layer 2).
+- **Identity**: Proving "I am over 18" without revealing birth date.
+`
+                    },
+                    {
+                        id: 'did',
+                        title: 'Decentralized Identity (DID)',
+                        description: 'Self-Sovereign Identity (SSI), Verifiable Credentials (VC), and VP.',
+                        content: `
+### 1. Core Components (W3C Standard)
+- **DID (Decentralized Identifier)**: A globally unique identifier (e.g., \`did:sov:1234...\`) that resolves to a DID Document.
+- **DID Document**: Contains public keys and service endpoints.
+- **VC (Verifiable Credential)**: Digital credential issued by an Issuer (e.g., Driver's License). Includes Issuer's signature.
+- **VP (Verifiable Presentation)**: A collection of VCs (or parts of them) presented by the Holder to a Verifier.
+
+### 2. Flow
+1. **Issuer** issues VC to **Holder** (User).
+2. **Holder** stores VC in Wallet.
+3. **Verifier** requests proof.
+4. **Holder** creates VP and sends to **Verifier**.
+5. **Verifier** checks signature against Issuer's DID on Blockchain.
+`
+                    }
+                ]
             }
         ]
     },
@@ -330,6 +503,179 @@ results = vector_db.query(
 for result in results:
     print(result.metadata['text'])
 \`\`\`
+`
+                    }
+                ]
+            },
+            {
+                id: 'backend',
+                title: '백엔드 아키텍처',
+                topics: [
+                    {
+                        id: 'sync-vs-async',
+                        title: 'Sync vs Async & Blocking vs Non-blocking',
+                        description: 'Spring MVC (Thread-per-request)와 Node.js (Event Loop)의 아키텍처 비교.',
+                        content: `
+### 1. Sync vs Async / Blocking vs Non-blocking
+- **Synchronous (동기)**: 요청자가 결과를 기다림.
+- **Asynchronous (비동기)**: 요청자가 작업을 시키고 바로 리턴, 나중에 완료 알림 받음 (Callback/Future).
+- **Blocking**: I/O 작업이 끝날 때까지 스레드가 대기함.
+- **Non-blocking**: 스레드가 대기하지 않고 즉시 리턴, I/O 완료는 이벤트로 처리.
+
+### 2. Spring MVC (Classic) vs Node.js
+#### Spring MVC (Blocking I/O)
+- **모델**: Thread-per-request (요청당 스레드).
+- **장점**: 디버깅 용이, 안정성, 레거시 호환성.
+- **단점**: 동시 접속이 많으면 스레드 생성 비용(Context Switching) 증가.
+- **사용처**: CPU 연산이 많은 작업, 전통적인 엔터프라이즈 앱.
+
+#### Node.js / Spring WebFlux (Non-blocking I/O)
+- **모델**: Single Thread Event Loop (Node.js) / Event-driven.
+- **장점**: 적은 수의 스레드로 대량의 동시 접속 처리 가능.
+- **단점**: 콜백 지옥(Async/Await로 완화), CPU 집약적 작업 시 루프 차단됨.
+- **사용처**: I/O가 많은 앱 (채팅, 스트리밍, 게이트웨이).
+`
+                    },
+                    {
+                        id: 'grpc-vs-rest',
+                        title: 'gRPC vs REST API',
+                        description: 'gRPC를 사용하는 이유, Protocol Buffers와 JSON 비교, 시스템 간 통신 효율성.',
+                        content: `
+### 1. 비교
+
+| 특징 | REST API | gRPC |
+| :--- | :--- | :--- |
+| **프로토콜** | HTTP/1.1 (텍스트 기반) | HTTP/2 (바이너리 기반) |
+| **데이터 포맷** | JSON (사람이 읽기 편함, 용량 큼) | Protocol Buffers (바이너리, 작고 빠름, 타입 엄격) |
+| **통신 방식** | Unary (전통적 요청/응답) | Unary, Server/Client Streaming, 양방향 Streaming |
+| **브라우저 지원** | 기본 지원 | gRPC-Web 프록시 필요 |
+
+### 2. 왜 gRPC인가?
+- **성능**: Protobuf는 JSON 대비 직렬화/역직렬화 속도가 3-10배 빠르고 데이터 크기가 작음.
+- **타입 안정성**: .proto 파일로 인터페이스를 정의하므로 계약(Contract)이 엄격함.
+- **Polyglot**: Go, Java, Python 등 다양한 언어의 클라이언트/서버 코드를 자동 생성.
+
+### 3. 사용 사례
+- **마이크로서비스 간 통신** (내부 통신 속도 중요).
+- 모바일 클라이언트 (네트워크 대역폭 절약).
+`
+                    },
+                    {
+                        id: 'msa-patterns',
+                        title: 'MSA 패턴',
+                        description: '서비스 분리 전략, 분산 트랜잭션(Saga), 그리고 서킷 브레이커.',
+                        content: `
+### 1. 분리 전략 (Decomposition)
+- **비즈니스 능력 기반**: 주문 서비스, 재고 서비스 등.
+- **DDD 하위 도메인 기반**: 핵심(Core), 지원(Supporting), 일반(Generic) 도메인.
+
+### 2. 분산 트랜잭션 (Saga Pattern)
+MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패턴을 사용.
+- **Choreography (안무)**: 서비스끼리 이벤트를 주고받으며 다음 작업 수행 (중앙 제어 없음).
+- **Orchestration (지휘)**: 중앙 오케스트레이터가 각 서비스에 명령을 내림.
+
+### 3. 장애 격리 (Circuit Breaker)
+외부 서비스 장애가 전체 시스템으로 전파되는 것을 방지.
+- **Closed**: 정상 상태.
+- **Open**: 에러 임계치 초과 시 회로 차단 (요청 즉시 실패 처리).
+- **Half-Open**: 일정 시간 후 일부 요청만 보내보며 복구 확인.
+`
+                    },
+                    {
+                        id: 'high-traffic',
+                        title: '대용량 트래픽 처리',
+                        description: 'Redis를 활용한 캐싱 전략과 Kafka 기반의 이벤트 구동 아키텍처.',
+                        content: `
+### 1. 캐싱 전략 (Redis)
+- **Look Aside (Lazy Loading)**: 앱이 캐시 확인 -> 없으면 DB 조회 -> 캐시에 저장.
+- **Write Back**: 캐시에 먼저 쓰고 -> 비동기로 DB에 반영 (성능 최상, 데이터 유실 위험).
+- **Redis 자료구조**:
+    - **String**: 단순 키-값 (세션, 인증 토큰).
+    - **Sorted Set**: 실시간 랭킹/순위표.
+    - **Pub/Sub**: 실시간 메시징.
+
+### 2. 메시지 큐 (Kafka vs RabbitMQ)
+- **Kafka**: 로그 기반, 대용량 처리(Throughput) 중심, 데이터가 디스크에 남음. **이벤트 스트리밍**, **로그 수집**에 적합.
+- **RabbitMQ**: 전통적 브로커, 복잡한 라우팅(Exchange) 가능. **작업 큐(Task Queue)**에 적합.
+`
+                    }
+                ]
+            },
+            {
+                id: 'blockchain',
+                title: '블록체인 (Blockchain)',
+                topics: [
+                    {
+                        id: 'public-vs-private',
+                        title: 'Public vs Private 블록체인',
+                        description: 'Ethereum과 Hyperledger Fabric의 아키텍처 및 합의 알고리즘 비교.',
+                        content: `
+### 1. 비교
+
+| 특징 | Public (Ethereum) | Private/Consortium (Hyperledger Fabric) |
+| :--- | :--- | :--- |
+| **접근성** | 누구나 참여 가능 (Permissionless) | 허가된 참여자만 가능 (MSP 인증) |
+| **합의 알고리즘** | PoS (지분 증명) | Pluggable (Raft, Kafka - CFT) |
+| **프라이버시** | 모든 거래 내역 공개 | Channel (채널)을 통해 특정 그룹끼리만 데이터 공유 |
+| **성능** | 낮음 (~15-20 TPS), 확정성(Finality) 부족 | 높음 (3000+ TPS), 즉각적인 확정성 |
+| **비용** | 가스비 (Gas Fee) | 인프라 구축 및 유지 비용 |
+
+### 2. 아키텍처 차이
+- **Ethereum**: EVM (World State), 스마트 컨트랙트 (Solidity), 계정 기반 모델.
+- **Fabric**: Peers (Endorser, Committer), Orderer (합의), Chaincode (Go/Java/Node), Ledger (World State + Blockchain).
+`
+                    },
+                    {
+                        id: 'smart-contract-security',
+                        title: '스마트 컨트랙트 보안',
+                        description: 'Solidity 개발 시 발생하는 주요 취약점(Reentrancy 등)과 보안 패턴.',
+                        content: `
+### 1. 재진입 공격 (Reentrancy Attack)
+- **취약점**: 공격자의 컨트랙트가 원래 함수 실행이 끝나기 전에 다시 해당 함수를 호출하여 자금을 반복 인출.
+- **해결**: **Checks-Effects-Interactions** 패턴 준수 (상태 변경을 송금 전에 수행). \`ReentrancyGuard\` 사용.
+
+### 2. 오버플로우/언더플로우 (Overflow/Underflow)
+- **취약점**: 변수 타입의 최대값을 넘어가면 0으로 돌아가는 현상.
+- **해결**: Solidity 0.8+ 버전 사용 (자체 체크 내장) 또는 OpenZeppelin \`SafeMath\` 라이브러리 사용.
+
+### 3. 접근 제어 (Access Control)
+- \`owner\`나 특정 권한을 가진 계정만 중요 함수를 실행할 수 있도록 제어 (\`onlyOwner\` modifier 사용).
+`
+                    },
+                    {
+                        id: 'zkp',
+                        title: '영지식 증명 (ZKP)',
+                        description: '정보를 공개하지 않고 정보를 알고 있음을 증명하는 기술.',
+                        content: `
+### 1. 개념
+**ZKP (Zero-Knowledge Proof)**: 증명자(Prover)가 검증자(Verifier)에게 자신이 비밀 값 $x$를 알고 있다는 사실을, $x$ 자체를 노출하지 않고 확신시키는 방법.
+- **완전성 (Completeness)**: 참이면 검증자를 납득시킬 수 있음.
+- **건전성 (Soundness)**: 거짓이면 검증자를 속일 수 없음.
+- **영지식성 (Zero-Knowledge)**: 검증자는 참/거짓 외에 아무 정보도 얻지 못함.
+
+### 2. 활용 사례
+- **익명 거래**: Zcash, Tornado Cash (믹서).
+- **확장성**: zk-Rollups (Layer 2에서 수많은 트랜잭션을 하나의 증명으로 압축해 Layer 1에 기록).
+- **신원 증명**: 생년월일을 공개하지 않고 "성인임"만 증명.
+`
+                    },
+                    {
+                        id: 'did',
+                        title: '분산 신원 증명 (DID)',
+                        description: '자기 주권 신원(SSI), Verifiable Credential(VC)의 개념.',
+                        content: `
+### 1. 핵심 구성 요소 (W3C 표준)
+- **DID (Decentralized Identifier)**: 전 세계적으로 유일한 식별자 (예: \`did:sov:1234...\`). DID Document로 연결됨.
+- **DID Document**: 공개키와 서비스 엔드포인트 등을 담고 있음.
+- **VC (Verifiable Credential)**: 발행자(Issuer)가 발급한 디지털 증명서 (예: 운전면허증). 발행자의 서명이 포함됨.
+- **VP (Verifiable Presentation)**: 사용자가 검증자에게 제출하기 위해 VC들을 조합하여 만든 프레젠테이션.
+
+### 2. 흐름
+1. **Issuer** (발행자)가 **Holder** (사용자)에게 VC 발급.
+2. **Holder**는 VC를 모바일 지갑 등에 보관.
+3. **Verifier** (검증자)가 증명을 요청.
+4. **Holder**는 VP를 생성하여 **Verifier**에게 제출.
+5. **Verifier**는 블록체인상의 DID를 통해 Issuer의 서명을 검증.
 `
                     }
                 ]
