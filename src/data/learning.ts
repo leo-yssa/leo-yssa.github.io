@@ -175,6 +175,65 @@ for result in results:
                 ]
             },
             {
+                id: 'database',
+                title: 'Database',
+                topics: [
+                    // ... existing topics ...
+                    {
+                        id: 'db-algorithms',
+                        title: 'DBMS Algorithms & Big-O Complexity',
+                        description: 'Deep dive into B+ Trees, Hash Indexes, and LSM Trees with CRUD time complexity analysis.',
+                        content: `
+### 1. B+ Tree (Standard for RDBMS)
+Used by **MySQL (InnoDB)**, **Oracle**, **PostgreSQL**.
+- **Structure**: All actual data(or pointers) reside in leaf nodes. Internal nodes only hold keys for routing. Leaf nodes are linked (LinkedList) for efficiency.
+- **Time Complexity**: **O(log N)** for Search, Insert, Update, Delete.
+- **Why O(log N)?**: It is a balanced tree. The height of the tree grows logarithmically with the number of data points ($N$). Accessing any leaf requires traversing from the root down the height of the tree.
+
+#### Differences by DBMS
+- **MySQL (InnoDB)**: **Clustered Index**. The Primary Key (PK) B+ Tree *is* the table itself. Leaf nodes contain the full row data.
+- **PostgreSQL / Oracle**: **Heap Table + Index**. The table data resides in a Heap structure. The B+ Tree index leaf nodes contain pointers (CTID or RowID) to the heap location.
+
+### 2. Hash Index
+Used by **Redis**, Memory Storage engines.
+- **Time Complexity**: **O(1)** (Average).
+- **Reason**: A hash function computes the exact memory address/bucket from the key. No traversal needed.
+- **Limitation**: Cannot support Range Scans (e.g., \`WHERE age > 20\`).
+
+### 3. LSM Tree (Log Structured Merge Tree)
+Used by **Cassandra**, **HBase**, **RocksDB** (Write-heavy NoSQL).
+- **Write**: **O(1)**. Appends to an in-memory buffer (MemTable). No disk seeking needed immediately.
+- **Read**: **O(K * log N)**. Must check MemTable and potentially multiple disk files (SSTables). Slower than B+ Tree for reads.
+`
+                    },
+                    {
+                        id: 'db-index-types',
+                        title: 'Database Index Types & Best Practices',
+                        description: 'Clustered vs Non-Clustered, Composite Index, and performance optimization.',
+                        content: `
+### 1. Clustered Index
+- **Definition**: The physical order of data on disk matches the index order. Only one per table (usually Primary Key).
+- **Pros**: Very fast retrieval for **Range Queries (\`BETWEEN\`, \`>\`)** and **Sorting (\`ORDER BY\`)**.
+- **Cons**: Insert/Update can be slow if physical reordering (Page Split) is required.
+
+### 2. Non-Clustered Index (Secondary Index)
+- **Definition**: A separate structure from table rows. Contains a sorted key and a pointer to the actual data row.
+- **Pros**: Multiple indexes per table allowed.
+- **Cons**: Requires additional lookup (Index -> Pointer -> Data), slightly slower than Clustered.
+
+### 3. Composite Index (Multi-Column Index)
+- **Definition**: An index on two or more columns.
+- **Caution**: **Leftmost Prefix Rule**. The order of columns matters. If index is (A, B), query on B alone cannot use the index effectively.
+
+### 4. Best Practices & Cautions
+- **Cardinality**: Use indexes on columns with high cardinality (many unique values). (e.g., ID is good, Gender is bad).
+- **Write Performance**: Too many indexes slow down \`INSERT\`, \`UPDATE\`, \`DELETE\` operations significantly as all indexes must be maintained.
+- **Covering Index**: If an index contains all required columns for a query, the DB can return data directly from the index without looking up the table (Significant performance boost).
+`
+                    }
+                ]
+            },
+            {
                 id: 'backend',
                 title: 'Backend Architecture',
                 topics: [
@@ -346,6 +405,196 @@ Prevents cascading failures when a downstream service is down.
 `
                     }
                 ]
+            },
+            {
+                id: 'frontend',
+                title: 'Frontend Development',
+                topics: [
+                    {
+                        id: 'virtual-dom',
+                        title: 'Virtual DOM & Rendering Optimization',
+                        description: 'How React works: Diffing algorithm and Memoization.',
+                        content: `
+### 1. Virtual DOM
+- **Concept**: A lightweight copy of the real DOM. React updates the Virtual DOM first, compares it with the previous version (**Diffing**), and only updates the changed parts in the real DOM (**Reconciliation**).
+- **Reason**: Direct DOM manipulation is slow (reflow/repaint). Virtual DOM batches updates for performance.
+
+### 2. Optimization Techniques
+- **React.memo**: Memoizes a component to prevent re-rendering if props haven't changed.
+- **useMemo / useCallback**: Caches heavy calculation results or function definitions to avoid re-creation on every render.
+- **Key Prop**: Essential for lists. Helps React identify which items have changed, added, or removed.
+`
+                    },
+                    {
+                        id: 'state-management',
+                        title: 'State Management (Redux vs Zustand)',
+                        description: 'Comparison of Global State libraries and Server State concepts.',
+                        content: `
+### 1. Client State
+- **Context API**: Built-in, good for simple global data (Theme, Auth). frequent updates can cause unnecessary re-renders.
+- **Redux**: Predictable state container (Flux pattern). Powerful devtools, but high boilerplate (Actions, Reducers).
+- **Zustand**: Minimalist, hook-based, no boilerplate. Growing popularity for its simplicity.
+
+### 2. Server State
+- **React Query (TanStack Query)**: Manages async server data (Caching, Deduping, Background updates). Replaces strict "Global State" for API data.
+`
+                    },
+                    {
+                        id: 'build-tools',
+                        title: 'Modern Build Tools (Webpack vs Vite)',
+                        description: 'Bundle-based vs Native ESM-based development environments.',
+                        content: `
+### 1. Webpack (Bundler)
+- **Mechanism**: Bundles all files (JS, CSS, Images) into a single (or few) output file(s) *before* starting the dev server.
+- **Pros**: Mature ecosystem, rich plugin support.
+- **Cons**: Slow startup time on large projects.
+
+### 2. Vite (Native ESM)
+- **Mechanism**: Serves source files over Native ESM. Bundling is done by **esbuild** (Go-based, extremely fast).
+- **Pros**: Instant server start, HMR (Hot Module Replacement) stays fast regardless of app size.
+- **Cons**: Newer ecosystem compared to Webpack.
+`
+                    },
+                    {
+                        id: 'ssr-nextjs',
+                        title: 'SSR & Next.js',
+                        description: 'CSR vs SSR vs SSG, and React Server Components (RSC).',
+                        content: `
+### 1. Rendering Patterns
+- **CSR (Client-Side Rendering)**: Browser downloads empty HTML + JS. JS builds the UI. Good for interactivity, bad for SEO.
+- **SSR (Server-Side Rendering)**: Server generates HTML for every request. Good for SEO, slower TTFB.
+- **SSG (Static Site Generation)**: HTML built at compile time. Fastest performance, but data is static.
+
+### 2. React Server Components (RSC)
+- Components run *only* on the server. Zero bundle size impact on client.
+- Can directly access DB/Filesystem.
+- **Hydration**: Client takes over interactivity after initial HTML load.
+`
+                    }
+                ]
+            },
+            {
+                id: 'app-development',
+                title: 'App Development',
+                topics: [
+                    {
+                        id: 'cross-platform',
+                        title: 'Cross-Platform (Flutter vs React Native)',
+                        description: 'Comparison of rendering engines (Skia vs Bridge/JSI) and performance.',
+                        content: `
+### 1. Flutter
+- **Engine**: Uses **Skia** (C++) to draw every pixel on the screen. Identical UI across platforms.
+- **Language**: Dart (AOT compiled to native code).
+- **Pros**: Consistent UI, high performance (60fps), great documentation.
+
+### 2. React Native
+- **Engine**: Uses Native Platform UI components mapped via a **Bridge** (or JSI in new architecture).
+- **Language**: JavaScript/TypeScript.
+- **Pros**: Access to native UI look & feel, huge ecosystem, code sharing with Web (React).
+`
+                    },
+                    {
+                        id: 'app-lifecycle',
+                        title: 'App Lifecycle & Memory Management',
+                        description: 'Understanding Activity/Fragment lifecycles and background task handling.',
+                        content: `
+### 1. Lifecycle States
+- **Foreground**: App is visible and interactive.
+- **Background**: App is hidden (Home button pressed). OS may kill it to reclaim memory.
+- **Suspended**: App is in memory but not executing code.
+
+### 2. Memory Leaks
+- **Common Causes**: Unregistered listeners, static references to Context (Android), Retain cycles (iOS).
+- **Detection**: Android Studio Profiler, Xcode Instruments, LeakCanary.
+`
+                    },
+                    {
+                        id: 'offline-first',
+                        title: 'Offline-First Architecture',
+                        description: 'Local databases (SQLite, Realm) and Data Sync strategies.',
+                        content: `
+### 1. Local Database
+- **SQLite**: Standard relational DB. Good for complex queries. (Libraries: Room, Drift).
+- **Realm / Hive**: NoSQL object stores. Faster read/write for object graphs.
+
+### 2. Sync Strategies
+- **Optimistic UI**: Update UI immediately, sync with server in background. Rollback on error.
+- **Conflict Resolution**: "Last Write Wins" or "Merge" strategies when server data differs from local.
+`
+                    },
+                    {
+                        id: 'app-deployment',
+                        title: 'Deployment & CI/CD',
+                        description: 'Automating release process with Fastlane and Store guidelines.',
+                        content: `
+### 1. Fastlane
+- Automation tool for screenshots, code signing, and releasing to stores.
+- **Match**: Syncs certificates/profiles via Git to share across team.
+
+### 2. Store Guidelines
+- **iOS (App Store)**: Strict review. No dynamic code loading (hot push limited).
+- **Android (Play Store)**: Automated checks + manual review. Phased rollouts supported.
+`
+                    }
+                ]
+            },
+            {
+                id: 'ai',
+                title: 'Artificial Intelligence',
+                topics: [
+                    {
+                        id: 'transformers',
+                        title: 'Transformer Architecture',
+                        description: 'The "Attention Is All You Need" revolution behind GPT and BERT.',
+                        content: `
+### 1. Attention Mechanism
+- **Self-Attention**: Allows the model to weigh the importance of different words in a sentence regardless of their distance.
+- Solves the "long-term dependency" problem of RNNs/LSTMs.
+- **Parallelization**: Unlike RNNs (sequential), Transformers process entire sequences at once, enabling massive scale training.
+`
+                    },
+                    {
+                        id: 'llm-training',
+                        title: 'LLM Training Pipeline',
+                        description: 'Pre-training, SFT (Supervised Fine-Tuning), and RLHF.',
+                        content: `
+### 1. Pre-training
+- Learning to predict the next token on massive text datasets (Unsupervised).
+- Learns grammar, facts, and reasoning abilities.
+
+### 2. Fine-Tuning
+- **SFT (Supervised Fine-Tuning)**: Training on high-quality Q&A pairs to follow instructions.
+- **RLHF (Reinforcement Learning from Human Feedback)**: Aligning model output with human preferences (Helpful, Honest, Harmless).
+`
+                    },
+                    {
+                        id: 'vector-search',
+                        title: 'Vector Search & Embeddings',
+                        description: 'Mathematical representation of meaning for Semantic Search.',
+                        content: `
+### 1. Embeddings
+- Converting text/image into a high-dimensional vector (list of numbers).
+- **Proximity**: Similar concepts are close in vector space (e.g., "King" - "Man" + "Woman" ≈ "Queen").
+
+### 2. Search Algorithms
+- **KNN (K-Nearest Neighbors)**: Exact but slow.
+- **ANN (Approximate Nearest Neighbors)**: HNSW, IVF. Faster, slightly less accurate. Used in Vector DBs.
+`
+                    },
+                    {
+                        id: 'diffusion-models',
+                        title: 'Diffusion Models',
+                        description: 'How image generation models (Stable Diffusion, Midjourney) work.',
+                        content: `
+### 1. Forward Process
+- Gradually adding Gaussian noise to an image until it becomes pure random noise.
+
+### 2. Reverse Process
+- Training a neural network (U-Net) to predict and *remove* the noise step-by-step.
+- Starting from random noise, the model "denoises" it into a coherent image based on a text prompt (Conditioning).
+`
+                    }
+                ]
             }
         ]
     },
@@ -504,9 +753,67 @@ for result in results:
     print(result.metadata['text'])
 \`\`\`
 `
+                    },
+                    {
+                        id: 'db-algorithms',
+                        title: 'DBMS 알고리즘과 CRUD Big-O 분석',
+                        description: 'B+ Tree, Hash Index, LSM Tree의 구조와 각 CRUD 동작의 시간 복잡도 상세 분석.',
+                        content: `
+### 1. B+ Tree (관계형 DB의 표준)
+**MySQL (InnoDB)**, **Oracle**, **PostgreSQL**에서 기본 인덱스 구조로 사용.
+
+#### 구조 및 특징
+- **Balanced Tree**: 루트에서 모든 리프 노드까지의 거리가 동일함.
+- **리프 노드**: 실제 데이터(또는 포인터)는 모두 리프에만 존재하며, 리프 노드끼리는 Linked List로 연결되어 있어 **범위 검색(Range Scan)**에 매우 유리함.
+
+#### CRUD 시간 복잡도: O(log N)
+- **이유**: 트리의 높이(Height)만큼만 비교 연산을 수행하면 됨. 데이터가 100만 개($N$)여도 높이는 보통 3~4 수준임 ($log_{FanOut}(N)$).
+- **Insert/Delete**: 데이터를 삽입/삭제할 때 노드가 꽉 차면 분할(Split)하거나 병합(Merge)하는 과정이 필요하지만, 이 역시 트리 높이에 비례하므로 **O(log N)** 유지.
+
+#### DBMS별 차이
+- **MySQL (InnoDB)**: **Clustered Index**. PK의 B+ Tree 리프 노드에 **실제 행 데이터**가 저장됨. PK로 조회 시 가장 빠름.
+- **PostgreSQL / Oracle**: **Heap Table**. 데이터는 별도의 힙 영역에 쌓이고, B+ Tree 인덱스는 데이터의 위치(RowID/CTID)를 가리킴. 2차 탐색(인덱스 -> 힙) 비용이 발생하지만, 2차 인덱스 갱신 비용은 MySQL보다 저렴할 수 있음.
+
+### 2. Hash Index (해시 인덱스)
+**Redis**, 일부 In-Memory DB에서 사용.
+- **시간 복잡도**: **O(1)** (평균).
+- **이유**: 해시 함수 $f(x)$를 통해 데이터가 저장된 메모리 주소를 즉시 계산.
+- **단점**: **범위 검색(예: \`> 20\`) 불가**. 오직 **동등 비교(\`=\`)**만 가능.
+
+### 3. LSM Tree (Log Structured Merge Tree)
+**Cassandra**, **HBase** 등 쓰기 성능이 중요한 NoSQL에서 사용.
+- **쓰기 (Write)**: **O(1)**. 디스크 탐색 없이 메모리(MemTable)에 순차적으로(Append-only) 씀.
+- **읽기 (Read)**: **O(K * log N)**. 메모리를 먼저 보고, 없으면 디스크의 여러 파일(SSTable)을 뒤져야 하므로 B+ Tree보다 느릴 수 있음 (Bloom Filter로 보완).
+`
+                    },
+                    {
+                        id: 'db-index-types',
+                        title: '데이터베이스 인덱스 종류와 주의점',
+                        description: '클러스터드 vs 논-클러스터드, 결합 인덱스, 그리고 성능 최적화.',
+                        content: `
+### 1. Clustered Index (클러스터드 인덱스)
+- **정의**: 데이터의 물리적 저장 순서가 인덱스 순서와 동일함. 테이블당 1개만 존재 (주로 PK).
+- **장점**: **범위 검색(Range Scan)** 및 **정렬(Order By)**에 매우 빠름.
+- **단점**: 데이터 입력/수정 시 물리적 재정렬(Page Split)이 발생하여 성능 저하 가능성.
+
+### 2. Non-Clustered Index (논-클러스터드 / 세컨더리 인덱스)
+- **정의**: 데이터와 별도로 존재하는 인덱스 구조. 정렬된 키와 실제 데이터의 위치(포인터)를 가리킴.
+- **장점**: 테이블당 여러 개 생성 가능.
+- **단점**: 인덱스를 거쳐 데이터를 찾아야 하므로(Look up) 클러스터드보다 약간 느림.
+
+### 3. Composite Index (결합 인덱스)
+- **정의**: 두 개 이상의 컬럼을 묶어 만든 인덱스.
+- **주의**: **Leftmost Prefix Rule**. 컬럼 순서가 중요함. 인덱스가 (A, B)일 때, B만으로 조회하면 인덱스를 타지 않음.
+
+### 4. 주의사항 및 팁
+- **카디널리티(Cardinality)**: 중복도가 낮고 유니크한 값이 많은 컬럼(주민번호, ID)에 걸어야 효율적 (성별같이 중복 많은 컬럼은 비효율).
+- **쓰기 성능**: 인덱스가 많으면 \`INSERT\`, \`UPDATE\`, \`DELETE\` 시 모든 인덱스를 갱신해야 하므로 느려짐.
+- **커버링 인덱스(Covering Index)**: 쿼리에 필요한 모든 컬럼이 인덱스에 포함되어 있다면, 테이블 조회 없이 인덱스만으로 결과를 반환하여 성능 급상승.
+`
                     }
                 ]
             },
+
             {
                 id: 'backend',
                 title: '백엔드 아키텍처',
@@ -516,24 +823,24 @@ for result in results:
                         title: 'Sync vs Async & Blocking vs Non-blocking',
                         description: 'Spring MVC (Thread-per-request)와 Node.js (Event Loop)의 아키텍처 비교.',
                         content: `
-### 1. Sync vs Async / Blocking vs Non-blocking
-- **Synchronous (동기)**: 요청자가 결과를 기다림.
-- **Asynchronous (비동기)**: 요청자가 작업을 시키고 바로 리턴, 나중에 완료 알림 받음 (Callback/Future).
-- **Blocking**: I/O 작업이 끝날 때까지 스레드가 대기함.
-- **Non-blocking**: 스레드가 대기하지 않고 즉시 리턴, I/O 완료는 이벤트로 처리.
+### 1. Sync vs Async / Blocking vs Non - blocking
+                    - ** Synchronous(동기) **: 요청자가 결과를 기다림.
+- ** Asynchronous(비동기) **: 요청자가 작업을 시키고 바로 리턴, 나중에 완료 알림 받음(Callback / Future).
+- ** Blocking **: I / O 작업이 끝날 때까지 스레드가 대기함.
+- ** Non - blocking **: 스레드가 대기하지 않고 즉시 리턴, I / O 완료는 이벤트로 처리.
 
-### 2. Spring MVC (Classic) vs Node.js
-#### Spring MVC (Blocking I/O)
-- **모델**: Thread-per-request (요청당 스레드).
-- **장점**: 디버깅 용이, 안정성, 레거시 호환성.
-- **단점**: 동시 접속이 많으면 스레드 생성 비용(Context Switching) 증가.
-- **사용처**: CPU 연산이 많은 작업, 전통적인 엔터프라이즈 앱.
+### 2. Spring MVC(Classic) vs Node.js
+#### Spring MVC(Blocking I / O)
+                    - ** 모델 **: Thread - per - request(요청당 스레드).
+- ** 장점 **: 디버깅 용이, 안정성, 레거시 호환성.
+- ** 단점 **: 동시 접속이 많으면 스레드 생성 비용(Context Switching) 증가.
+- ** 사용처 **: CPU 연산이 많은 작업, 전통적인 엔터프라이즈 앱.
 
-#### Node.js / Spring WebFlux (Non-blocking I/O)
-- **모델**: Single Thread Event Loop (Node.js) / Event-driven.
-- **장점**: 적은 수의 스레드로 대량의 동시 접속 처리 가능.
-- **단점**: 콜백 지옥(Async/Await로 완화), CPU 집약적 작업 시 루프 차단됨.
-- **사용처**: I/O가 많은 앱 (채팅, 스트리밍, 게이트웨이).
+#### Node.js / Spring WebFlux(Non - blocking I / O)
+                    - ** 모델 **: Single Thread Event Loop(Node.js) / Event - driven.
+- ** 장점 **: 적은 수의 스레드로 대량의 동시 접속 처리 가능.
+- ** 단점 **: 콜백 지옥(Async / Await로 완화), CPU 집약적 작업 시 루프 차단됨.
+- ** 사용처 **: I / O가 많은 앱(채팅, 스트리밍, 게이트웨이).
 `
                     },
                     {
@@ -543,21 +850,21 @@ for result in results:
                         content: `
 ### 1. 비교
 
-| 특징 | REST API | gRPC |
-| :--- | :--- | :--- |
-| **프로토콜** | HTTP/1.1 (텍스트 기반) | HTTP/2 (바이너리 기반) |
-| **데이터 포맷** | JSON (사람이 읽기 편함, 용량 큼) | Protocol Buffers (바이너리, 작고 빠름, 타입 엄격) |
-| **통신 방식** | Unary (전통적 요청/응답) | Unary, Server/Client Streaming, 양방향 Streaming |
-| **브라우저 지원** | 기본 지원 | gRPC-Web 프록시 필요 |
+                    | 특징 | REST API | gRPC |
+| : --- | : --- | : --- |
+| ** 프로토콜 ** | HTTP / 1.1(텍스트 기반) | HTTP / 2(바이너리 기반) |
+| ** 데이터 포맷 ** | JSON(사람이 읽기 편함, 용량 큼) | Protocol Buffers(바이너리, 작고 빠름, 타입 엄격) |
+| ** 통신 방식 ** | Unary(전통적 요청 / 응답) | Unary, Server / Client Streaming, 양방향 Streaming |
+| ** 브라우저 지원 ** | 기본 지원 | gRPC - Web 프록시 필요 |
 
-### 2. 왜 gRPC인가?
-- **성능**: Protobuf는 JSON 대비 직렬화/역직렬화 속도가 3-10배 빠르고 데이터 크기가 작음.
-- **타입 안정성**: .proto 파일로 인터페이스를 정의하므로 계약(Contract)이 엄격함.
-- **Polyglot**: Go, Java, Python 등 다양한 언어의 클라이언트/서버 코드를 자동 생성.
+### 2. 왜 gRPC인가 ?
+- ** 성능 **: Protobuf는 JSON 대비 직렬화 / 역직렬화 속도가 3 - 10배 빠르고 데이터 크기가 작음.
+- ** 타입 안정성 **: .proto 파일로 인터페이스를 정의하므로 계약(Contract)이 엄격함.
+- ** Polyglot **: Go, Java, Python 등 다양한 언어의 클라이언트 / 서버 코드를 자동 생성.
 
 ### 3. 사용 사례
-- **마이크로서비스 간 통신** (내부 통신 속도 중요).
-- 모바일 클라이언트 (네트워크 대역폭 절약).
+                    - ** 마이크로서비스 간 통신 ** (내부 통신 속도 중요).
+- 모바일 클라이언트(네트워크 대역폭 절약).
 `
                     },
                     {
@@ -565,20 +872,20 @@ for result in results:
                         title: 'MSA 패턴',
                         description: '서비스 분리 전략, 분산 트랜잭션(Saga), 그리고 서킷 브레이커.',
                         content: `
-### 1. 분리 전략 (Decomposition)
-- **비즈니스 능력 기반**: 주문 서비스, 재고 서비스 등.
-- **DDD 하위 도메인 기반**: 핵심(Core), 지원(Supporting), 일반(Generic) 도메인.
+### 1. 분리 전략(Decomposition)
+                    - ** 비즈니스 능력 기반 **: 주문 서비스, 재고 서비스 등.
+- ** DDD 하위 도메인 기반 **: 핵심(Core), 지원(Supporting), 일반(Generic) 도메인.
 
-### 2. 분산 트랜잭션 (Saga Pattern)
+### 2. 분산 트랜잭션(Saga Pattern)
 MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패턴을 사용.
-- **Choreography (안무)**: 서비스끼리 이벤트를 주고받으며 다음 작업 수행 (중앙 제어 없음).
-- **Orchestration (지휘)**: 중앙 오케스트레이터가 각 서비스에 명령을 내림.
+- ** Choreography(안무) **: 서비스끼리 이벤트를 주고받으며 다음 작업 수행(중앙 제어 없음).
+- ** Orchestration(지휘) **: 중앙 오케스트레이터가 각 서비스에 명령을 내림.
 
-### 3. 장애 격리 (Circuit Breaker)
+### 3. 장애 격리(Circuit Breaker)
 외부 서비스 장애가 전체 시스템으로 전파되는 것을 방지.
-- **Closed**: 정상 상태.
-- **Open**: 에러 임계치 초과 시 회로 차단 (요청 즉시 실패 처리).
-- **Half-Open**: 일정 시간 후 일부 요청만 보내보며 복구 확인.
+- ** Closed **: 정상 상태.
+- ** Open **: 에러 임계치 초과 시 회로 차단(요청 즉시 실패 처리).
+- ** Half - Open **: 일정 시간 후 일부 요청만 보내보며 복구 확인.
 `
                     },
                     {
@@ -586,24 +893,24 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
                         title: '대용량 트래픽 처리',
                         description: 'Redis를 활용한 캐싱 전략과 Kafka 기반의 이벤트 구동 아키텍처.',
                         content: `
-### 1. 캐싱 전략 (Redis)
-- **Look Aside (Lazy Loading)**: 앱이 캐시 확인 -> 없으면 DB 조회 -> 캐시에 저장.
-- **Write Back**: 캐시에 먼저 쓰고 -> 비동기로 DB에 반영 (성능 최상, 데이터 유실 위험).
-- **Redis 자료구조**:
-    - **String**: 단순 키-값 (세션, 인증 토큰).
-    - **Sorted Set**: 실시간 랭킹/순위표.
-    - **Pub/Sub**: 실시간 메시징.
+### 1. 캐싱 전략(Redis)
+                    - ** Look Aside(Lazy Loading) **: 앱이 캐시 확인 -> 없으면 DB 조회 -> 캐시에 저장.
+- ** Write Back **: 캐시에 먼저 쓰고 -> 비동기로 DB에 반영(성능 최상, 데이터 유실 위험).
+- ** Redis 자료구조 **:
+    - ** String **: 단순 키 - 값(세션, 인증 토큰).
+    - ** Sorted Set **: 실시간 랭킹 / 순위표.
+    - ** Pub / Sub **: 실시간 메시징.
 
-### 2. 메시지 큐 (Kafka vs RabbitMQ)
-- **Kafka**: 로그 기반, 대용량 처리(Throughput) 중심, 데이터가 디스크에 남음. **이벤트 스트리밍**, **로그 수집**에 적합.
-- **RabbitMQ**: 전통적 브로커, 복잡한 라우팅(Exchange) 가능. **작업 큐(Task Queue)**에 적합.
+### 2. 메시지 큐(Kafka vs RabbitMQ)
+                    - ** Kafka **: 로그 기반, 대용량 처리(Throughput) 중심, 데이터가 디스크에 남음. ** 이벤트 스트리밍 **, ** 로그 수집 ** 에 적합.
+- ** RabbitMQ **: 전통적 브로커, 복잡한 라우팅(Exchange) 가능. ** 작업 큐(Task Queue) ** 에 적합.
 `
                     }
                 ]
             },
             {
                 id: 'blockchain',
-                title: '블록체인 (Blockchain)',
+                title: '블록체인',
                 topics: [
                     {
                         id: 'public-vs-private',
@@ -612,17 +919,17 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
                         content: `
 ### 1. 비교
 
-| 특징 | Public (Ethereum) | Private/Consortium (Hyperledger Fabric) |
-| :--- | :--- | :--- |
-| **접근성** | 누구나 참여 가능 (Permissionless) | 허가된 참여자만 가능 (MSP 인증) |
-| **합의 알고리즘** | PoS (지분 증명) | Pluggable (Raft, Kafka - CFT) |
-| **프라이버시** | 모든 거래 내역 공개 | Channel (채널)을 통해 특정 그룹끼리만 데이터 공유 |
-| **성능** | 낮음 (~15-20 TPS), 확정성(Finality) 부족 | 높음 (3000+ TPS), 즉각적인 확정성 |
-| **비용** | 가스비 (Gas Fee) | 인프라 구축 및 유지 비용 |
+                    | 특징 | Public(Ethereum) | Private / Consortium(Hyperledger Fabric) |
+| : --- | : --- | : --- |
+| ** 접근성 ** | 누구나 참여 가능(Permissionless) | 허가된 참여자만 가능(MSP 인증) |
+| ** 합의 알고리즘 ** | PoS(지분 증명) | Pluggable(Raft, Kafka - CFT) |
+| ** 프라이버시 ** | 모든 거래 내역 공개 | Channel(채널)을 통해 특정 그룹끼리만 데이터 공유 |
+| ** 성능 ** | 낮음(~15 - 20 TPS), 확정성(Finality) 부족 | 높음(3000 + TPS), 즉각적인 확정성 |
+| ** 비용 ** | 가스비(Gas Fee) | 인프라 구축 및 유지 비용 |
 
 ### 2. 아키텍처 차이
-- **Ethereum**: EVM (World State), 스마트 컨트랙트 (Solidity), 계정 기반 모델.
-- **Fabric**: Peers (Endorser, Committer), Orderer (합의), Chaincode (Go/Java/Node), Ledger (World State + Blockchain).
+                    - ** Ethereum **: EVM(World State), 스마트 컨트랙트(Solidity), 계정 기반 모델.
+- ** Fabric **: Peers(Endorser, Committer), Orderer(합의), Chaincode(Go / Java / Node), Ledger(World State + Blockchain).
 `
                     },
                     {
@@ -630,9 +937,9 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
                         title: '스마트 컨트랙트 보안',
                         description: 'Solidity 개발 시 발생하는 주요 취약점(Reentrancy 등)과 보안 패턴.',
                         content: `
-### 1. 재진입 공격 (Reentrancy Attack)
-- **취약점**: 공격자의 컨트랙트가 원래 함수 실행이 끝나기 전에 다시 해당 함수를 호출하여 자금을 반복 인출.
-- **해결**: **Checks-Effects-Interactions** 패턴 준수 (상태 변경을 송금 전에 수행). \`ReentrancyGuard\` 사용.
+### 1. 재진입 공격(Reentrancy Attack)
+                    - ** 취약점 **: 공격자의 컨트랙트가 원래 함수 실행이 끝나기 전에 다시 해당 함수를 호출하여 자금을 반복 인출.
+- ** 해결 **: ** Checks - Effects - Interactions ** 패턴 준수(상태 변경을 송금 전에 수행).\`ReentrancyGuard\` 사용.
 
 ### 2. 오버플로우/언더플로우 (Overflow/Underflow)
 - **취약점**: 변수 타입의 최대값을 넘어가면 0으로 돌아가는 현상.
@@ -676,6 +983,196 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
 3. **Verifier** (검증자)가 증명을 요청.
 4. **Holder**는 VP를 생성하여 **Verifier**에게 제출.
 5. **Verifier**는 블록체인상의 DID를 통해 Issuer의 서명을 검증.
+`
+                    }
+                ]
+            },
+            {
+                id: 'frontend',
+                title: '프론트엔드',
+                topics: [
+                    {
+                        id: 'virtual-dom',
+                        title: 'Virtual DOM & 렌더링 최적화',
+                        description: 'React의 동작 원리와 메모이제이션을 통한 성능 개선.',
+                        content: `
+### 1. Virtual DOM
+- **개념**: 실제 DOM의 가벼운 사본. React는 Virtual DOM을 먼저 업데이트하고, 이전 버전과 비교(**Diffing**)한 뒤 변경된 부분만 실제 DOM에 반영(**Reconciliation**).
+- **이유**: DOM 조작은 비용이 많이 듬(Reflow/Repaint). 변경 사항을 모아서 한 번에 처리하여 성능 향상.
+
+### 2. 최적화 기법
+- **React.memo**: Props가 변경되지 않으면 컴포넌트 리렌더링 방지.
+- **useMemo / useCallback**: 무거운 연산 결과나 함수 정의를 캐싱하여 불필요한 재생성 방지.
+- **Key Prop**: 리스트 렌더링 시 변경/추가/삭제된 항목을 식별하기 위해 필수.
+`
+                    },
+                    {
+                        id: 'state-management',
+                        title: '상태 관리 (Redux vs Zustand)',
+                        description: '전역 상태 라이브러리 비교와 서버 상태(Server State) 개념.',
+                        content: `
+### 1. 클라이언트 상태 (Client State)
+- **Context API**: 내장 기능, 사용 간편. 잦은 업데이트 시 불필요한 리렌더링 발생 가능.
+- **Redux**: 예측 가능한 상태 컨테이너(Flux 패턴). 강력한 DevTools, but 보일러플레이트가 많음.
+- **Zustand**: 훅 기반의 미니멀한 라이브러리. 사용이 쉽고 렌더링 최적화가 자동.
+
+### 2. 서버 상태 (Server State)
+- **React Query (TanStack Query)**: 비동기 데이터 관리(캐싱, 중복 제거, 백그라운드 갱신). API 데이터 처리를 전역 상태에서 분리.
+`
+                    },
+                    {
+                        id: 'build-tools',
+                        title: '모던 빌드 도구 (Webpack vs Vite)',
+                        description: '번들러 기반 vs 네이티브 ESM 기반 개발 환경 비교.',
+                        content: `
+### 1. Webpack (번들러)
+- **방식**: 모든 파일(JS, CSS, 이미지)을 하나의 결과물로 번들링한 *후* 서버 구동.
+- **장점**: 방대한 생태계, 안정성, 풍부한 플러그인.
+- **단점**: 프로젝트가 커질수록 초기 구동 속도가 느려짐.
+
+### 2. Vite (Native ESM)
+- **방식**: 소스 파일을 Native ESM으로 서빙. 라이브러리 번들링은 **esbuild**(Go 기반)로 초고속 처리.
+- **장점**: 즉각적인 서버 구동, 앱 크기와 상관없이 빠른 HMR.
+- **단점**: Webpack에 비해 생태계가 상대적으로 작음(빠르게 성장 중).
+`
+                    },
+                    {
+                        id: 'ssr-nextjs',
+                        title: 'SSR & Next.js',
+                        description: 'CSR vs SSR vs SSG, 그리고 React Server Components (RSC).',
+                        content: `
+### 1. 렌더링 패턴
+- **CSR (Client-Side Rendering)**: 빈 HTML + JS 다운로드. 상호작용 좋음, SEO 불리.
+- **SSR (Server-Side Rendering)**: 요청마다 서버에서 HTML 생성. SEO 좋음, 초기 로딩(TTFB) 느릴 수 있음.
+- **SSG (Static Site Generation)**: 빌드 시점에 HTML 생성. 성능 최상, 정적 데이터에 적합.
+
+### 2. React Server Components (RSC)
+- 컴포넌트가 **서버에서만** 실행됨. 클라이언트 번들 사이즈 0.
+- DB나 파일시스템 직접 접근 가능.
+- **Hydration**: 초기 HTML 로드 후 클라이언트가 상호작용 권한을 넘겨받음.
+`
+                    }
+                ]
+            },
+            {
+                id: 'app',
+                title: '앱',
+                topics: [
+                    {
+                        id: 'cross-platform',
+                        title: '크로스 플랫폼 (Flutter vs React Native)',
+                        description: '렌더링 엔진 차이(Skia vs Bridge/JSI)와 성능 비교.',
+                        content: `
+### 1. Flutter
+- **엔진**: C++로 작성된 **Skia** 엔진이 화면의 모든 픽셀을 직접 그림. 플랫폼 간 완벽히 동일한 UI.
+- **언어**: Dart (네이티브 코드로 AOT 컴파일).
+- **장점**: 일관된 UI, 고성능(60fps), 훌륭한 문서.
+
+### 2. React Native
+- **엔진**: 네이티브 플랫폼의 UI 컴포넌트를 **Bridge**(또는 JSI)를 통해 호출하여 사용.
+- **언어**: JavaScript/TypeScript.
+- **장점**: 네이티브 고유의 Look & Feel, 방대한 JS 생태계, 웹(React)과 코드 공유 용이.
+`
+                    },
+                    {
+                        id: 'app-lifecycle',
+                        title: '앱 수명주기 & 메모리 관리',
+                        description: 'Activity/Fragment 수명주기와 백그라운드 태스크 처리.',
+                        content: `
+### 1. 수명주기 상태
+- **Foreground**: 앱이 화면에 보이고 상호작용 가능.
+- **Background**: 앱이 숨겨짐(홈 버튼). OS가 메모리 부족 시 종료시킬 수 있음.
+- **Suspended**: 메모리에 있지만 코드는 실행되지 않는 상태.
+
+### 2. 메모리 누수 (Memory Leaks)
+- **주요 원인**: 해제되지 않은 리스너, Context에 대한 정적 참조(Android), 순환 참조(iOS).
+- **탐지**: Android Studio Profiler, Xcode Instruments, LeakCanary.
+`
+                    },
+                    {
+                        id: 'offline-first',
+                        title: '오프라인 아키텍처',
+                        description: '로컬 데이터베이스(SQLite, Realm)와 데이터 동기화 전략.',
+                        content: `
+### 1. 로컬 데이터베이스
+- **SQLite**: 표준 관계형 DB. 복잡한 쿼리에 강점. (라이브러리: Room, Drift).
+- **Realm / Hive**: NoSQL 객체 저장소. 객체 그래프 처리가 빠르고 직관적.
+
+### 2. 동기화 전략
+- **Optimistic UI**: UI를 먼저 업데이트하고 백그라운드에서 서버와 동기화. 실패 시 롤백.
+- **충돌 해결**: 서버 데이터와 로컬 데이터가 다를 때 "Last Write Wins" 또는 "Merge" 전략 사용.
+`
+                    },
+                    {
+                        id: 'app-deployment',
+                        title: '배포 & CI/CD',
+                        description: 'Fastlane을 이용한 배포 자동화와 스토어 가이드라인.',
+                        content: `
+### 1. Fastlane
+- 스크린샷 캡처, 코드 사이닝, 스토어 업로드를 자동화하는 도구.
+- **Match**: 인증서/프로비저닝 프로파일을 Git으로 관리하여 팀 간 공유.
+
+### 2. 스토어 가이드라인
+- **iOS (App Store)**: 심사가 엄격함. 동적 코드 로딩 금지 (Hot Push 제한적).
+- **Android (Play Store)**: 자동화 검사 + 수동 리뷰. 단계적 배포(Phased Rollout) 지원.
+`
+                    }
+                ]
+            },
+            {
+                id: 'ai',
+                title: '인공지능',
+                topics: [
+                    {
+                        id: 'transformers',
+                        title: 'Transformer 아키텍처',
+                        description: 'GPT와 BERT의 기반이 된 "Attention Is All You Need" 혁명.',
+                        content: `
+### 1. 어텐션 메커니즘 (Attention Mechanism)
+- **Self-Attention**: 문장 내 단어들 간의 관계(중요도)를 거리와 상관없이 파악.
+- RNN/LSTM의 고질적인 "장기 의존성(Long-term dependency)" 문제 해결.
+- **병렬 처리**: 순차적으로 처리하는 RNN과 달리 문장 전체를 한 번에 처리하여 대규모 학습 가능.
+`
+                    },
+                    {
+                        id: 'llm-training',
+                        title: 'LLM 학습 파이프라인',
+                        description: '사전 학습(Pre-training), SFT, 그리고 RLHF.',
+                        content: `
+### 1. 사전 학습 (Pre-training)
+- 대규모 텍스트 데이터에서 다음 단어를 예측하도록 학습 (비지도 학습).
+- 문법, 지식, 추론 능력을 습득.
+
+### 2. 미세 조정 (Fine-Tuning)
+- **SFT (Supervised Fine-Tuning)**: 지시사항을 따르도록 양질의 Q&A 데이터로 추가 학습.
+- **RLHF (Reinforcement Learning from Human Feedback)**: 인간의 피드백(선호도)을 반영하여 모델의 출력을 교정 (유해성 감소, 도움되는 답변 유도).
+`
+                    },
+                    {
+                        id: 'vector-search',
+                        title: '벡터 검색 & 임베딩',
+                        description: '의미 기반 검색(Semantic Search)을 위한 수학적 표현.',
+                        content: `
+### 1. 임베딩 (Embeddings)
+- 텍스트/이미지를 고차원 벡터(숫자 리스트)로 변환.
+- **근접성**: 의미가 비슷한 개념은 벡터 공간에서 서로 가까이 위치함 (예: "왕" - "남자" + "여자" ≈ "여왕").
+
+### 2. 검색 알고리즘
+- **KNN (K-Nearest Neighbors)**: 정확하지만 데이터가 많으면 느림.
+- **ANN (Approximate Nearest Neighbors)**: HNSW, IVF 등. 속도가 빠르고 정확도도 준수함. Vector DB에서 사용.
+`
+                    },
+                    {
+                        id: 'diffusion-models',
+                        title: 'Diffusion 모델',
+                        description: '이미지 생성 모델(Stable Diffusion, Midjourney)의 원리.',
+                        content: `
+### 1. Forward Process (확산 과정)
+- 이미지에 점진적으로 노이즈(가우시안 노이즈)를 추가하여 완전한 노이즈로 만듦.
+
+### 2. Reverse Process (역확산 과정)
+- 신경망(U-Net)을 학습시켜 노이즈를 단계적으로 *제거*하는 방법을 익힘.
+- 랜덤 노이즈에서 시작하여 텍스트 프롬프트(Conditioning)에 따라 의미 있는 이미지로 복원.
 `
                     }
                 ]
