@@ -230,6 +230,63 @@ Used by **Cassandra**, **HBase**, **RocksDB** (Write-heavy NoSQL).
 - **Write Performance**: Too many indexes slow down \`INSERT\`, \`UPDATE\`, \`DELETE\` operations significantly as all indexes must be maintained.
 - **Covering Index**: If an index contains all required columns for a query, the DB can return data directly from the index without looking up the table (Significant performance boost).
 `
+                    },
+                    {
+                        id: 'db-sharding',
+                        title: 'Database Sharding',
+                        description: 'Horizontal scaling technique: Pros, Cons, and Sharding Strategies.',
+                        content: `
+### 1. Concept
+- **Definition**: Splitting a large dataset into smaller chunks (Shards) and distributing them across multiple servers.
+- **Vertical Scaling (Scale Up)**: Upgrading CPU/RAM of a single server. Limited by hardware costs.
+- **Horizontal Scaling (Scale Out)**: Adding more servers. Sharding enables this for databases.
+
+### 2. Pros & Cons
+- **Pros**:
+    - **Unlimited Scalability**: Can handle petabytes of data by adding more nodes.
+    - **Performance**: Queries are distributed, reducing load on individual servers.
+- **Cons (Challenges)**:
+    - **Complexity**: Application logic must determine which shard to query.
+    - **No Cross-Shard Joins**: Joining tables across different shards is extremely expensive or impossible.
+    - **Rebalancing**: Adding/Removing nodes requires migrating data, which is risky and complex.
+
+### 3. Sharding Strategies (Key Selection)
+- **Hash Sharding**: \`ShardID = hash(Key) % N\`. Even distribution, but adding nodes requires re-hashing everything (Consistent Hashing helps).
+- **Range Sharding**: \`Shard 1: ID 1~1000\`, \`Shard 2: ID 1001~2000\`. Good for range queries, but can create **Hotspots** (e.g., recent data all going to one shard).
+- **Directory Sharding**: A lookup table maps keys to shards. Flexible but the lookup table becomes a single point of failure.
+
+### 4. Sharding vs Partitioning
+- **Partitioning**: Breaking a table into smaller chunks within a **single database instance** (e.g., MySQL Partitioning).
+    - **Goal**: Manageability and query performance (Pruning).
+    - **Scope**: Single Server.
+- **Sharding**: Partitioning across **multiple database instances**.
+    - **Goal**: Horizontal Scaling (Storage & Compute).
+    - **Scope**: Multi-Server (Cluster).
+`
+                    },
+                    {
+                        id: 'db-partitioning',
+                        title: 'Database Partitioning',
+                        description: 'Splitting tables within a single instance: Types and Pruning optimization.',
+                        content: `
+### 1. Concept
+- **Definition**: Breaking down a large table into smaller, manageable pieces (Partitions) within a **single database instance**.
+- **Goal**: Improve manageability (e.g., dropping old data) and query performance (Partition Pruning).
+
+### 2. Partitioning Types
+- **Range Partitioning**: Based on a range of values (e.g., Dates: Jan, Feb, Mar). Best for time-series data.
+- **List Partitioning**: Based on a specific list of values (e.g., Country: 'KR', 'US', 'JP').
+- **Hash Partitioning**: Based on a hash of a key. Ensures even distribution but no logical grouping.
+- **Composite Partitioning**: Combining methods (e.g., Range first, then Hash).
+
+### 3. Pros & Cons
+- **Pros**:
+    - **Partition Pruning**: The optimizer skips scanning partitions that don't match the query \`WHERE\` clause.
+    - **Manageability**: Can drop an entire partition instantly (much faster than \`DELETE FROM table WHERE date < ...\`).
+- **Cons**:
+    - **Key Limitation**: Partition key must be part of the Primary Key / Unique Keys.
+    - **Complexity**: Global indexes vs Local indexes management.
+`
                     }
                 ]
             },
@@ -809,6 +866,63 @@ for result in results:
 - **카디널리티(Cardinality)**: 중복도가 낮고 유니크한 값이 많은 컬럼(주민번호, ID)에 걸어야 효율적 (성별같이 중복 많은 컬럼은 비효율).
 - **쓰기 성능**: 인덱스가 많으면 \`INSERT\`, \`UPDATE\`, \`DELETE\` 시 모든 인덱스를 갱신해야 하므로 느려짐.
 - **커버링 인덱스(Covering Index)**: 쿼리에 필요한 모든 컬럼이 인덱스에 포함되어 있다면, 테이블 조회 없이 인덱스만으로 결과를 반환하여 성능 급상승.
+`
+                    },
+                    {
+                        id: 'db-sharding',
+                        title: 'DB 샤딩(Sharding)',
+                        description: '수평적 확장의 개념, 장단점, 그리고 샤딩 전략.',
+                        content: `
+### 1. 개념
+- **정의**: 대용량 데이터를 작은 단위(Shard)로 나누어 여러 서버에 분산 저장하는 기술.
+- **수직적 확장(Scale Up)**: 단일 서버의 CPU/RAM 업그레이드. 하드웨어의 물리적 한계 존재.
+- **수평적 확장(Scale Out)**: 서버를 여러 대로 늘림. 데이터베이스는 샤딩을 통해 수평 확장을 구현.
+
+### 2. 장단점 (Pros & Cons)
+- **장점 (Pros)**:
+    - **무제한 확장성**: 노드를 계속 추가하여 페타바이트급 데이터 처리 가능.
+    - **성능 향상**: 쿼리가 여러 서버로 분산되므로 단일 노드의 부하 감소.
+- **단점 (Cons)**:
+    - **복잡성**: 애플리케이션 레벨에서 어떤 샤드에 데이터를 저장/조회할지 결정해야 함.
+    - **조인(Join) 불가**: 서로 다른 샤드에 있는 테이블 간 Join은 매우 비싸거나 불가능.
+    - **데이터 재할당(Rebalancing)**: 노드 추가/삭제 시 데이터 마이그레이션이 필요하며, 운영 중 수행하기 매우 까다로움.
+
+### 3. 샤딩 전략 (Sharding Strategies)
+- **Hash Sharding**: \`ShardID = hash(Key) % N\`. 데이터가 균등하게 분산되지만, 노드 수가 바뀌면 전체 데이터 재배치가 필요함 (Consistent Hashing으로 완화).
+- **Range Sharding**: \`Shard 1: ID 1~1000\`, \`Shard 2: ID 1001~2000\`. 범위 조회에 유리하지만, 특정 샤드에 데이터가 몰리는 **Hotspot** 발생 가능.
+- **Directory Sharding**: 별도의 조회 테이블(Lookup Table)이 키-샤드 매핑 정보를 관리. 유연하지만 조회 테이블이 단일 장애 지점(SPOF)이 될 수 있음.
+
+### 4. 샤딩 vs 파티셔닝
+- **파티셔닝 (Partitioning)**: 큰 테이블을 **단일 데이터베이스 인스턴스** 내에서 작은 단위로 나누는 것 (예: MySQL Partitioning).
+    - **목적**: 데이터 관리 용이성 및 쿼리 성능 최적화 (Pruning).
+    - **범위**: 단일 서버.
+- **샤딩 (Sharding)**: 데이터를 **여러 데이터베이스 인스턴스**로 나누는 것.
+    - **목적**: 수평적 확장 (저장 공간 및 연산 능력 증대).
+    - **범위**: 멀티 서버 (클러스터).
+`
+                    },
+                    {
+                        id: 'db-partitioning',
+                        title: 'DB 파티셔닝(Partitioning)',
+                        description: '단일 인스턴스 내 테이블 분할 기법: 종류와 Pruning 최적화.',
+                        content: `
+### 1. 개념
+- **정의**: 큰 테이블을 작은 단위(Partition)로 나누어 **단일 데이터베이스 인스턴스** 내에서 관리하는 기법.
+- **목적**: 데이터 관리 용이성(오래된 데이터 삭제 등) 및 쿼리 성능 최적화(Partition Pruning).
+
+### 2. 파티셔닝 종류
+- **Range Partitioning**: 값의 범위를 기준 (예: 날짜별 Jan, Feb, Mar). 시계열 데이터에 최적.
+- **List Partitioning**: 특정 값 목록을 기준 (예: 국가 코드 'KR', 'US', 'JP').
+- **Hash Partitioning**: 해시 함수를 통해 데이터 분산. 균등하게 저장되지만 논리적 그룹화는 안 됨.
+- **Composite Partitioning**: 여러 기법을 결합 (예: 날짜로 먼저 나누고, 그 안에서 해시로 나눔).
+
+### 3. 장단점
+- **장점**:
+    - **Partition Pruning**: 옵티마이저가 \`WHERE\` 조건에 맞지 않는 파티션은 아예 스캔하지 않음 (성능 향상).
+    - **관리 용이성**: 파티션 단위로 데이터를 즉시 삭제(\`DROP PARTITION\`) 가능 (\`DELETE\`보다 훨씬 빠름).
+- **단점**:
+    - **키 제약**: 파티션 키는 반드시 Primary Key / Unique Key의 일부여야 함.
+    - **복잡성**: Global Index와 Local Index 관리 이슈.
 `
                     }
                 ]
