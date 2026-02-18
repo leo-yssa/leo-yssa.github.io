@@ -8,17 +8,11 @@ const About = () => {
 
     return (
         <section id="about" className={styles.section}>
-            <div className="container">
-                <div className={styles.row}>
-                    <div className={styles.headerCol}>
-                        <h2 className="heading">{t('about.title')}</h2>
-                    </div>
-                    <div className={styles.contentCol}>
-                        <p className={styles.text}>
-                            {aboutText}
-                        </p>
-                    </div>
-                </div>
+            <h2 className="heading">{t('about.title')}</h2>
+            <div className={styles.content}>
+                <p className={styles.text}>
+                    {aboutText}
+                </p>
             </div>
         </section>
     );
