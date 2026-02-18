@@ -6,6 +6,7 @@ import Experience from './sections/Experience';
 import Education from './sections/Education';
 import Projects from './sections/Projects';
 import Skills from './sections/Skills';
+import Certifications from './sections/Certifications';
 import Footer from './components/Footer';
 import './styles/global.css';
 
@@ -21,6 +22,7 @@ function App() {
           <Education />
           <Projects />
           <Skills />
+          <Certifications />
           <Footer />
         </main>
       </div>

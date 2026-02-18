@@ -15,9 +15,6 @@ const Hero = () => {
             <div className={styles.content}>
                 <h1 className={styles.title}>Youngsoo(Leo) Sa</h1>
                 <h2 className={styles.subtitle}>{t('hero.role')}</h2>
-                <div className={styles.cta}>
-                    <a href="#" className="btn-rounded-white">{t('hero.resume')}</a>
-                </div>
             </div>
             <div className={styles.scrollDown} onClick={scrollToAbout}>
                 <div className={styles.scrollIcon}>

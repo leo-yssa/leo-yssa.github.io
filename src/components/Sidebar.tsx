@@ -14,6 +14,7 @@ const Sidebar = () => {
         { id: 'education', icon: <FaGraduationCap />, label: 'nav.education' },
         { id: 'projects', icon: <FaLaptopCode />, label: 'nav.projects' },
         { id: 'skills', icon: <FaCode />, label: 'nav.skills' },
+        { id: 'certifications', icon: <FaCode />, label: 'nav.certifications' },
     ];
 
     const handleNavClick = (id: string) => {
@@ -35,7 +36,7 @@ const Sidebar = () => {
                 <div className={styles.profile}>
                     <div className={styles.profileImageContainer}>
                         {/* Ideally replace with actual profile image */}
-                        <img src="/images/lead-bg.jpg" alt="Profile" className={styles.profileImage} />
+                        <img src="/images/lead-bg.png" alt="Profile" className={styles.profileImage} />
                     </div>
                     <h2 className={styles.name}>Youngsoo(Leo) Sa</h2>
                     <p className={styles.role}>{t('hero.role')}</p>

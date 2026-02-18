@@ -24,10 +24,17 @@ export interface AwardItem {
     organization: string;
 }
 
+export interface CertificationItem {
+    title: string;
+    date: string;
+    organization: string;
+}
+
 export interface Content {
     experience: ExperienceItem[];
     education: EducationItem[];
     awards: AwardItem[];
+    certifications: CertificationItem[];
     projects: ProjectItem[];
     about: string;
 }
@@ -109,6 +116,33 @@ export const content: Record<string, Content> = {
                 title: "First Prize (Grand Prize)",
                 date: "2018",
                 organization: "1st Blockchain Academy, Sogang University Intelligent Blockchain Research Center"
+            }
+        ],
+        certifications: [
+            {
+                title: "Information Processing Engineer",
+                date: "May 2019",
+                organization: "HRDK (Human Resources Development Service of Korea)"
+            },
+            {
+                title: "Computer Specialist in Spreadsheet & Database Level-1",
+                date: "July 2021",
+                organization: "KCCI (Korea Chamber of Commerce and Industry)"
+            },
+            {
+                title: "Network Master Level-2",
+                date: "September 2017",
+                organization: "ICQA (Korea Association for ICT Promotion)"
+            },
+            {
+                title: "Linux Master Level-2",
+                date: "May 2017",
+                organization: "KAIT (Korea Association for ICT Promotion)"
+            },
+            {
+                title: "OCJP (Oracle Certified Professional, Java SE 6 Programmer)",
+                date: "December 2016",
+                organization: "Oracle"
             }
         ],
         projects: [
@@ -226,6 +260,33 @@ export const content: Record<string, Content> = {
                 title: "제 1회 블록체인 학술대회 최우수상",
                 date: "2018",
                 organization: "서강대 지능형 블록체인 연구센터"
+            }
+        ],
+        certifications: [
+            {
+                title: "정보처리기사",
+                date: "2018.05",
+                organization: "한국산업인력공단"
+            },
+            {
+                title: "컴퓨터활용능력 1급",
+                date: "2021.07",
+                organization: "대한상공회의소"
+            },
+            {
+                title: "네트워크관리사 2급",
+                date: "2017.09",
+                organization: "한국정보통신자격협회"
+            },
+            {
+                title: "리눅스마스터 2급",
+                date: "2017.05",
+                organization: "한국정보통신진흥협회"
+            },
+            {
+                title: "OCJP (Oracle Certified Professional, Java SE 6 Programmer)",
+                date: "2016.12",
+                organization: "Oracle"
             }
         ],
         projects: [
