@@ -1,6 +1,6 @@
 import { FaBriefcase } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
-import { content, ExperienceItem } from '../data';
+import { content, ExperienceItem } from '../data/portfolio';
 import styles from './Experience.module.css';
 
 const Experience = () => {

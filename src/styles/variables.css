@@ -11,15 +11,16 @@
   /* Slate 50 */
   --color-text-secondary: #94a3b8;
   /* Slate 400 */
+  /* Modern Tech Palette */
   --color-text-accent: #38bdf8;
   /* Sky 400 */
 
-  --color-primary: #3b82f6;
-  /* Blue 500 */
-  --color-primary-dark: #2563eb;
-  /* Blue 600 */
-  --color-secondary: #8b5cf6;
-  /* Violet 500 */
+  --color-primary: #0ea5e9;
+  /* Sky 500 - More vibrant/tech blue */
+  --color-primary-dark: #0284c7;
+  /* Sky 600 */
+  --color-secondary: #6366f1;
+  /* Indigo 500 - Deep tech blue/purple */
 
   --color-border: #334155;
   /* Slate 700 */

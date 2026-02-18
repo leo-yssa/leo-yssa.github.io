@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import { content } from '../data';
+import { content } from '../data/portfolio';
 import styles from './Certifications.module.css';
 
 const Certifications = () => {

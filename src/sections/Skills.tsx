@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import { skills } from '../data'; // Skills list is shared/language-agnostic for now
+import { skills } from '../data/portfolio';
 import styles from './Skills.module.css';
 
 const Skills = () => {

@@ -1,0 +1,222 @@
+.section {
+    padding: 80px 20px;
+    background: var(--color-bg-secondary);
+    /* Match Projects */
+    border-bottom: 1px solid var(--color-border);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* Match Projects */
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.card {
+    background: var(--color-bg-tertiary);
+    /* Match Projects */
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    /* Match Projects */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-hover);
+}
+
+.iconWrapper {
+    font-size: 3rem;
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .iconWrapper {
+    transform: scale(1.1);
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    color: var(--color-text-main);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.cardCount {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Back Button */
+.backButton {
+    background: transparent;
+    border: none;
+    color: var(--color-text-accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.backButton:hover {
+    text-decoration: underline;
+}
+
+.subHeading {
+    font-size: 2rem;
+    color: var(--color-text-main);
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 15px;
+}
+
+/* Topic List */
+.topicList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.topicItem {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 20px;
+    /* Reduced padding from 25px */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.topicItem:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-tertiary);
+    /* Highlight on hover */
+}
+
+.topicInfo {
+    flex: 1;
+}
+
+.topicTitle {
+    font-size: 1.2rem;
+    color: var(--color-text-main);
+    margin-bottom: 5px;
+    /* Reduced margin */
+}
+
+.topicDesc {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+.chevron {
+    color: var(--color-text-secondary);
+}
+
+/* Article Detail */
+.article {
+    background: var(--color-bg-secondary);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+}
+
+.articleTitle {
+    font-size: 2.2rem;
+    color: var(--color-text-main);
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 20px;
+}
+
+.markdownContent {
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+}
+
+.markdownContent h3 {
+    color: var(--color-text-main);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.markdownContent h4 {
+    color: var(--color-text-main);
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.markdownContent p {
+    margin-bottom: 15px;
+}
+
+.markdownContent ul,
+.markdownContent ol {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+.markdownContent li {
+    margin-bottom: 5px;
+}
+
+.markdownContent pre {
+    background: #0f172a;
+    /* Darker background for code */
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 20px 0;
+    border: 1px solid var(--color-border);
+}
+
+.markdownContent code {
+    font-family: 'Fira Code', monospace;
+    color: #e2e8f0;
+}
+
+.markdownContent strong {
+    color: var(--color-text-main);
+    font-weight: 600;
+}
+
+/* Table Styles for Markdown */
+.markdownContent table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.markdownContent th,
+.markdownContent td {
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    text-align: left;
+}
+
+.markdownContent th {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-main);
+}

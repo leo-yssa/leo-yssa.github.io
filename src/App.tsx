@@ -7,6 +7,7 @@ import Education from './sections/Education';
 import Projects from './sections/Projects';
 import Skills from './sections/Skills';
 import Certifications from './sections/Certifications';
+import Learning from './sections/Learning';
 import Footer from './components/Footer';
 import './styles/global.css';
 
@@ -23,6 +24,7 @@ function App() {
           <Projects />
           <Skills />
           <Certifications />
+          <Learning />
           <Footer />
         </main>
       </div>

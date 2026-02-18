@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import { content, ProjectItem } from '../data';
+import { content, ProjectItem } from '../data/portfolio';
 import styles from './Projects.module.css';
 
 const Projects = () => {

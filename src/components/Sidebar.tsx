@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { FaUser, FaBriefcase, FaGraduationCap, FaCode, FaLaptopCode, FaGithub, FaLinkedin, FaBars, FaTimes, FaEnvelope, FaPen } from 'react-icons/fa';
+import { FaUser, FaBriefcase, FaGraduationCap, FaCode, FaLaptopCode, FaGithub, FaLinkedin, FaBars, FaTimes, FaEnvelope, FaPen, FaBook } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
@@ -15,6 +15,7 @@ const Sidebar = () => {
         { id: 'projects', icon: <FaLaptopCode />, label: 'nav.projects' },
         { id: 'skills', icon: <FaCode />, label: 'nav.skills' },
         { id: 'certifications', icon: <FaCode />, label: 'nav.certifications' },
+        { id: 'learning', icon: <FaBook />, label: 'nav.learning' },
     ];
 
     const handleNavClick = (id: string) => {

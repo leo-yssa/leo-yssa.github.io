@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import { content, EducationItem, AwardItem } from '../data';
+import { content, EducationItem, AwardItem } from '../data/portfolio';
 import styles from './Education.module.css';
 
 const Education = () => {
