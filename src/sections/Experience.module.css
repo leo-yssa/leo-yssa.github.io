@@ -1,0 +1,128 @@
+.section {
+    padding: 80px 20px;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.timeline {
+    margin: 40px auto 0 auto;
+    position: relative;
+    max-width: 1000px;
+}
+
+.timeline::before {
+    position: absolute;
+    content: '';
+    top: 0;
+    bottom: 0;
+    left: 303px;
+    right: auto;
+    height: 100%;
+    width: 2px;
+    background: var(--color-border);
+    z-index: 0;
+}
+
+.timelineBlock {
+    position: relative;
+    display: block;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.timelineDate {
+    width: 260px;
+    text-align: right;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 500;
+    color: var(--color-text-accent);
+    font-size: 0.95rem;
+}
+
+.timelineIcon {
+    position: relative;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    background: var(--color-bg-tertiary);
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+    float: left;
+    z-index: 99;
+    margin-left: 284px;
+    /* adjusted for centering on line */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    box-shadow: 0 0 0 5px var(--color-bg-secondary);
+    /* spacing illusion */
+}
+
+.timelineContent {
+    margin-left: 360px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    padding: 25px;
+    border-radius: 12px;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.timelineContent:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
+}
+
+.timelineContent h3 {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin: 0;
+}
+
+.timelineContent h4 {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin: 5px 0 15px 0;
+}
+
+.list {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.list li {
+    list-style-type: disc;
+    color: var(--color-text-secondary);
+    /* Slate 400 */
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .timeline::before {
+        left: 29px;
+    }
+
+    .timelineDate {
+        width: auto;
+        text-align: left;
+        position: relative;
+        margin-bottom: 10px;
+        display: block;
+        margin-left: 80px;
+    }
+
+    .timelineIcon {
+        margin-left: 10px;
+    }
+
+    .timelineContent {
+        margin-left: 80px;
+    }
+}
