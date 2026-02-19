@@ -639,6 +639,27 @@ Prevents cascading failures when a downstream service is down.
 `
                     },
                     {
+                        id: 'local-ai-execution',
+                        title: 'Local AI Execution (Ollama, LM Studio)',
+                        description: 'Running LLMs on your own hardware using ease-of-use tools.',
+                        content: `
+### 1. Why Local AI?
+- **Privacy**: Data never leaves your machine. Essential for sensitive documents.
+- **Cost**: No API fees. One-time hardware cost (GPU/RAM) vs recurring token costs.
+- **Offline**: Works without internet connection.
+
+### 2. Tools
+- **Ollama**: CLI-based. Easiest way to run open-source models (Llama 3, Mistral, Gemma) on Mac/Linux/Windows.
+    - \`brew install ollama\` -> \`ollama run llama3\`.
+- **LM Studio**: GUI-based. Great for discovering and testing different quantized models (GGUF format) from Hugging Face.
+- **Hugging Face Transformers**: For developers. Load models directly in Python code for fine-tuning or integration.
+
+### 3. Requirements
+- **VRAM (Video RAM)**: The most critical factor. 7B models need ~4-6GB VRAM (Quantized). 70B models need ~24-48GB.
+- **RAM**: System RAM is used if VRAM is insufficient (slower fallback). Apple Silicon (M1/M2/M3) Unified Memory is highly proficient for this.
+`
+                    },
+                    {
                         id: 'diffusion-models',
                         title: 'Diffusion Models',
                         description: 'How image generation models (Stable Diffusion, Midjourney) work.',
@@ -1274,6 +1295,27 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
 ### 2. 검색 알고리즘
 - **KNN (K-Nearest Neighbors)**: 정확하지만 데이터가 많으면 느림.
 - **ANN (Approximate Nearest Neighbors)**: HNSW, IVF 등. 속도가 빠르고 정확도도 준수함. Vector DB에서 사용.
+`
+                    },
+                    {
+                        id: 'local-ai-execution',
+                        title: '로컬 AI 실행 (Local LLM)',
+                        description: 'Ollama, LM Studio 등을 활용해 내 컴퓨터에서 LLM을 구동하는 방법.',
+                        content: `
+### 1. 로컬 AI의 장점
+- **프라이버시**: 데이터가 내 컴퓨터 밖으로 나가지 않음. 민감한 문서 처리에 필수적.
+- **비용 절감**: API 사용료가 없음. 초기 하드웨어 투자(GPU/RAM) 외에 추가 비용 0.
+- **오프라인 동작**: 인터넷 연결 없이도 언제 어디서나 사용 가능.
+
+### 2. 주요 도구
+- **Ollama**: CLI 기반. Mac/Linux/Windows에서 오픈소스 모델(Llama 3, Mistral, Gemma)을 가장 쉽게 실행하는 방법.
+    - \`brew install ollama\` -> \`ollama run llama3\`.
+- **LM Studio**: GUI 기반. Hugging Face의 다양한 양자화(Quantized) 모델(GGUF 포맷)을 테스트하기 좋음.
+- **Hugging Face Transformers**: 개발자용. 파이썬 코드로 직접 모델을 로드하여 파인튜닝하거나 앱에 통합.
+
+### 3. 하드웨어 요구사항
+- **VRAM (비디오 메모리)**: 가장 중요한 요소. 7B 모델은 약 4~6GB(양자화 기준), 70B 모델은 24~48GB 필요.
+- **RAM**: VRAM 부족 시 시스템 RAM을 사용하지만 속도가 느림. Apple Silicon(M1/M2/M3)의 통합 메모리(Unified Memory) 구조가 유리함.
 `
                     },
                     {

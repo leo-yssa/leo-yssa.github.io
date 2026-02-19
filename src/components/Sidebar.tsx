@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { FaUser, FaBriefcase, FaGraduationCap, FaCode, FaLaptopCode, FaGithub, FaLinkedin, FaBars, FaTimes, FaEnvelope, FaPen, FaBook } from 'react-icons/fa';
+import { FaUser, FaBriefcase, FaGraduationCap, FaCode, FaLaptopCode, FaBars, FaTimes, FaBook } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
@@ -76,20 +76,7 @@ const Sidebar = () => {
                         </button>
                     </div>
 
-                    <div className={styles.social}>
-                        <a href="mailto:yssa@kakao.com" className={styles.socialLink} title="Email">
-                            <FaEnvelope />
-                        </a>
-                        <a href="https://yssa.tistory.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} title="Blog">
-                            <FaPen />
-                        </a>
-                        <a href="https://github.com/leo-yssa" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                            <FaGithub />
-                        </a>
-                        <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                            <FaLinkedin />
-                        </a>
-                    </div>
+
                 </div>
             </aside>
         </>

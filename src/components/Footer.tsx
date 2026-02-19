@@ -1,4 +1,4 @@
-import { FaChevronUp, FaGithub, FaStackOverflow, FaLinkedin } from 'react-icons/fa';
+import { FaChevronUp, FaGithub, FaStackOverflow, FaLinkedin, FaEnvelope, FaPen } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import styles from './Footer.module.css';
 
@@ -25,15 +25,21 @@ const Footer = () => {
                     </div>
 
                     <div className={styles.social}>
-                        <a href="https://github.com/leo-yssa" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                        <div className={styles.socialLink} data-tooltip="Email" onClick={() => window.location.href = 'mailto:yssa@kakao.com'}>
+                            <FaEnvelope />
+                        </div>
+                        <div className={styles.socialLink} data-tooltip="Blog" onClick={() => window.open('https://yssa.tistory.com', '_blank')}>
+                            <FaPen />
+                        </div>
+                        <div className={styles.socialLink} data-tooltip="GitHub" onClick={() => window.open('https://github.com/leo-yssa', '_blank')}>
                             <FaGithub />
-                        </a>
-                        <a href="https://stackoverflow.com/" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                        </div>
+                        <div className={styles.socialLink} data-tooltip="Stack Overflow" onClick={() => window.open('https://stackoverflow.com/', '_blank')}>
                             <FaStackOverflow />
-                        </a>
-                        <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                        </div>
+                        <div className={styles.socialLink} data-tooltip="LinkedIn" onClick={() => window.open('https://linkedin.com/', '_blank')}>
                             <FaLinkedin />
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
