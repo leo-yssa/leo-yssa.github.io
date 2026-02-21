@@ -13,6 +13,23 @@ const About = () => {
                 <p className={styles.text}>
                     {aboutText}
                 </p>
+
+                {content[language]?.motto && (
+                    <div className={styles.mottoContainer}>
+                        <div className={styles.mottoHeader}>
+                            <span className={styles.mottoLabel}>{t('about.motto')}</span>
+                            <span className={styles.philosopherLabel}>{t('about.philosopher')}: {content[language].motto.author}</span>
+                        </div>
+                        <blockquote className={styles.blockquote}>
+                            <p>"{content[language].motto.quote}"</p>
+                        </blockquote>
+
+                        <div className={styles.storySection}>
+                            <h3 className={styles.storyTitle}>{t('about.story')}</h3>
+                            <p className={styles.storyText}>{content[language].motto.story}</p>
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );

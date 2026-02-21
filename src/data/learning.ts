@@ -381,6 +381,53 @@ Prevents cascading failures when a downstream service is down.
 - **Kafka**: Log-based, high throughput, persistent, consumer pulls data. Good for **Event Streaming** and **Log Aggregation**.
 - **RabbitMQ**: Traditional Broker, complex routing (Exchanges), push-based. Good for **Task Queues**.
 `
+                    },
+                    {
+                        id: 'pos-migration',
+                        title: 'Architecture Migration (2-Tier to 3-Tier)',
+                        description: 'Transitioning a Swing desktop app to a modern Spring Boot REST API.',
+                        content: `
+### 1. The Challenge (2-Tier Architecture)
+- **Legacy Structure**: The original Java Swing POS system connected directly to the MySQL database (Thick Client).
+- **Issues**:
+  - **Security**: Database credentials had to be embedded in the desktop client.
+  - **Maintainability**: Any business logic change required updating the client application everywhere.
+  - **Scalability**: Connection pooling and handling concurrent requests directly from numerous clients is inefficient.
+
+### 2. The Solution (3-Tier Architecture)
+- **Modern Structure**: Client (Swing or Web) -> API Server (Spring Boot) -> Database (MySQL).
+- **Benefits**:
+  - The DB is hidden behind the API firewall.
+  - Business logic is centralized in the API, allowing clients to be updated independently.
+`
+                    },
+                    {
+                        id: 'pos-spring-data',
+                        title: 'Spring Data JPA & JDBC Hybrid',
+                        description: 'Using both ORM and native JDBC in a single Spring Boot application.',
+                        content: `
+### 1. JPA (Java Persistence API)
+- Leveraged via \`spring-boot-starter-data-jpa\` for standard CRUD operations and object-relational mapping (ORM).
+- Excellent for rapid development, managing entity relationships, and minimizing boilerplate SQL.
+
+### 2. JDBC Template
+- Leveraged via \`spring-boot-starter-jdbc\` alongside JPA.
+- Useful for complex native queries, bulk inserts/updates (which JPA handles poorly), or migrating legacy raw JDBC code incrementally without rewriting everything to JPA entities immediately.
+`
+                    },
+                    {
+                        id: 'pos-security',
+                        title: 'Lightweight Spring Security Crypto',
+                        description: 'Using Spring Crypto without the full Security Filter Chain.',
+                        content: `
+### 1. Secure Password Hashing
+- Included \`spring-security-crypto\` dependency instead of the full \`spring-boot-starter-security\`.
+- This provides access to \`BCryptPasswordEncoder\` for securely hashing user passwords before storing them in the DB.
+
+### 2. Why Not Full Security?
+- In simpler custom authentication flows (like a basic \`/api/auth/login\` endpoint issuing a custom token), enabling the full auto-configured Security Filter Chain can add unnecessary complexity and strict defaults that must be overridden.
+- Using just the crypto module keeps the application lightweight while maintaining essential security practices.
+`
                     }
                 ]
             },
@@ -467,6 +514,26 @@ Prevents cascading failures when a downstream service is down.
                 id: 'frontend',
                 title: 'Frontend Development',
                 topics: [
+                    {
+                        id: 'java-swing',
+                        title: 'Java Swing',
+                        description: 'Java GUI toolkit for building desktop applications.',
+                        content: `
+### 1. Concept
+- **Java Swing**: A part of Java Foundation Classes (JFC), used to create window-based applications. It is built on top of AWT (Abstract Window Toolkit) API and entirely written in Java.
+- **Lightweight**: Unlike AWT components, Swing components are platform-independent and lightweight.
+
+### 2. Key Features
+- **Pluggable Look and Feel (PLAF)**: Allows the application to look like a native Windows, Mac, or Linux app, or use a custom skin (e.g., Metal, Nimbus) dynamically.
+- **MVC Architecture**: Separates the data (Model), the UI (View), and the interaction (Controller) for better manageability.
+- **Event-Driven Programming**: Utilizes the \`Listener\` pattern (like \`ActionListener\`) to handle user interactions such as button clicks and key presses.
+
+### 3. Core Components & Layouts
+- **Containers**: \`JFrame\` (main window), \`JPanel\` (sub-container to group components).
+- **Controls**: \`JButton\`, \`JLabel\`, \`JTextField\`, \`JTable\`.
+- **Layout Managers**: Dictate how components are arranged inside a container. Examples include \`BorderLayout\` (N/S/E/W/Center), \`FlowLayout\` (left to right), and \`GridLayout\` (matrix).
+`
+                    },
                     {
                         id: 'virtual-dom',
                         title: 'Virtual DOM & Rendering Optimization',
@@ -670,6 +737,45 @@ Prevents cascading failures when a downstream service is down.
 ### 2. Reverse Process
 - Training a neural network (U-Net) to predict and *remove* the noise step-by-step.
 - Starting from random noise, the model "denoises" it into a coherent image based on a text prompt (Conditioning).
+`
+                    }
+                ]
+            },
+            {
+                id: 'algorithm',
+                title: 'Algorithm',
+                topics: [
+                    {
+                        id: 'huffman-coding',
+                        title: 'Huffman Coding & Data Compression',
+                        description: 'Understanding lossless data compression through a custom Huffman encoder/decoder implementation.',
+                        content: `
+### 1. Concept
+**Huffman Coding**: A lossless data compression algorithm. The basic idea is to assign variable-length codes to input characters, with lengths based on the frequencies of corresponding characters. The most frequent character gets the smallest code and the least frequent character gets the largest code.
+
+### 2. Implementation Details (Custom Format)
+In this toy project implementation, a **canonical Huffman** coding approach is used with a fixed **big-endian** \`.enc\` file format.
+
+#### File Header Format
+1. \`bytes[4]\`: Magic Number (\`"HUF1"\`)
+2. \`uint8\`: Version (\`1\`)
+3. \`uint64\`: \`original_size\` (Total uncompressed bytes)
+4. \`uint16\`: \`sym_count\` (Number of entries in the code table, 0-256)
+5. **Code Table Entries** (\`sym_count\` repetitions):
+   - \`uint8\`: \`symbol\` (0-255)
+   - \`uint8\`: \`code_len\` (1-64 bit length)
+6. **Bitstream**: Packed bits starting from MSB (0x80).
+
+### 3. Canonical Huffman Rules
+To avoid storing the actual bit sequences in the file header, the decoder reconstructs the tree using the following canonical rules:
+1. Sort entries by \`(code_len, symbol)\` in ascending order.
+2. Starting from the shortest length, assign codes from \`0\`, left-shifting as the length increases.
+3. The decoder uses this exact deterministic rule to rebuild the code table.
+
+### 4. Limitations
+- Code lengths are artificially restricted to a maximum of 64 bits. Highly skewed distributions that require longer paths will fail.
+- Even for files containing only a single repeated byte, a 1-bit code is assigned to avoid an empty tree.
+- No integrity checks (like CRC) are currently implemented, so corrupted files will result in decoding errors.
 `
                     }
                 ]
@@ -1029,16 +1135,64 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
                         description: 'Redis를 활용한 캐싱 전략과 Kafka 기반의 이벤트 구동 아키텍처.',
                         content: `
 ### 1. 캐싱 전략(Redis)
-                    - ** Look Aside(Lazy Loading) **: 앱이 캐시 확인 -> 없으면 DB 조회 -> 캐시에 저장.
-- ** Write Back **: 캐시에 먼저 쓰고 -> 비동기로 DB에 반영(성능 최상, 데이터 유실 위험).
-- ** Redis 자료구조 **:
-    - ** String **: 단순 키 - 값(세션, 인증 토큰).
-    - ** Sorted Set **: 실시간 랭킹 / 순위표.
-    - ** Pub / Sub **: 실시간 메시징.
+- **Look Aside(Lazy Loading)**: 앱이 캐시 확인 -> 없으면 DB 조회 -> 캐시에 저장.
+- **Write Back**: 캐시에 먼저 쓰고 -> 비동기로 DB에 반영(성능 최상, 데이터 유실 위험).
+- **Redis 자료구조**:
+    - **String**: 단순 키 - 값(세션, 인증 토큰).
+    - **Sorted Set**: 실시간 랭킹 / 순위표.
+    - **Pub / Sub**: 실시간 메시징.
 
 ### 2. 메시지 큐(Kafka vs RabbitMQ)
-                    - ** Kafka **: 로그 기반, 대용량 처리(Throughput) 중심, 데이터가 디스크에 남음. ** 이벤트 스트리밍 **, ** 로그 수집 ** 에 적합.
-- ** RabbitMQ **: 전통적 브로커, 복잡한 라우팅(Exchange) 가능. ** 작업 큐(Task Queue) ** 에 적합.
+- **Kafka**: 로그 기반, 대용량 처리(Throughput) 중심, 데이터가 디스크에 남음. **이벤트 스트리밍**, **로그 수집**에 적합.
+- **RabbitMQ**: 전통적 브로커, 복잡한 라우팅(Exchange) 가능. **작업 큐(Task Queue)**에 적합.
+`
+                    },
+                    {
+                        id: 'pos-migration',
+                        title: '아키텍처 마이그레이션 (2-Tier -> 3-Tier)',
+                        description: 'Swing 데스크톱 앱에서 구조를 분리해 Spring Boot REST API로 전환하는 과정.',
+                        content: `
+### 1. 기존의 문제점 (2-Tier 구조)
+- **레거시 구조**: 과거의 Java Swing POS 앱이 직접 MySQL 데이터베이스에 연결하는 형태(Thick Client)였습니다.
+- **문제점**:
+  - **보안**: 데이터베이스 접속 정보(IP, ID, PW)가 클라이언트 앱 내부에 하드코딩되어 노출 위험.
+  - **유지보수**: 비즈니스 로직(예: 결제 로직 변경) 수정 시 모든 클라이언트 앱을 재배포해야 함.
+  - **확장성**: 여러 기기에서 직접 DB 커넥션을 맺으면 커넥션 풀 관리가 비효율적임.
+
+### 2. 해결책 (3-Tier 구조)
+- **모던 아키텍처**: 클라이언트 -> API 서버 (Spring Boot) -> 데이터베이스 (MySQL).
+- **장점**:
+  - DB를 API 레이어 뒤로 숨겨 직접적인 접근을 차단함.
+  - 비즈니스 로직을 API 서버에 집중시켜, 로직 변경 시 서버만 업데이트하면 됨.
+`
+                    },
+                    {
+                        id: 'pos-spring-data',
+                        title: 'Spring Data JPA & JDBC 하이브리드',
+                        description: '하나의 Spring Boot 앱에서 ORM(JPA)과 네이티브 JDBC를 혼용하는 전략.',
+                        content: `
+### 1. JPA (Java Persistence API)
+- \`spring-boot-starter-data-jpa\`를 통해 표준 CRUD 작업과 ORM을 처리합니다.
+- 복잡한 객체 관계형 매핑 관리에 유리하며 초기 개발 속도를 비약적으로 높여줍니다.
+
+### 2. JDBC Template
+- \`spring-boot-starter-jdbc\`를 동시 포함하여 특정 상황에 대응합니다.
+- 복잡한 네이티브 쿼리가 필요하거나, JPA가 취약한 대량의 Bulk Insert/Update 성능 최적화가 필요할 때 사용합니다.
+- 기존 레거시의 날것(Raw) JDBC 코드를 JPA 엔티티로 완벽히 재설계하기 전에 점진적으로 마이그레이션하는 데도 유용합니다.
+`
+                    },
+                    {
+                        id: 'pos-security',
+                        title: '경량화된 Spring Security Crypto',
+                        description: '무거운 Security 필터 체인 없이 비밀번호 암호화(Crypto)만 활용하기.',
+                        content: `
+### 1. 안전한 비밀번호 암호화
+- 덩치가 큰 \`spring-boot-starter-security\` 전체 대신 \`spring-security-crypto\` 모듈만 의존성에 추가합니다.
+- \`BCryptPasswordEncoder\` 등 강력한 단방향 해시 함수를 이용해 유저 비밀번호를 안전하게 DB에 저장할 수 있습니다.
+
+### 2. 왜 전체 Security를 쓰지 않았나?
+- 커스텀 토큰을 발급하는 간단한 로그인 API(\`/api/auth/login\`)의 경우, 자동 구성되는 강력한 Security 필터 체인을 모두 끄거나 재정의하는 설정 오버헤드가 발생합니다.
+- 불필요하게 무거워지는 것을 방지하고, 핵심적인 비밀번호 암호화 기능만 취하며 가볍고 통제하기 쉬운 서버를 유지하기 위함입니다.
 `
                     }
                 ]
@@ -1126,6 +1280,26 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
                 id: 'frontend',
                 title: '프론트엔드',
                 topics: [
+                    {
+                        id: 'java-swing',
+                        title: 'Java Swing (자바 스윙)',
+                        description: '데스크톱 애플리케이션 개발을 위한 Java GUI 툴킷.',
+                        content: `
+### 1. 개념
+- **Java Swing**: Java Foundation Classes (JFC)의 일부로, 데스크톱 윈도우 애플리케이션을 만들기 위한 GUI 툴킷입니다. AWT(Abstract Window Toolkit)를 기반으로 작성되었습니다.
+- **경량 컴포넌트 (Lightweight)**: OS의 네이티브 UI 자원을 직접 사용하지 않고 (최상위 컨테이너 제외) Java 코드로 직접 화면을 그리기 때문에, 플랫폼(OS)에 독립적입니다.
+
+### 2. 주요 특징
+- **Pluggable Look and Feel (PLAF)**: 소스 코드 수정 없이 윈도우, 맥, 리눅스 스타일이나 고유 스킨(Metal, Nimbus 등)으로 테마를 동적으로 변경할 수 있습니다.
+- **MVC (Model-View-Controller) 패턴**: 내부적으로 데이터(Model)와 화면(View), 제어(Controller)를 분리하여 설계되었습니다.
+- **이벤트 기반 프로그래밍 (Event-Driven)**: 사용자의 클릭, 키보드 입력 등을 \`ActionListener\`와 같은 리스너(Listener) 패턴을 통해 비동기적으로 처리합니다.
+
+### 3. 주요 요소 및 레이아웃
+- **컨테이너**: \`JFrame\` (기본 창), \`JPanel\` (컴포넌트들을 묶는 도화지 역할).
+- **기본 컴포넌트**: \`JButton\`, \`JLabel\`, \`JTextField\`, \`JTable\` 등 J로 시작하는 클래스들.
+- **배치 관리자 (Layout Manager)**: 컴포넌트들의 위치와 크기를 결정합니다. \`BorderLayout\` (동서남북/중앙), \`FlowLayout\` (순서대로 나열), \`GridLayout\` (격자 형태) 등이 있습니다.
+`
+                    },
                     {
                         id: 'virtual-dom',
                         title: 'Virtual DOM & 렌더링 최적화',
@@ -1329,6 +1503,45 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
 ### 2. Reverse Process (역확산 과정)
 - 신경망(U-Net)을 학습시켜 노이즈를 단계적으로 *제거*하는 방법을 익힘.
 - 랜덤 노이즈에서 시작하여 텍스트 프롬프트(Conditioning)에 따라 의미 있는 이미지로 복원.
+`
+                    }
+                ]
+            },
+            {
+                id: 'algorithm',
+                title: '알고리즘',
+                topics: [
+                    {
+                        id: 'huffman-coding',
+                        title: '허프만 코딩 (Huffman Coding)',
+                        description: '직접 구현한 허프만 인코더/디코더를 통해 알아보는 무손실 데이터 압축 기법.',
+                        content: `
+### 1. 개념
+**허프만 코딩(Huffman Coding)**: 문자의 출현 빈도에 따라 가변 길이의 코드를 부여하는 무손실 데이터 압축 알고리즘입니다. 자주 등장하는 문자에는 짧은 비트를, 드물게 등장하는 문자에는 긴 비트를 할당하여 전체 파일 크기를 줄입니다.
+
+### 2. 구현 상세 (커스텀 포맷)
+해당 토이 프로젝트에서는 **Canonical Huffman(정규 허프만)** 트리를 사용하고, **빅엔디안(Big-endian)** 기반의 자체 \`.enc\` 포맷을 정의했습니다.
+
+#### 파일 헤더 구조
+1. \`bytes[4]\`: 매직 넘버 (\`"HUF1"\`)
+2. \`uint8\`: 버전 (\`1\`)
+3. \`uint64\`: \`original_size\` (원본 파일의 바이트 수)
+4. \`uint16\`: \`sym_count\` (코드표에 등록된 심볼 수, 0-256)
+5. **코드표 엔트리** (\`sym_count\`만큼 반복):
+   - \`uint8\`: \`symbol\` (원래 바이트 값, 0-255)
+   - \`uint8\`: \`code_len\` (할당된 코드의 비트 길이, 1-64)
+6. **비트스트림(Bitstream)**: 패킹된 압축 데이터 (MSB부터 채움).
+
+### 3. Canonical Huffman 규칙
+압축 파일 용량을 줄이기 위해 헤더에 실제 비트 코드를 저장하지 않고, 기호와 길이만 저장한 뒤 아래 규칙으로 코드를 복원합니다:
+1. \`(code_len, symbol)\` 기준으로 오름차순 정렬합니다.
+2. 가장 짧은 길이의 코드에 \`0\`을 부여하고, 길이가 늘어날 때마다 길이에 맞춰 비트를 왼쪽으로 시프트(left-shift)하며 코드를 연속으로 할당합니다.
+3. 디코더도 동일한 규칙을 따르기 때문에 코드표를 100% 동일하게 재구성할 수 있습니다.
+
+### 4. 주의사항 및 한계점
+- 허프만 트리의 최대 깊이(코드 길이)를 64비트로 제한했습니다. 극단적으로 불균형한 분포에서는 압축에 실패할 수 있습니다.
+- 동일한 문자로만 이루어진 파일이라도 동작하도록 최소 1비트의 코드를 강제로 부여합니다.
+- 복원 시 무결성 검증(CRC 등) 로직이 없어, 파일이 손상되면 오작동할 수 있습니다.
 `
                     }
                 ]
