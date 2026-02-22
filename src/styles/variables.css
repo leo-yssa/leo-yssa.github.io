@@ -12,15 +12,15 @@
   --color-text-secondary: #94a3b8;
   /* Slate 400 */
   /* Modern Tech Palette */
-  --color-text-accent: #38bdf8;
-  /* Sky 400 */
+  --color-text-accent: #fbbf24;
+  /* Amber 400 */
 
-  --color-primary: #0ea5e9;
-  /* Sky 500 - More vibrant/tech blue */
-  --color-primary-dark: #0284c7;
-  /* Sky 600 */
-  --color-secondary: #6366f1;
-  /* Indigo 500 - Deep tech blue/purple */
+  --color-primary: #f59e0b;
+  /* Amber 500 - Warm accent color */
+  --color-primary-dark: #d97706;
+  /* Amber 600 */
+  --color-secondary: #eb6c36;
+  /* Warm Orange */
 
   --color-border: #334155;
   /* Slate 700 */
