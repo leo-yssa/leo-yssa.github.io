@@ -507,6 +507,98 @@ Prevents cascading failures when a downstream service is down.
 4. **Holder** creates VP and sends to **Verifier**.
 5. **Verifier** checks signature against Issuer's DID on Blockchain.
 `
+                    },
+                    {
+                        id: 'proxy-patterns',
+                        title: 'Proxy Patterns Comparison',
+                        description: 'Comparison of Transparent, UUPS, and Beacon proxy patterns for smart contract upgradeability.',
+                        content: `
+### 1. Transparent Proxy Pattern
+The Transparent Proxy pattern separates admin logic and user logic by checking the caller's address. If the caller is the proxy admin, the proxy resolves admin functions (like \`upgradeTo\`). If the caller is any other address, the proxy delegates the call to the implementation contract.
+
+**Pros:**
+- **Standardized:** It has been the most common proxy pattern for a long time.
+- **Fail-safe:** The proxy contract itself contains the upgrade logic, meaning even if a buggy implementation is deployed, the admin can still upgrade it.
+
+**Cons:**
+- **High Deployment Cost:** The proxy contract itself is relatively large and expensive to deploy.
+- **High Execution Cost:** Every user interaction incurs an additional \`SLOAD\` operation to check the admin address, increasing gas costs.
+- **ProxyAdmin Contract:** Requires a separate \`ProxyAdmin\` contract to manage all transparent proxies securely.
+
+### 2. UUPS (Universal Upgradeable Proxy Standard) Pattern
+Proposed in EIP-1822, UUPS places the upgrade logic inside the **Implementation** contract instead of the proxy itself. The Proxy is solely responsible for routing delegate-calls.
+
+**Pros:**
+- **Cheaper Deployment:** The proxy is a minimal EIP-1967 proxy, making deployment significantly cheaper.
+- **Lower Execution Cost:** Since the proxy doesn't need to check whether the caller is an admin on every call, the gas overhead per transaction is significantly reduced.
+- **Flexibility:** Developers can customize the upgrade mechanism within the implementation's \`_authorizeUpgrade\` function.
+
+**Cons:**
+- **Risk of Bricking:** If an implementation is deployed without the upgrade logic or with a bug in \`_authorizeUpgrade\`, the proxy can be permanently "bricked".
+- **Implementation Complexity:** Developers must inherit \`UUPSUpgradeable\` and override \`_authorizeUpgrade\`.
+
+### 3. Beacon Proxy Pattern
+Introduces a third component: the **Beacon** contract. The Beacon holds the address of the current implementation. Proxies query the Beacon on every call.
+
+**Pros:**
+- **Mass Upgrades:** When the administrator updates the implementation address inside the Beacon, **all** connected Beacon Proxies are simultaneously upgraded.
+- **Scalability:** Highly efficient when an application needs to deploy numerous identical proxies.
+
+**Cons:**
+- **Slightly Higher Execution Cost:** The proxy must make an external call to the Beacon to fetch the implementation address, increasing gas cost.
+- **Complex Architecture:** Requires deploying and managing three layers: Proxy, Beacon, and Implementation.
+
+### Summary and Recommendations
+
+| Feature | Transparent | UUPS | Beacon |
+| :--- | :--- | :--- | :--- |
+| **Upgrade Logic Location** | Proxy | Implementation | Beacon |
+| **Upgrade Scope** | Single Proxy | Single Proxy | Multiple Proxies at once |
+| **Deployment Gas Cost** | High | Low | Medium (Requires Beacon) |
+| **Execution Overhead** | High | Low | Highest (Extra Call) |
+| **Risk of Bricking Upgrade** | Low | High | Low |
+
+1. **Use UUPS** when you need a single proxy instance that requires the cheapest gas execution and deployment costs.
+2. **Use Beacon** when you need to deploy many proxy instances of the exact same contract and want the ability to upgrade all of them with a single transaction.
+3. **Use Transparent Proxy** if your team strictly requires the upgrade logic to be isolated from the logic contract to prevent bricking.
+`
+                    },
+                    {
+                        id: 'vrf-reveal',
+                        title: 'Chainlink VRF & NFT Reveal Pattern',
+                        description: 'Using Verifiable Random Functions for fair RNG and offset-based NFT reveals.',
+                        content: `
+### 1. The Problem with On-Chain RNG
+Using on-chain data like \`block.timestamp\` or \`block.difficulty\` for randomness is insecure because miners can manipulate these values to influence the outcome.
+
+### 2. Chainlink VRF
+Chainlink **Verifiable Random Function (VRF)** provides a provably fair and verifiable random number generator.
+- **Request & Receive**: The smart contract requests randomness from Chainlink. In the next few blocks, Chainlink off-chain nodes generate the number with a cryptographic proof and call back the contract via \`fulfillRandomWords\`.
+- **Use Cases**: Lottery, gaming, and fair NFT generation.
+
+### 3. NFT Reveal Pattern (Offset-based)
+Instead of assigning a random URI to each minted NFT individually (which is gas expensive), a global **starting index (offset)** is randomly generated *after* the sale ends.
+- **Mechanism**: The \`tokenURI\` function calculates the actual metadata ID using a modulo operation: \`(tokenId + offset) % maxSupply\`.
+- **Fairness**: Snipping is prevented because nobody knows which \`tokenId\` will correspond to the rarest metadata until the \`offset\` is set via VRF.
+`
+                    },
+                    {
+                        id: 'merkle-allowlist',
+                        title: 'Merkle Tree Allowlist (Airdrop)',
+                        description: 'A scalable, gas-efficient way to verify a large set of addresses for presales.',
+                        content: `
+### 1. The Problem with Mapping
+Storing thousands of allowlisted addresses in a Solidity \`mapping(address => bool)\` is extremely expensive due to high storage gas costs.
+
+### 2. The Merkle Tree Solution
+A **Merkle Tree** allows you to verify that an address exists in a large dataset by only storing a single 32-byte hash (the **Merkle Root**) on-chain.
+- **Off-chain**: The tree is constructed using all allowlisted addresses. Only the Root Hash is saved to the smart contract.
+- **On-chain Verification**: Users provide a **Merkle Proof** when minting. The contract hashes the user's address with the proof to see if it matches the Root Hash.
+
+### 3. Pros and Cons
+- **Pros**: Gas costs for verification are mostly constant, regardless of how many addresses are on the list (from 10 to 1,000,000+).
+- **Cons**: Users must query a backend or IPFS to get their unique Merkle Proof before calling the mint function.
+`
                     }
                 ]
             },
@@ -520,13 +612,13 @@ Prevents cascading failures when a downstream service is down.
                         description: 'Java GUI toolkit for building desktop applications.',
                         content: `
 ### 1. Concept
-- **Java Swing**: A part of Java Foundation Classes (JFC), used to create window-based applications. It is built on top of AWT (Abstract Window Toolkit) API and entirely written in Java.
-- **Lightweight**: Unlike AWT components, Swing components are platform-independent and lightweight.
+                    - ** Java Swing **: A part of Java Foundation Classes(JFC), used to create window - based applications.It is built on top of AWT(Abstract Window Toolkit) API and entirely written in Java.
+- ** Lightweight **: Unlike AWT components, Swing components are platform - independent and lightweight.
 
 ### 2. Key Features
-- **Pluggable Look and Feel (PLAF)**: Allows the application to look like a native Windows, Mac, or Linux app, or use a custom skin (e.g., Metal, Nimbus) dynamically.
-- **MVC Architecture**: Separates the data (Model), the UI (View), and the interaction (Controller) for better manageability.
-- **Event-Driven Programming**: Utilizes the \`Listener\` pattern (like \`ActionListener\`) to handle user interactions such as button clicks and key presses.
+                    - ** Pluggable Look and Feel(PLAF) **: Allows the application to look like a native Windows, Mac, or Linux app, or use a custom skin(e.g., Metal, Nimbus) dynamically.
+- ** MVC Architecture **: Separates the data(Model), the UI(View), and the interaction(Controller) for better manageability.
+- ** Event - Driven Programming**: Utilizes the \`Listener\` pattern (like \`ActionListener\`) to handle user interactions such as button clicks and key presses.
 
 ### 3. Core Components & Layouts
 - **Containers**: \`JFrame\` (main window), \`JPanel\` (sub-container to group components).
@@ -1273,6 +1365,78 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
 4. **Holder**는 VP를 생성하여 **Verifier**에게 제출.
 5. **Verifier**는 블록체인상의 DID를 통해 Issuer의 서명을 검증.
 `
+                    },
+                    {
+                        id: 'proxy-patterns',
+                        title: '프록시 패턴 비교 (Proxy Patterns)',
+                        description: 'Transparent Proxy, UUPS, Beacon Proxy 패턴의 아키텍처 및 장단점 비교.',
+                        content: `
+### 1. Transparent Proxy Pattern
+관리자 로직과 사용자 로직을 호출자의 주소로 구분하는 패턴입니다. 호출자가 프록시 관리자인 경우 관리자 함수(예: \`upgradeTo\`)를 실행하고, 그 외의 경우 구현 컨트랙트로 호출을 위임(delegatecall)합니다.
+- **장점**: 오랫동안 사용된 표준 패턴이며, 구조적으로 안전함(Fail-safe). 프록시 자체에 업그레이드 로직이 있어 구현 컨트랙트에 버그가 발생해도 관리자가 업그레이드 가능.
+- **단점**: 프록시 배포 가스비와 매 트랜잭션마다 수행되는 관리자 주소 확인 연산(\`SLOAD\`)으로 인해 실행 가스비가 높음. 부가적인 \`ProxyAdmin\` 컨트랙트 관리가 필요함.
+
+### 2. UUPS (Universal Upgradeable Proxy Standard) Pattern
+EIP-1822 표준 제안. 업그레이드 로직을 프록시가 아닌 **구현 컨트랙트(Implementation)** 내부에 배치합니다. 프록시는 단순히 delegatecall 라우팅만 수행합니다.
+- **장점**: 프록시 컨트랙트가 가벼워 배포 비용이 저렴하며, 매번 관리자를 확인하지 않아 트랜잭션당 가스비 오버헤드가 낮음. 개발자가 업그레이드 제어 로직을 유연하게 커스텀 가능.
+- **단점**: 업그레이드 로직 작성에 오류가 있거나 로직이 빠진 구현 컨트랙트가 배포될 경우 프록시가 영구적으로 업그레이드 불가능한 상태("Bricking")가 될 위험이 큼.
+
+### 3. Beacon Proxy Pattern
+프록시와 구현 컨트랙트 사이에 **Beacon** 컨트랙트를 도입합니다. 프록시들은 직접 구현체의 주소를 저장하지 않고 매 트랜잭션마다 Beacon에 구현체 주소를 질의합니다.
+- **장점**: 중앙의 Beacon 컨트랙트 내부 주소만 변경하면, 연결된 **수많은 프록시(수천 개의 지갑 등)가 한 번의 트랜잭션으로 동시 업그레이드** 됨. 뛰어난 확장성.
+- **단점**: 매번 Beacon을 외부 호출(External Call)하여 주소를 조회하므로 UUPS보다 실행 가스비가 소폭 증가함. Proxy-Beacon-Implementation의 3계층으로 구조가 복잡함.
+
+### 요약 및 권장 사항
+
+| 구분 | Transparent | UUPS | Beacon |
+| :--- | :--- | :--- | :--- |
+| **업그레이드 로직 위치** | Proxy | Implementation | Beacon |
+| **업그레이드 범위** | 단일 Proxy | 단일 Proxy | 다수 Proxy 동시 |
+| **배포 가스비** | 높음 | 낮음 | 중간 (Beacon 필요) |
+| **실행 가스비** | 높음 | 낮음 | 가장 높음 (추가 호출) |
+| **Bricking 위험** | 낮음 | 높음 | 낮음 |
+
+1. **UUPS 권장**: 가장 저렴한 배포 및 실행 가스비로 단일 프록시를 운영할 때 (현재 OpenZeppelin 표준 권고).
+2. **Beacon 권장**: 동일한 스마트 컨트랙트를 여러 개(Mass) 배포하고, 단일 트랜잭션으로 동시에 업그레이드해야 하는 서비스 아키텍처일 때.
+3. **Transparent 권장**: 가스 비용을 감수하더라도, 개발자 실수로 인한 스마트 컨트랙트 영구 결함(Bricking)을 원천적으로 막아야 하는 강력한 격리가 필요할 때.
+`
+                    },
+                    {
+                        id: 'vrf-reveal',
+                        title: 'Chainlink VRF & NFT Reveal 패턴',
+                        description: '검증 가능한 난수 생성기(VRF)를 활용해 공정하게 NFT 메타데이터를 리빌하는 방법.',
+                        content: `
+### 1. 온체인 난수 생성의 문제점
+\`block.timestamp\`나 \`block.difficulty\` 같은 온체인 데이터를 난수로 사용하면, 채굴자(또는 검증자)가 자신에게 유리한 방향으로 블록 해시를 조작할 위험이 있습니다.
+
+### 2. Chainlink VRF (Verifiable Random Function)
+Chainlink VRF는 증명 가능하고 조작 불가능한 온체인 난수를 제공합니다.
+- **Request & Receive 구조**: 스마트 컨트랙트가 난수를 요청하면, 오프체인 오라클 노드가 암호학적 증명과 함께 난수를 생성하여 \`fulfillRandomWords\` 콜백 함수로 결과 값을 전달해 줍니다.
+- **활용**: 복권(Lottery), 확률형 게임, 공정한 NFT 민팅.
+
+### 3. 오프셋 기반 NFT Reveal 패턴
+모든 NFT를 개별적으로 랜덤한 URI와 매핑하는 대신(가스비 낭비), 판매가 종료된 후 **단 하나의 글로벌 오프셋(Offset)** 값을 VRF로 결정하여 전체 메타데이터를 밀어내는(Shift) 방식입니다.
+- **원리**: \`tokenURI\` 호출 시 개별 토큰 ID에 오프셋을 더하고 모듈러(%) 연산을 수행해 메타데이터 ID를 도출합니다. 예: \`(tokenId + offset) % maxSupply\`.
+- **장점**: 어떤 \`tokenId\`가 레어리티가 높은 메타데이터와 매칭될지 아무도 알 수 없어 예측 민팅(Snipping)을 방지할 수 있으며, 가스비가 매우 효율적입니다.
+`
+                    },
+                    {
+                        id: 'merkle-allowlist',
+                        title: '머클 트리 (Merkle Tree) Allowlist',
+                        description: '대규모 화이트리스트나 에어드랍을 가스비 걱정 없이 구현하는 확장성 높은 패턴.',
+                        content: `
+### 1. Mapping의 한계
+수만 명의 화이트리스트 주소를 솔리디티의 \`mapping(address => bool)\`에 직접 저장(Store)하는 것은 막대한 가스비용(Deploy & Execution)을 초래합니다.
+
+### 2. 머클 트리(Merkle Tree) 해결책
+**머클 트리** 구조를 사용하면 아무리 많은 주소 목록이라도 32바이트 길이의 단일 해시 값(**머클 루트, Merkle Root**) 하나만 온체인에 저장하여 검증할 수 있습니다.
+- **오프체인 작업**: 백엔드에서 화이트리스트 주소들을 모아 리프 노드(Leaf Node)로 삼고 트리를 구성해 머클 루트 값을 컨트랙트에 세팅합니다.
+- **온체인 검증**: 유저가 민팅할 때 자신만의 **머클 프루프(Merkle Proof)** 배열을 함께 제출합니다. 컨트랙트는 유저의 주소와 프루프 값을 해싱하여 저장된 Root 해시와 일치하는지 단 몇 번의 연산만으로 검증합니다.
+
+### 3. 장단점
+- **장점**: 대상자가 파편화되어 수백만 명으로 늘어나도 컨트랙트 검증 비용은 거의 변함없어 매우 경제적입니다.
+- **단점**: 유저(클라이언트)가 트랜잭션을 발생시키기 전에 자신의 주소에 맞는 증명(Proof) 데이터를 백엔드 API 등을 통해 미리 가져와야 합니다.
+`
                     }
                 ]
             },
@@ -1286,13 +1450,13 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
                         description: '데스크톱 애플리케이션 개발을 위한 Java GUI 툴킷.',
                         content: `
 ### 1. 개념
-- **Java Swing**: Java Foundation Classes (JFC)의 일부로, 데스크톱 윈도우 애플리케이션을 만들기 위한 GUI 툴킷입니다. AWT(Abstract Window Toolkit)를 기반으로 작성되었습니다.
-- **경량 컴포넌트 (Lightweight)**: OS의 네이티브 UI 자원을 직접 사용하지 않고 (최상위 컨테이너 제외) Java 코드로 직접 화면을 그리기 때문에, 플랫폼(OS)에 독립적입니다.
+                - ** Java Swing **: Java Foundation Classes(JFC)의 일부로, 데스크톱 윈도우 애플리케이션을 만들기 위한 GUI 툴킷입니다.AWT(Abstract Window Toolkit)를 기반으로 작성되었습니다.
+- ** 경량 컴포넌트(Lightweight) **: OS의 네이티브 UI 자원을 직접 사용하지 않고(최상위 컨테이너 제외) Java 코드로 직접 화면을 그리기 때문에, 플랫폼(OS)에 독립적입니다.
 
 ### 2. 주요 특징
-- **Pluggable Look and Feel (PLAF)**: 소스 코드 수정 없이 윈도우, 맥, 리눅스 스타일이나 고유 스킨(Metal, Nimbus 등)으로 테마를 동적으로 변경할 수 있습니다.
-- **MVC (Model-View-Controller) 패턴**: 내부적으로 데이터(Model)와 화면(View), 제어(Controller)를 분리하여 설계되었습니다.
-- **이벤트 기반 프로그래밍 (Event-Driven)**: 사용자의 클릭, 키보드 입력 등을 \`ActionListener\`와 같은 리스너(Listener) 패턴을 통해 비동기적으로 처리합니다.
+                - ** Pluggable Look and Feel(PLAF) **: 소스 코드 수정 없이 윈도우, 맥, 리눅스 스타일이나 고유 스킨(Metal, Nimbus 등)으로 테마를 동적으로 변경할 수 있습니다.
+- ** MVC(Model - View - Controller) 패턴 **: 내부적으로 데이터(Model)와 화면(View), 제어(Controller)를 분리하여 설계되었습니다.
+- ** 이벤트 기반 프로그래밍(Event - Driven) **: 사용자의 클릭, 키보드 입력 등을 \`ActionListener\`와 같은 리스너(Listener) 패턴을 통해 비동기적으로 처리합니다.
 
 ### 3. 주요 요소 및 레이아웃
 - **컨테이너**: \`JFrame\` (기본 창), \`JPanel\` (컴포넌트들을 묶는 도화지 역할).
