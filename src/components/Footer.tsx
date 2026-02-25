@@ -1,9 +1,7 @@
 import { FaChevronUp, FaGithub, FaStackOverflow, FaLinkedin, FaEnvelope, FaPen } from 'react-icons/fa';
-import { useLanguage } from '../context/LanguageContext';
 import styles from './Footer.module.css';
 
 const Footer = () => {
-    const { t } = useLanguage();
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };

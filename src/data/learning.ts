@@ -428,6 +428,29 @@ Prevents cascading failures when a downstream service is down.
 - In simpler custom authentication flows (like a basic \`/api/auth/login\` endpoint issuing a custom token), enabling the full auto-configured Security Filter Chain can add unnecessary complexity and strict defaults that must be overridden.
 - Using just the crypto module keeps the application lightweight while maintaining essential security practices.
 `
+                    },
+                    {
+                        id: 'keycloak-iam',
+                        title: 'Keycloak Identity & Access Management',
+                        description: 'Choosing Keycloak for centralized authentication and its architectural benefits.',
+                        content: `
+### 1. Why Keycloak?
+Managing authentication and authorization manually is error-prone and complex. Keycloak is an open-source solution that provides:
+- **SSO (Single Sign-On)**: Users authenticate once and access multiple independent applications.
+- **Identity Brokering**: Easy integration with social logins (Google, Kakao) or enterprise identity providers (LDAP, Active Directory).
+- **Standard Protocol Support**: Native implementation of OIDC (OpenID Connect), OAuth 2.0, and SAML 2.0.
+- **Security by Default**: Built-in 2FA/MFA, password policies, and brute-force protection.
+- **Offloading Responsibility**: The application logic stays focused on business features while Keycloak handles security complexity.
+
+### 2. Architecture: Resource Server & Client
+In a modern microservices or decoupled architecture:
+- **Identity Provider (Keycloak)**: Handles the UI for login, issues \`access_token\` and \`refresh_token\`, and provides a JWKS endpoint with public keys.
+- **Resource Server (NestJS/Spring)**: Does not store passwords. It validates the incoming JWT using the public key from Keycloak.
+- **Client (Web/App)**: Redirects users to Keycloak for authentication and attaches the token to API requests.
+
+### 3. JWT Validation & Security
+Instead of calling Keycloak on every request (Introspection), Resource Servers can validate tokens offline using **JWKS (JSON Web Key Set)**. This reduces latency and ensures the server only processes requests with a valid signature from the trusted issuer.
+`
                     }
                 ]
             },
@@ -598,6 +621,73 @@ A **Merkle Tree** allows you to verify that an address exists in a large dataset
 ### 3. Pros and Cons
 - **Pros**: Gas costs for verification are mostly constant, regardless of how many addresses are on the list (from 10 to 1,000,000+).
 - **Cons**: Users must query a backend or IPFS to get their unique Merkle Proof before calling the mint function.
+`
+                    },
+                    {
+                        id: 'hts-hedera',
+                        title: 'Hedera Token Service (HTS) Integration',
+                        description: 'Using Hedera precompiled contracts for native token operations on EVM.',
+                        content: `
+### 1. Concept
+Hedera Hashgraph provides the **Hedera Token Service (HTS)**, which allows for the creation and management of native tokens (Fungible and Non-Fungible) with high performance and low fees. When using Solidity on Hedera, you interact with HTS through **Precompiled Contracts**.
+
+### 2. Standard ERC-721 vs. HTS
+- **Standard ERC-721**: Minting logic is handled within the smart contract state. Each mint increases the contract's storage usage.
+- **HTS (Native)**: The smart contract calls a system-level precompile (\`HederaTokenService.sol\`). The actual token state is managed by the Hedera network layer, not the EVM storage, making it significantly faster and cheaper.
+
+### 3. Key Patterns
+- **Token Keys**: HTS uses specific keys (Admin, Supply, Freeze, Wipe) to manage permissions. These can be assigned to a smart contract ID for decentralized control.
+- **Auto-Renew**: Native support for token expiration and auto-renewal using a designated account/contract.
+- **Precompile Integration**:
+\`\`\`solidity
+(int responseCode, address createdToken) = HederaTokenService.createNonFungibleToken(token);
+require(responseCode == HederaResponseCodes.SUCCESS, "Failed to create NFT");
+\`\`\`
+`
+                    },
+                    {
+                        id: 'zk-nullifier',
+                        title: 'ZK-Nullifier Privacy Pattern',
+                        description: 'Implementing "Spent" state verification without revealing identity using Nullifiers and commitments.',
+                        content: `
+### 1. Problem: Privacy in Public Ledgers
+In a standard blockchain transaction, if you prove you own a certain "ticket", that proof itself often reveals which ticket you own, breaking anonymity.
+
+### 2. Commitment & Nullifier Scheme
+This pattern, popularized by **Tornado Cash**, allows for "Zero-Knowledge" spending:
+- **Commitment**: A secret (random number + nullifier) hashed and stored in a Merkle Tree.
+- **Nullifier**: A unique derived value that is revealed when the commitment is "spent". 
+- **ZK-Proof**: Proves that "I know a secret whose commitment is in the tree, and this nullifier corresponds to that secret," without revealing which commitment it is.
+
+### 3. Merkle Tree with History
+The contract maintains a Merkle Tree of all commitments. To prevent double-spending, the contract stores a mapping of used nullifiers. Once a nullifier is revealed and verified, it is marked as used, and the corresponding "secret" cannot be used again, even though the observer doesn't know which one it was.
+`
+                    },
+                    {
+                        id: 'tx-management',
+                        title: 'Transaction & Gas Management (RBF)',
+                        description: 'Handling pending transactions and gas price spikes in backend services.',
+                        content: `
+### 1. Replace-By-Fee (RBF)
+When a transaction is stuck in the mempool due to low gas fees, you can send a new transaction with the **same nonce** but higher gas fees (at least 10% higher is the standard requirement). The network will prioritize the higher fee version, effectively "canceling" or "speeding up" the original.
+
+### 2. Nonce Management
+Backend services must track nonces carefully.
+- **Local Tracking**: Assigning nonces in memory to allow concurrent transaction sending without waiting for inclusion.
+- **Recovery**: Querying \`getTransactionCount\` (pending) from the node if the local state goes out of sync.
+
+### 3. Implementation Pattern (Ethers.js)
+\`\`\`typescript
+export function increaseGas(percent: number, transaction: TransactionRequest): TransactionRequest {
+  const mul = (v: bigint | undefined) =>
+    v === undefined ? undefined : (v * BigInt(100 + percent)) / BigInt(100);
+  return {
+    ...transaction,
+    maxPriorityFeePerGas: mul(transaction.maxPriorityFeePerGas),
+    maxFeePerGas: mul(transaction.maxFeePerGas),
+  };
+}
+\`\`\`
 `
                     }
                 ]
@@ -1286,6 +1376,29 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
 - 커스텀 토큰을 발급하는 간단한 로그인 API(\`/api/auth/login\`)의 경우, 자동 구성되는 강력한 Security 필터 체인을 모두 끄거나 재정의하는 설정 오버헤드가 발생합니다.
 - 불필요하게 무거워지는 것을 방지하고, 핵심적인 비밀번호 암호화 기능만 취하며 가볍고 통제하기 쉬운 서버를 유지하기 위함입니다.
 `
+                    },
+                    {
+                        id: 'keycloak-iam',
+                        title: 'Keycloak을 이용한 인증 및 인가 관리',
+                        description: '중앙 집중식 인증 서버로 Keycloak을 선택하는 이유와 아키텍처적 이점.',
+                        content: `
+### 1. 왜 Keycloak인가?
+직접 인증/인가 로직(회원가입, 로그인, 비밀번호 찾기 등)을 구현하는 것은 보안 위험이 크고 복잡합니다. Keycloak은 다음과 같은 강력한 이점을 제공합니다:
+- **중앙 집중식 관리 (SSO)**: 한 번의 로그인으로 연동된 모든 앱에 접근할 수 있는 Single Sign-On을 지원합니다.
+- **소셜 로그인 & 연동 (Identity Brokering)**: 카카오, 구글 등 소셜 계정이나 기업용 LDAP/AD와 손쉽게 연동할 수 있습니다.
+- **표준 프로토콜 준수**: OIDC(OpenID Connect), OAuth 2.0, SAML 2.0 등 업계 표준 프로토콜을 완벽하게 지원합니다.
+- **검증된 보안**: MFA(2단계 인증), 비밀번호 정책, 무차별 대입 공격(Brute-force) 방지 기능이 내장되어 있습니다.
+- **개발 생산성**: 서비스 서버(NestJS 등)는 복잡한 인증 로직 대신 비즈니스 로직에만 집중할 수 있습니다.
+
+### 2. 리소스 서버와 클라이언트 아키텍처
+Keycloak을 도입하면 다음과 같은 구조로 역할이 분리됩니다:
+- **인증 서버 (Keycloak)**: 로그인 UI 제공, 토큰(Access/Refresh) 발급, 서명 검증을 위한 공개키(JWKS) 제공.
+- **리소스 서버 (NestJS 앱)**: 유저의 비밀번호를 알 필요가 없습니다. 전달받은 JWT가 Keycloak이 발급한 정상적인 토큰인지만 공개키로 검증합니다.
+- **클라이언트 (Web/App)**: 유저를 Keycloak 페이지로 리다이렉트하여 인증을 유도하고, 발급받은 토큰을 API 요청 헤더에 담아 보냅니다.
+
+### 3. JWKS를 이용한 효율적인 검증
+서버가 매 요청마다 Keycloak에 "이 토큰이 맞나?"라고 물어볼 필요가 없습니다. Keycloak의 **JWKS** 엔드포인트에서 공개키를 한 번 가져와 로컬에서 직접 서명을 검증하므로, 네트워크 지연 없이 빠르고 안전한 인증 처리가 가능합니다.
+`
                     }
                 ]
             },
@@ -1436,6 +1549,73 @@ Chainlink VRF는 증명 가능하고 조작 불가능한 온체인 난수를 제
 ### 3. 장단점
 - **장점**: 대상자가 파편화되어 수백만 명으로 늘어나도 컨트랙트 검증 비용은 거의 변함없어 매우 경제적입니다.
 - **단점**: 유저(클라이언트)가 트랜잭션을 발생시키기 전에 자신의 주소에 맞는 증명(Proof) 데이터를 백엔드 API 등을 통해 미리 가져와야 합니다.
+`
+                    },
+                    {
+                        id: 'hts-hedera',
+                        title: 'Hedera Token Service (HTS) 연동',
+                        description: '헤데라 네트워크의 네이티브 토큰 기능을 EVM 상의 사전 컴파일 컨트랙트로 호출하는 방법.',
+                        content: `
+### 1. 개념
+헤데라 해시그래프(Hedera Hashgraph)는 **HTS(Hedera Token Service)**를 통해 네트워크 레벨에서 네이티브 토큰(Fungible/Non-Fungible)을 생성하고 관리할 수 있도록 지원합니다. 솔리디티 컨트랙트에서는 **사전 컴파일된 컨트랙트(Precompiled Contract)**를 호출하여 이 기능을 사용합니다.
+
+### 2. 표준 ERC-721 vs. HTS 방식 비교
+- **표준 ERC-721**: 민팅 로직과 모든 상태가 스마트 컨트랙트 내부에 저장됩니다. 발행량이 늘어날수록 컨트랙트의 스토리지 비용이 증가합니다.
+- **HTS (Native)**: 스마트 컨트랙트는 시스템 레벨의 \`HederaTokenService.sol\`을 호출하기만 합니다. 실제 토큰의 상태 관리는 헤데라 네트워크 레이어에서 처리되므로 EVM 스토리지를 사용하지 않아 속도가 매우 빠르고 수수료가 저렴합니다.
+
+### 3. 주요 패턴 및 특징
+- **Token Keys**: HTS는 관리자(Admin), 발행(Supply), 동결(Freeze), 삭제(Wipe) 등 권한별로 별도의 키를 가집니다. 이를 스마트 컨트랙트 ID로 지정하여 탈중앙화된 제어가 가능합니다.
+- **Auto-Renew**: 토큰의 만료 및 자동 갱신을 네트워크 레벨에서 지원하며, 특정 계정이나 컨트랙트를 통해 비용을 자동 지불하도록 설정할 수 있습니다.
+- **사전 컴파일 호출 예시**:
+\`\`\`solidity
+(int responseCode, address createdToken) = HederaTokenService.createNonFungibleToken(token);
+require(responseCode == HederaResponseCodes.SUCCESS, "NFT 생성 실패");
+\`\`\`
+`
+                    },
+                    {
+                        id: 'zk-nullifier',
+                        title: 'ZK-Nullifier 프라이버시 패턴',
+                        description: 'Nullifier와 Commitment 구조를 활용해 익명성을 유지하며 사용 여부를 검증하는 기법.',
+                        content: `
+### 1. 문제: 퍼블릭 블록체인의 프라이버시
+표준적인 블록체인 트랜잭션에서는 특정 "권리(티켓 등)"를 소유하고 있음을 증명할 때, 그 증명 과정에서 내가 어떤 티켓을 가지고 있는지 노출되어 익명성이 깨지는 경우가 많습니다.
+
+### 2. Commitment & Nullifier 방식
+**토네이도 캐시(Tornado Cash)** 등에서 대중화된 이 패턴은 "영지식 사용(Zero-Knowledge Spending)"을 가능하게 합니다.
+- **Commitment**: 비밀값(난수 + Nullifier)을 해싱하여 머클 트리에 저장한 데이터입니다.
+- **Nullifier (무효화 값)**: 해당 Commitment가 사용될 때 공개되는 고유값입니다. 비밀값으로부터 유도되지만, 공개되기 전까지는 어떤 Commitment와 연결되는지 알 수 없습니다.
+- **영지식 증명(ZK-Proof)**: "나는 머클 트리에 포함된 특정 Commitment의 비밀값을 알고 있으며, 지금 제출하는 Nullifier는 그 비밀값에 대응한다"는 사실을, **실제 어떤 Commitment인지 밝히지 않고** 증명합니다.
+
+### 3. 이력이 포함된 머클 트리 (Merkle Tree with History)
+컨트랙트는 Commitment들이 저장된 머클 트리를 관리합니다. 이중 지불(Double Spending)을 방지하기 위해 사용된 Nullifier 목록을 매핑으로 저장하며, 검증된 Nullifier가 제출되면 해당 '비밀'은 다시 사용할 수 없게 처리됩니다. 이를 통해 관찰자는 누가 사용했는지는 모르지만, 이미 사용된 권리인지는 확실히 알 수 있습니다.
+`
+                    },
+                    {
+                        id: 'tx-management',
+                        title: '트랜잭션 및 가스 관리 (RBF)',
+                        description: '백엔드 서비스에서 펜딩(Pending) 트랜잭션 처리와 가스비 급등에 대응하는 방법.',
+                        content: `
+### 1. RBF (Replace-By-Fee)
+가스비가 낮아 트랜잭션이 멤풀(Mempool)에 갇혀 있을 때, **동일한 Nonce**를 사용하면서 더 높은 가스비(통상 최소 10% 이상 인상)를 책정해 새로운 트랜잭션을 보내는 기법입니다. 네트워크는 수수료가 높은 새 트랜잭션을 우선 처리하며, 기존 트랜잭션은 자연스럽게 취소(덮어쓰기)됩니다.
+
+### 2. Nonce 관리 전략
+백엔드 서비스에서는 연속적인 트랜잭션 발생 시 Nonce 관리가 매우 중요합니다.
+- **로컬 트래킹**: 인메모리에서 Nonce를 관리하여 블록에 포함될 때까지 기다리지 않고 즉시 다음 트랜잭션을 보낼 수 있도록 합니다.
+- **동기화 및 복구**: 로컬 상태가 어긋날 경우 노드에 \`getTransactionCount\` (Pending 포함)를 쿼리하여 Nonce를 다시 맞춥니다.
+
+### 3. 구현 패턴 (Ethers.js 예시)
+\`\`\`typescript
+export function increaseGas(percent: number, transaction: TransactionRequest): TransactionRequest {
+  const mul = (v: bigint | undefined) =>
+    v === undefined ? undefined : (v * BigInt(100 + percent)) / BigInt(100);
+  return {
+    ...transaction,
+    maxPriorityFeePerGas: mul(transaction.maxPriorityFeePerGas),
+    maxFeePerGas: mul(transaction.maxFeePerGas),
+  };
+}
+\`\`\`
 `
                     }
                 ]
