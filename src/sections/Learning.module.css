@@ -8,7 +8,7 @@
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    /* Match Projects */
+    justify-content: center;
     gap: 30px;
     margin-top: 40px;
 }
@@ -68,15 +68,24 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     font-size: 1rem;
     font-weight: 500;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;
     padding: 0;
 }
 
 .backButton:hover {
     text-decoration: underline;
+}
+
+/* Layout Containers */
+.topicsContainer,
+.detailContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .subHeading {
@@ -85,6 +94,7 @@
     margin-bottom: 30px;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 15px;
+    text-align: center;
 }
 
 /* Topic List */
@@ -99,29 +109,31 @@
     border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 20px;
-    /* Reduced padding from 25px */
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
     transition: var(--transition-base);
+    text-align: center;
+    position: relative;
 }
 
 .topicItem:hover {
     border-color: var(--color-primary);
     background: var(--color-bg-tertiary);
-    /* Highlight on hover */
 }
 
 .topicInfo {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .topicTitle {
     font-size: 1.2rem;
     color: var(--color-text-main);
     margin-bottom: 5px;
-    /* Reduced margin */
 }
 
 .topicDesc {
@@ -131,6 +143,8 @@
 
 .chevron {
     color: var(--color-text-secondary);
+    position: absolute;
+    right: 20px;
 }
 
 /* Article Detail */
@@ -139,6 +153,7 @@
     padding: 40px;
     border-radius: 12px;
     border: 1px solid var(--color-border);
+    text-align: center;
 }
 
 .articleTitle {
@@ -147,11 +162,13 @@
     margin-bottom: 30px;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 20px;
+    text-align: center;
 }
 
 .markdownContent {
     color: var(--color-text-secondary);
     line-height: 1.8;
+    text-align: center;
 }
 
 .markdownContent h3 {
@@ -175,7 +192,8 @@
 .markdownContent ul,
 .markdownContent ol {
     margin-bottom: 15px;
-    padding-left: 20px;
+    padding-left: 0;
+    list-style-position: inside;
 }
 
 .markdownContent li {

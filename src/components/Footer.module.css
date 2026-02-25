@@ -15,21 +15,29 @@
 }
 
 .top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
     cursor: pointer;
-    width: 35px;
-    height: 35px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     border: 3px solid #b9bfc4;
+    background-color: var(--color-bg-primary);
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--color-text-secondary);
     transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
 }
 
 .top:hover {
-    border-color: var(--color-text-main);
-    color: var(--color-text-main);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
 }
 
 .social {

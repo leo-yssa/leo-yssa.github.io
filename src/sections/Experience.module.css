@@ -8,6 +8,7 @@
     margin: 40px auto 0 auto;
     position: relative;
     max-width: 1000px;
+    margin: 0 auto;
 }
 
 .timeline::before {

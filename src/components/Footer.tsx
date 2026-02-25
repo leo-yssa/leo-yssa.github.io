@@ -16,7 +16,7 @@ const Footer = () => {
                 <div className={styles.content}>
                     <div className={styles.copyright}>
                         <p>
-                            {t('footer.copyright').replace('{year}', String(currentYear))}
+                            {currentYear}
                         </p>
                     </div>
 

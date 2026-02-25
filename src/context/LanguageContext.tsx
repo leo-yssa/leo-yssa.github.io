@@ -34,7 +34,6 @@ export const translations = {
         'learning.title': 'Learning',
         'learning.back': 'Back',
         'contact.title': 'Contact',
-        'footer.copyright': 'Copyright © {year} Youngsoo(Leo) Sa',
     },
     ko: {
         'nav.about': '소개',
@@ -59,7 +58,6 @@ export const translations = {
         'learning.title': '학습 노트',
         'learning.back': '뒤로가기',
         'contact.title': '연락처',
-        'footer.copyright': '저작권 © {year} 사영수(Leo)',
     }
 };
 
