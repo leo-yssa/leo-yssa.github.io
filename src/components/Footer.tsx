@@ -1,4 +1,4 @@
-import { FaChevronUp, FaGithub, FaStackOverflow, FaLinkedin, FaEnvelope, FaPen } from 'react-icons/fa';
+import { FaChevronUp, FaGithub, FaStackOverflow, FaLinkedin, FaEnvelope, FaPen, FaFileAlt } from 'react-icons/fa';
 import styles from './Footer.module.css';
 
 const Footer = () => {
@@ -37,6 +37,9 @@ const Footer = () => {
                         </div>
                         <div className={styles.socialLink} data-tooltip="LinkedIn" onClick={() => window.open('https://linkedin.com/', '_blank')}>
                             <FaLinkedin />
+                        </div>
+                        <div className={styles.socialLink} data-tooltip="Resume" onClick={() => window.open('/resume.html', '_blank')}>
+                            <FaFileAlt />
                         </div>
                     </div>
                 </div>

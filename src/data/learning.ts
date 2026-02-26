@@ -430,6 +430,65 @@ Prevents cascading failures when a downstream service is down.
 `
                     },
                     {
+                        id: 'eai-mci',
+                        title: 'EAI & MCI Integration Patterns',
+                        description: 'Architecting system integration for large-scale enterprise environments.',
+                        content: `
+### 1. EAI (Enterprise Application Integration)
+EAI is the middleware technology used to integrate independent applications within an organization. It allows data flow between siloed systems (e.g., CRM, ERP, Legacy DB) without modifying them.
+- **Hub-and-Spoke**: A central hub manages all integrations, reducing the "spaghetti" complexity of point-to-point connections.
+- **Message Broker**: Uses asynchronous messaging (e.g., MQ) to ensure reliable delivery even if a system is temporarily offline.
+
+### 2. MCI (Multi-Channel Integration)
+MCI is the layer that manages communication between internal backend systems and various external channels (Mobile, Web, ARS, Open API).
+- **Single Point of Contact**: Provides a unified interface for all channels, simplifying authentication and protocol conversion.
+- **Protocol Conversion**: Converts different data formats (XML, JSON, Fixed-length) between the backend and diverse clients.
+
+### 3. Key Benefits in Finance
+In large-scale financial projects (like CRM/Campaign systems), EAI/MCI ensure:
+- **Loose Coupling**: Changes in one system don't break others.
+- **Scalability**: High-traffic channel requests are throttled or queued before hitting core legacy systems.
+- **Reliability**: Transactional integrity across distributed systems can be monitored centrally.
+`
+                    },
+                    {
+                        id: 'jvm-performance-tuning',
+                        title: 'JVM Performance & Memory Management',
+                        description: 'Optimizing Java applications for high-throughput and low-latency environments.',
+                        content: `
+### 1. JVM Memory Model
+Understanding the Heap (Young/Old Generation) and Metaspace is crucial for large-scale systems.
+- **Tuning Flags**: Setting \`-Xms\` and \`-Xmx\` to the same value to avoid heap resizing overhead.
+- **Direct Memory**: Using \`-XX:MaxDirectMemorySize\` for high-performance I/O (like Netty or Kafka clients) to bypass heap GC.
+
+### 2. Garbage Collection (GC) Strategies
+- **G1 GC**: The standard for most modern large-scale applications; balances throughput and pause times.
+- **ZGC / Shenandoah**: Ultra-low latency collectors for applications requiring sub-millisecond pauses.
+
+### 3. Monitoring & Diagnostics
+- **JFR (JDK Flight Recorder)**: Low-overhead profiling to solve production issues.
+- **Thread Dumps & Heap Dumps**: Essential for diagnosing deadlocks and memory leaks in distributed environments.
+`
+                    },
+                    {
+                        id: 'resiliency-patterns',
+                        title: 'Microservices Resiliency (Circuit Breaker)',
+                        description: 'Ensuring system stability in highly distributed environments like eBay.',
+                        content: `
+### 1. The Cascading Failure Problem
+In a microservices architecture, if one service (e.g., Payment) becomes slow, it can tie up threads in calling services (e.g., Order), eventually bringing down the entire system.
+
+### 2. Circuit Breaker Pattern
+- **Closed**: Requests flow normally.
+- **Open**: When failure threshold is reached, requests fail fast immediately to protect the system.
+- **Half-Open**: Periodically allows a few requests to check if the downstream service has recovered.
+
+### 3. Implementation (Resilience4j / Spring Cloud)
+- **Fallback**: Providing a default or cached response when the circuit is open.
+- **Bulkhead**: Isolating resources (thread pools) so that a failure in one area doesn't exhaust the entire server's resources.
+`
+                    },
+                    {
                         id: 'keycloak-iam',
                         title: 'Keycloak Identity & Access Management',
                         description: 'Choosing Keycloak for centralized authentication and its architectural benefits.',
@@ -1375,6 +1434,64 @@ MSA에서는 전통적인 ACID 트랜잭션(2PC)이 어렵기 때문에 Saga 패
 ### 2. 왜 전체 Security를 쓰지 않았나?
 - 커스텀 토큰을 발급하는 간단한 로그인 API(\`/api/auth/login\`)의 경우, 자동 구성되는 강력한 Security 필터 체인을 모두 끄거나 재정의하는 설정 오버헤드가 발생합니다.
 - 불필요하게 무거워지는 것을 방지하고, 핵심적인 비밀번호 암호화 기능만 취하며 가볍고 통제하기 쉬운 서버를 유지하기 위함입니다.
+`
+                    },
+                    {
+                        id: 'eai-mci',
+                        title: 'EAI & MCI 연동 패턴',
+                        description: '엔터프라이즈 환경에서의 시스템 통합 아키텍처 이해.',
+                        content: `
+### 1. EAI (Enterprise Application Integration)
+EAI는 기업 내의 서로 다른 애플리케이션(CRM, ERP, 레거시 DB 등)을 유기적으로 연결하여 데이터를 통합 관리하는 미들웨어 기술입니다. 
+- **Hub-and-Spoke**: 중앙 허브를 통해 모든 시스템을 연결함으로써, 점대점(Point-to-Point) 방식의 복잡한 '스파게티 소스' 구조를 방지합니다.
+- **데이터 통합**: 각 시스템의 수정 없이 데이터 포맷을 변환하고 흐름을 제어하여 비즈니스 프로세스를 효율화합니다.
+
+### 2. MCI (Multi-Channel Integration)
+MCI는 내부 시스템과 다양한 외부 채널(모바일, 웹, 콜센터, 제휴사 API 등) 사이의 접점을 통합 관리하는 계층입니다.
+- **채널 통합**: 다양한 인터페이스 요청을 단일 지점에서 처리하여 인증, 로깅, 전문 변환을 표준화합니다.
+- **전문 변환 (Protocol Conversion)**: 외부의 다양한 포맷(JSON, XML 등)과 내부 레거시 특유의 고정 길이(Fixed-length) 전문 등을 상호 변환합니다.
+
+### 3. 금융권 프로젝트에서의 중요성
+현대캐피탈, 르노캐피탈과 같은 대규모 금융 프로젝트에서는 EAI/MCI를 통해 다음과 같은 효과를 얻습니다.
+- **시스템 간 결합도 완화 (Loose Coupling)**: 특정 시스템이 변경되어도 연동된 다른 시스템에 미치는 영향을 최소화합니다.
+- **안정성 및 모니터링**: 대량의 요청이 발생할 때 큐잉(Queuing) 처리를 통해 시스템 부하를 조절하고, 전구간 트랜잭션을 추적할 수 있습니다.
+`
+                    },
+                    {
+                        id: 'jvm-performance-tuning',
+                        title: 'JVM 성능 최적화 및 메모리 관리',
+                        description: '고처리량(High-throughput) 환경을 위한 Java 애플리케이션 최적화.',
+                        content: `
+### 1. JVM 메모리 모델과 튜닝
+대규모 서비스에서는 Heap(Young/Old Gen)과 Metaspace에 대한 정확한 이해가 필수적입니다.
+- **메모리 할당**: \`-Xms\`와 \`-Xmx\`를 동일하게 설정하여 힙 리사이징에 따른 오버헤드를 방지합니다.
+- **Direct Memory**: \`-XX:MaxDirectMemorySize\` 설정을 통해 Netty나 Kafka 클라이언트와 같은 고성능 I/O 작업 시 힙 영역을 거치지 않는 메모리 사용을 최적화합니다.
+
+### 2. 가비지 컬렉터(GC) 선택 전략
+- **G1 GC**: 대부분의 현대적인 대규모 앱에서 표준으로 사용되며, 처리량과 일시 정지 시간의 균형을 맞춥니다.
+- **ZGC / Shenandoah**: 초저지연이 필요한 경우 사용하며, 힙 크기와 상관없이 밀리초 단위의 정지 시간을 보장합니다.
+
+### 3. 진단 및 모니터링
+- **JFR (JDK Flight Recorder)**: 운영 환경에서 낮은 오버헤드로 성능 데이터를 수집하여 문제를 추적합니다.
+- **Thread/Heap Dump 분석**: 분산 환경에서 발생하는 데드락이나 메모리 누수를 진단하는 필수 역량입니다.
+`
+                    },
+                    {
+                        id: 'resiliency-patterns',
+                        title: '마이크로서비스 회복 탄력성 (Circuit Breaker)',
+                        description: 'eBay와 같은 거대 분산 시스템에서 시스템 전체 붕괴를 막는 핵심 패턴.',
+                        content: `
+### 1. 연쇄 장애 (Cascading Failure)의 위험
+마이크로서비스 구조에서 특정 서비스(예: 결제)가 느려지면, 이를 호출하는 서비스(예: 주문)의 스레드가 점유되어 결국 시스템 전체가 마비될 수 있습니다.
+
+### 2. 서킷 브레이커 (Circuit Breaker) 패턴
+- **Closed (닫힘)**: 정상적인 요청 처리.
+- **Open (열림)**: 장애 임계치 도달 시 요청을 즉시 차단하여 시스템을 보호하고 빠른 실패(Fail-fast)를 유도합니다.
+- **Half-Open (반열림)**: 하위 서비스의 정상화 여부를 주기적으로 확인하여 자동 복구합니다.
+
+### 3. 구현 및 전략 (Resilience4j 등)
+- **Fallback**: 서킷이 열렸을 때 기본값이나 캐시된 데이터를 응답하여 사용자 경험을 유지합니다.
+- **Bulkhead**: 리소스(스레드 풀 등)를 격리하여 한 곳의 장애가 서버 전체의 자원을 고갈시키지 않도록 방어합니다.
 `
                     },
                     {

@@ -100,13 +100,14 @@ export const content: Record<string, Content> = {
                 ]
             },
             {
-                date: "November 2018 – November 2020",
+                date: "December 2018 – November 2020",
                 company: "Obzen",
                 title: "Assistant Manager (Backend)",
                 items: [
-                    "Executed CRM projects for major clients (Hyundai Capital, Renault Capital, Hana Tour) using the company's Java Spring-based solution.",
-                    "Customized and delivered enterprise solutions, managing MCI/EAI channel integrations.",
-                    "Designed data marts and handled large-scale data processing for financial clients."
+                    "Hyundai Capital: Designed and developed batch and real-time campaign processes (Java, Oracle 11g).",
+                    "Renault Capital: Designed and developed batch campaign and survey processes.",
+                    "Hana Tour: Executed CRM projects and integrated MCI/EAI channel interfaces.",
+                    "Customized enterprise solutions and designed large-scale data marts for financial clients."
                 ]
             }
         ],
@@ -299,13 +300,14 @@ export const content: Record<string, Content> = {
                 ]
             },
             {
-                date: "2018년 11월 – 2020년 11월",
+                date: "2018년 12월 – 2020년 11월",
                 company: "오브젠",
                 title: "대리 (Backend)",
                 items: [
-                    "현대캐피탈, 르노캐피탈, 하나투어 등 주요 고객사 대상 CRM 프로젝트 수행",
-                    "자사 Java Spring 기반 솔루션 납품 및 커스텀 개발",
-                    "MCI/EAI 채널 인터페이스 연동 및 대용량 데이터 마트 설계"
+                    "현대캐피탈: 배치 및 실시간 캠페인 프로세스 설계 및 개발 (Java, Oracle 11g)",
+                    "르노캐피탈: 배치 캠페인 및 설문 프로세스 설계 및 개발",
+                    "하나투어 등 주요 고객사 대상 CRM 프로젝트 수행 및 MCI/EAI 채널 연동",
+                    "대용량 데이터 마트 설계 및 금융권 특화 솔루션 커스텀 개발"
                 ]
             }
         ],
