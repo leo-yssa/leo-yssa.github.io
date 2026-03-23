@@ -835,6 +835,48 @@ export function increaseGas(percent: number, transaction: TransactionRequest): T
 - Can directly access DB/Filesystem.
 - **Hydration**: Client takes over interactivity after initial HTML load.
 `
+                    },
+                    {
+                        id: 'tailwind-css',
+                        title: 'Tailwind CSS',
+                        description: 'Utility-first CSS framework for rapid UI development.',
+                        content: `
+### 1. Concept
+**Tailwind CSS**: A utility-first CSS framework packed with classes like \`flex\`, \`pt-4\`, \`text-center\` and \`rotate-90\` that can be composed to build any design, directly in your markup.
+
+### 2. Key Features
+- **Utility-First**: Build complex components from a constrained set of primitive utilities.
+- **Responsive Design**: Mobile-first responsive modifiers (e.g., \`md:flex\`, \`lg:grid\`).
+- **Optimization**: Automatically removes unused CSS in production using **PurgeCSS** (built-in in v3+).
+- **Customization**: Highly configurable via \`tailwind.config.js\`.
+
+### 3. Benefits
+- **No more class naming**: You don't have to invent silly class names like \`wrapper\` or \`inner-container\`.
+- **Maintainability**: CSS stops growing. Since you're using utilities, your CSS bundle size remains constant even as your HTML grows.
+`
+                    },
+                    {
+                        id: 'indexed-db',
+                        title: 'IndexedDB',
+                        description: 'Client-side storage for large amounts of structured data.',
+                        content: `
+### 1. Concept
+**IndexedDB**: A low-level API for client-side storage of significant amounts of structured data, including files/blobs. It uses indexes to enable high-performance searches of this data.
+
+### 2. Key Features
+- **NoSQL**: It is a transactional, object-oriented database (not relational).
+- **Asynchronous**: Operations are non-blocking to keep the UI responsive.
+- **Structured Data**: Supports storing complex objects (JS objects, Dates, Files).
+- **Capacity**: Much larger storage limit than \`localStorage\` (usually 50MB+ or a % of disk space).
+
+### 3. Comparison
+| Feature | LocalStorage | IndexedDB |
+| :--- | :--- | :--- |
+| **Type** | Key-Value (String) | Object Store (NoSQL) |
+| **Size** | ~5MB | Reliable (Large) |
+| **Async** | No (Blocking) | Yes (Non-blocking) |
+| **Index** | No | Yes (Searchable) |
+`
                     }
                 ]
             },
@@ -1820,6 +1862,48 @@ export function increaseGas(percent: number, transaction: TransactionRequest): T
 - 컴포넌트가 **서버에서만** 실행됨. 클라이언트 번들 사이즈 0.
 - DB나 파일시스템 직접 접근 가능.
 - **Hydration**: 초기 HTML 로드 후 클라이언트가 상호작용 권한을 넘겨받음.
+`
+                    },
+                    {
+                        id: 'tailwind-css',
+                        title: 'Tailwind CSS',
+                        description: '유틸리티 우선 CSS 프레임워크를 이용한 빠른 UI 개발.',
+                        content: `
+### 1. 개념
+**Tailwind CSS**: \`flex\`, \`pt-4\`, \`text-center\`와 같은 유틸리티 클래스를 조합하여 별도의 CSS 작성 없이 HTML 마크업 안에서 디자인을 완성하는 **Utility-First** 방식의 CSS 프레임워크입니다.
+
+### 2. 주요 특징
+- **유틸리티 우선**: 미리 정의된 작은 클래스들을 조합하여 복잡한 UI를 구성합니다.
+- **반응형 디자인**: \`md:\`, \`lg:\` 스타일의 접두사를 통해 별도의 미디어 쿼리 없이 반응형 레이아웃을 구현합니다.
+- **자동 최적화**: 사용하지 않는 클래스를 빌드 시점에 제거하여 결과물 크기를 최소화합니다 (JIT 엔진).
+- **확장성**: \`tailwind.config.js\`를 통해 프로젝트 고유의 컬러 시스템이나 폰트를 쉽게 정의할 수 있습니다.
+
+### 3. 장점
+- **클래스 명명 불필요**: \`container-wrapper\` 같은 이름을 고민할 필요가 없어 개발 속도가 매우 빠릅니다.
+- **유지보수 용이**: 스타일이 HTML에 귀속되어 있어, 특정 요소를 수정할 때 다른 곳에 영향을 줄까 걱정할 필요가 없습니다.
+`
+                    },
+                    {
+                        id: 'indexed-db',
+                        title: 'IndexedDB',
+                        description: '대용량의 구조화된 데이터를 위한 클라이언트 측 저장소.',
+                        content: `
+### 1. 개념
+**IndexedDB**: 브라우저에 대용량의 구조화된 데이터를 저장하기 위한 로우 레벨 API입니다. 파일이나 블롭(Blob)도 저장할 수 있으며, 인덱스를 이용해 데이터를 고성능으로 검색할 수 있습니다.
+
+### 2. 주요 특징
+- **NoSQL**: 관계형 DB가 아닌 객체 지향적(Object-oriented) 데이터베이스입니다.
+- **비동기 처리**: 모든 작업이 비동기로 이루어져 UI 렌더링을 방해하지 않습니다(Non-blocking).
+- **구조화된 데이터**: 단순 문자열뿐만 아니라 JS 객체, 날짜, 파일 등을 그대로 저장할 수 있습니다.
+- **용량**: \`localStorage\`(약 5MB)보다 훨씬 큰 저장 공간을 제공합니다 (일반적으로 디스크 용량의 일정 비율).
+
+### 3. 비교
+| 특징 | LocalStorage | IndexedDB |
+| :--- | :--- | :--- |
+| **데이터 형태** | 키-값 (문자열 전용) | 객체 저장소 (NoSQL) |
+| **저장 용량** | 약 5MB (작음) | 매우 큼 (대용량) |
+| **동작 방식** | 동기 (Blocking) | 비동기 (Non-blocking) |
+| **검색 기능** | 없음 | 있음 (인덱스 활용) |
 `
                     }
                 ]
