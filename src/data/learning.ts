@@ -232,6 +232,50 @@ Used by **Cassandra**, **HBase**, **RocksDB** (Write-heavy NoSQL).
 `
                     },
                     {
+                        id: 'db-learned-index',
+                        title: 'Learned B-Tree (Learned Index)',
+                        description: 'Replacing traditional B-Tree nodes with machine learning models that predict the position of a key in a sorted array.',
+                        content: `
+### 1. Concept
+A **Learned Index** replaces the traditional B+ Tree structure with a hierarchy of machine learning models (typically linear regression or neural networks). Instead of traversing tree nodes to find a key, the model predicts the **position** (rank) of the key within a sorted array.
+
+### 2. Core Algorithm (RMI: Recursive Model Index)
+1.  **Model as CDF**: The index is viewed as a Cumulative Distribution Function $F(x) = P(X \le x)$. The position of key $K$ is approximately $N \times F(K)$.
+2.  **Prediction**: For a given key $K$, the model outputs a predicted position $p$.
+3.  **Error Bound**: Since models are not 100% accurate, each model stores a max error $\epsilon$. The actual position is guaranteed to be within $[p - \epsilon, p + \epsilon]$.
+4.  **Local Search**: A final search (binary search or exponential search) is performed within the predicted range to find the exact key.
+
+### 3. Comparison with B-Tree
+- **Space Complexity**: Significantly lower. A B-Tree stores many keys/pointers; a learned index stores only model weights (a few floats).
+- **Time Complexity**: $O(1)$ for prediction + $O(\log \epsilon)$ for local search. If $\epsilon$ is small, it outperforms $O(\log N)$.
+- **Insert/Update**: Very expensive, as it requires retraining or complex buffering (LSM-style). Ideal for read-heavy or static datasets.
+`
+                    },
+                    {
+                        id: 'db-trigram-index',
+                        title: 'Trigram Index',
+                        description: 'Breaking text into 3-character overlapping sequences to support fuzzy search and substring matching.',
+                        content: `
+### 1. Concept
+A **Trigram Index** is used for efficient searching of text data, especially for substring matching (\`LIKE %word%\`) and fuzzy/similarity searches. It decomposes strings into overlapping 3-character chunks called "trigrams".
+
+### 2. Core Algorithm
+1.  **Decomposition**: The string is padded and split.
+    - Example: "database" $\rightarrow$ \`{"  d", " da", "dat", "ata", "tab", "aba", "bas", "ase", "se "}\`.
+2.  **Inverted Index**: A mapping is created from each unique trigram to the list of document IDs containing it.
+3.  **Search**:
+    - The query "data" is broken into \`{"  d", " da", "dat", "ata", "ta "}\`.
+    - The engine fetches document lists for these trigrams and finds the intersection.
+4.  **Similarity (Jaccard Index)**: Similarity is calculated as:
+    $$\text{sim}(A, B) = \frac{|T(A) \cap T(B)|}{|T(A) \cup T(B)|}$$
+    where $T(x)$ is the set of trigrams for string $x$.
+
+### 3. Use Cases
+- **PostgreSQL pg_trgm**: Powering GIST/GIN indexes for fast substring search.
+- **Fuzzy Matching**: Identifying "John Doe" even if queried as "Jon Doe".
+`
+                    },
+                    {
                         id: 'db-sharding',
                         title: 'Database Sharding',
                         description: 'Horizontal scaling technique: Pros, Cons, and Sharding Strategies.',
@@ -1276,6 +1320,50 @@ for result in results:
 - **카디널리티(Cardinality)**: 중복도가 낮고 유니크한 값이 많은 컬럼(주민번호, ID)에 걸어야 효율적 (성별같이 중복 많은 컬럼은 비효율).
 - **쓰기 성능**: 인덱스가 많으면 \`INSERT\`, \`UPDATE\`, \`DELETE\` 시 모든 인덱스를 갱신해야 하므로 느려짐.
 - **커버링 인덱스(Covering Index)**: 쿼리에 필요한 모든 컬럼이 인덱스에 포함되어 있다면, 테이블 조회 없이 인덱스만으로 결과를 반환하여 성능 급상승.
+`
+                    },
+                    {
+                        id: 'db-learned-index',
+                        title: '학습 B트리 (Learned Index)',
+                        description: '전통적인 B-Tree 노드를 정렬된 배열 내 키의 위치를 예측하는 머신러닝 모델로 대체하는 기술.',
+                        content: `
+### 1. 개념
+**학습 인덱스(Learned Index)**는 전통적인 B+ Tree의 계층 구조를 머신러닝 모델(주로 선형 회귀 또는 신경망)로 대체합니다. 트리 노드를 따라가며 키를 찾는 대신, 모델이 정렬된 데이터 배열 내에서 키가 존재할 **예측 위치(rank)**를 직접 계산합니다.
+
+### 2. 핵심 알고리즘 (RMI: Recursive Model Index)
+1.  **모델과 CDF**: 인덱스를 누적 분포 함수(CDF) $F(x) = P(X \le x)$로 간주합니다. 키 $K$의 위치는 대략 $N \times F(K)$가 됩니다.
+2.  **위치 예측**: 입력된 키 $K$에 대해 모델 $M$이 예측 위치 $p$를 출력합니다.
+3.  **오차 범위(Error Bound)**: 모델은 정답을 완벽히 맞추지 못할 수 있으므로, 최대 오차 $\epsilon$을 별도로 저장합니다. 실제 데이터는 $[p - \epsilon, p + \epsilon]$ 구간 내에 있음이 보장됩니다.
+4.  **로컬 검색**: 예측된 범위 내에서 이진 검색(Binary Search) 등을 수행하여 정확한 키의 위치를 찾아냅니다.
+
+### 3. B-Tree와의 차이점
+- **공간 복잡도**: 훨씬 낮습니다. B-Tree는 수많은 키와 포인터를 저장해야 하지만, 학습 인덱스는 모델의 가중치(몇 개의 실수 값)만 저장하면 됩니다.
+- **시간 복잡도**: 예측에 $O(1)$, 로컬 검색에 $O(\log \epsilon)$이 소요됩니다. 오차 $\epsilon$이 충분히 작다면 $O(\log N)$보다 빠릅니다.
+- **단점**: 데이터 삽입/업데이트 시 모델을 재학습하거나 LSM-Tree 방식의 버퍼링이 필요하므로 비용이 큽니다. 읽기 전용 또는 정적 데이터에 유리합니다.
+`
+                    },
+                    {
+                        id: 'db-trigram-index',
+                        title: 'Trigram 인덱스',
+                        description: '텍스트를 3글자씩 겹치는 조각으로 분해하여 부분 일치 검색 및 유사도 검색을 지원하는 인덱스.',
+                        content: `
+### 1. 개념
+**Trigram 인덱스**는 텍스트 데이터의 효율적인 부분 일치 검색(\`LIKE %word%\`) 및 퍼지(Fuzzy) 검색을 위해 사용됩니다. 문자열을 "Trigrams"라고 불리는 3개의 연속된 문자 조각으로 분해하여 인덱싱합니다.
+
+### 2. 핵심 알고리즘
+1.  **텍스트 분해**: 문자열 앞뒤에 공백을 추가한 뒤 3글자씩 추출합니다.
+    - 예: "database" $\rightarrow$ \`{"  d", " da", "dat", "ata", "tab", "aba", "bas", "ase", "se "}\`.
+2.  **역색인(Inverted Index)**: 각 Trigram이 어떤 문서(또는 행)에 포함되어 있는지 매핑 정보를 생성합니다.
+3.  **검색 과정**:
+    - 검색어 "data"를 Trigram으로 분해합니다.
+    - 각 Trigram에 해당하는 문서 리스트를 인덱스에서 가져와 교집합(Intersection)을 찾습니다.
+4.  **유사도 계산 (Jaccard Index)**: 두 문자열의 유사도는 공유하는 Trigram의 비율로 계산합니다.
+    $$\text{sim}(A, B) = \frac{|T(A) \cap T(B)|}{|T(A) \cup T(B)|}$$
+    여기서 $T(x)$는 문자열 $x$의 Trigram 집합입니다.
+
+### 3. 활용 사례
+- **PostgreSQL pg_trgm**: GIST/GIN 인덱스를 통해 매우 빠른 부분 문자열 검색을 지원합니다.
+- **오타 교정**: "John Doe"를 "Jon Doe"로 검색해도 높은 유사자로 찾아낼 수 있습니다.
 `
                     },
                     {

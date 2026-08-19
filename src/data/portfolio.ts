@@ -1,457 +1,524 @@
-export interface ExperienceItem {
-    date: string;
-    company: string;
-    title: string;
-    items: string[];
-}
+// ============================================================
+// Dotorio Portfolio — Core Data Layer
+// ============================================================
 
-export interface EducationItem {
-    school: string;
-    date: string;
-    degree: string;
-    grade: string;
+export type Locale = 'en' | 'ko';
+
+// ─── Navigation ────────────────────────────────────────────
+export const navItems = [
+  { id: 'about', label: { en: 'About', ko: '소개' } },
+  { id: 'projects', label: { en: 'Projects', ko: '프로젝트' } },
+  { id: 'architecture', label: { en: 'Architecture', ko: '아키텍처' } },
+  { id: 'experience', label: { en: 'Experience', ko: '경력' } },
+  { id: 'stack', label: { en: 'Stack', ko: '기술 스택' } },
+  { id: 'contact', label: { en: 'Contact', ko: '연락' } },
+];
+
+// ─── Projects ──────────────────────────────────────────────
+export interface ProjectMetric {
+  label: { en: string; ko: string };
+  value: string;
+  unit?: string;
 }
 
 export interface ProjectItem {
-    image: string;
-    title: string;
-    description: string;
+  id: string;
+  title: string;
+  subtitle: { en: string; ko: string };
+  description: { en: string; ko: string };
+  type: 'B2C' | 'B2B' | 'Web3' | 'AI' | 'IoT' | 'Platform';
+  status: 'live' | 'shipped' | 'research';
+  metrics: ProjectMetric[];
+  stack: string[];
+  highlights: { en: string[]; ko: string[] };
+  architecture: { en: string; ko: string };
+  github?: string;
+  live?: string;
+  color: string;
 }
 
-export interface AwardItem {
-    title: string;
-    date: string;
-    organization: string;
-}
-
-export interface CertificationItem {
-    title: string;
-    date: string;
-    organization: string;
-}
-
-export interface MottoItem {
-    quote: string;
-    author: string;
-    story: string;
-}
-
-export interface Content {
-    experience: ExperienceItem[];
-    education: EducationItem[];
-    awards: AwardItem[];
-    certifications: CertificationItem[];
-    projects: ProjectItem[];
-    about: string;
-    motto?: MottoItem;
-}
-
-export const content: Record<string, Content> = {
-    en: {
-        experience: [
-            {
-                date: "July 2025 – Present",
-                company: "DeepLight (Musoft)",
-                title: "Team Lead (Backend & Blockchain)",
-                items: [
-                    "Leading development of 'Madezone' study room management platform.",
-                    "Developing 'ITDA' acquaintance matching platform using NestJS and PostgreSQL.",
-                    "Building AI Character Chat services with Google Gemini and WebSocket."
-                ]
-            },
-            {
-                date: "September 2024 – June 2025",
-                company: "Modern Lion",
-                title: "Manager (Blockchain & Backend)",
-                items: [
-                    "Developed Web3 ticketing platform supporting Polygon and Near networks.",
-                    "Implemented Solidity-based Ticket NFT (ERC-721) and random draw systems using Chainlink VRF.",
-                    "Integrated Octet Wallet and synchronized Web2/Web3 data using PortOne and Seatio."
-                ]
-            },
-            {
-                date: "September 2023 – September 2024",
-                company: "Innogrid",
-                title: "Senior Researcher (Blockchain & Backend)",
-                items: [
-                    "Developed LGE-COE advertising platform and reward structures based on Hedera Hashgraph.",
-                    "Implemented ZKP (Zero-Knowledge Proof) based survey systems for privacy protection.",
-                    "Built Node.js and gRPC-based API servers."
-                ]
-            },
-            {
-                date: "July 2022 – August 2023",
-                company: "Medium",
-                title: "Manager (Blockchain & Backend)",
-                items: [
-                    "Analyzed and modified Hyperledger Fabric Core source code; Validated Consensus and Gossip protocols.",
-                    "Designed Native Asset systems and cross-chain bridges (Mint & Burn).",
-                    "Optimized large-scale transaction processing and developed automation scripts."
-                ]
-            },
-            {
-                date: "July 2021 – June 2022",
-                company: "MarkAny",
-                title: "Assistant Manager (Blockchain & Backend)",
-                items: [
-                    "Advanced 'AnyBlock' (Hyperledger Fabric network monitoring) and developed Prometheus Exporters.",
-                    "Developed e-voting systems for the National Election Commission (NEC) using Fabric.",
-                    "Built DID-based simplified identity systems for Gangneung Citizen ID."
-                ]
-            },
-            {
-                date: "December 2018 – November 2020",
-                company: "Obzen",
-                title: "Assistant Manager (Backend)",
-                items: [
-                    "Hyundai Capital: Designed and developed batch and real-time campaign processes (Java, Oracle 11g).",
-                    "Renault Capital: Designed and developed batch campaign and survey processes.",
-                    "Hana Tour: Executed CRM projects and integrated MCI/EAI channel interfaces.",
-                    "Customized enterprise solutions and designed large-scale data marts for financial clients."
-                ]
-            }
-        ],
-        education: [
-            {
-                school: "Gangneung-Wonju National University",
-                date: "March 2015 - February 2019",
-                degree: "Bachelor of Computer Science",
-                grade: "Final Grade : 4.32/4.5 (Top of Class)"
-            }
-        ],
-        awards: [
-            {
-                title: "First Prize (Grand Prize)",
-                date: "2018",
-                organization: "1st Blockchain Academy, Sogang University Intelligent Blockchain Research Center"
-            },
-            {
-                title: "Academic Excellence (Grand Prize)",
-                date: "April 2018",
-                organization: "Gangneung-Wonju National University"
-            },
-            {
-                title: "FIVE Eco Regional Talent Training Research Group (Excellence Award - Research Mgmt)",
-                date: "November 2017",
-                organization: "FIVE Eco Regional Talent Training Research Group"
-            },
-            {
-                title: "FIVE Eco Regional Talent Training Research Group (Excellence Award - Activity)",
-                date: "November 2017",
-                organization: "FIVE Eco Regional Talent Training Research Group"
-            },
-            {
-                title: "FIVE Eco Regional Talent Training Research Group (Excellence Award - Overall)",
-                date: "November 2017",
-                organization: "FIVE Eco Regional Talent Training Research Group"
-            },
-            {
-                title: "Seoul Accord Activation Project Non-subject Course (Excellence Award)",
-                date: "December 2016",
-                organization: "Seoul Accord Activation Project"
-            },
-            {
-                title: "Academic Excellence (Grand Prize)",
-                date: "April 2016",
-                organization: "Gangneung-Wonju National University"
-            },
-            {
-                title: "Programming Championship (Excellence Award)",
-                date: "November 2015",
-                organization: "Gangneung-Wonju National University"
-            },
-            {
-                title: "Seoul Accord Activation Project Non-subject Course (Grand Prize)",
-                date: "November 2015",
-                organization: "Seoul Accord Activation Project"
-            }
-        ],
-        certifications: [
-            {
-                title: "Information Processing Engineer",
-                date: "May 2019",
-                organization: "HRDK (Human Resources Development Service of Korea)"
-            },
-            {
-                title: "Computer Specialist in Spreadsheet & Database Level-1",
-                date: "July 2021",
-                organization: "KCCI (Korea Chamber of Commerce and Industry)"
-            },
-            {
-                title: "Network Master Level-2",
-                date: "September 2017",
-                organization: "ICQA (Korea Association for ICT Promotion)"
-            },
-            {
-                title: "Linux Master Level-2",
-                date: "May 2017",
-                organization: "KAIT (Korea Association for ICT Promotion)"
-            },
-            {
-                title: "OCJP (Oracle Certified Professional, Java SE 6 Programmer)",
-                date: "December 2016",
-                organization: "Oracle"
-            }
-        ],
-        projects: [
-            {
-                image: "/images/project.jpg",
-                title: "Madezone",
-                description: "Study room management platform (DeepLight).\nDeveloped App/Web and NestJS server.\nIntegrated Kakao notification and PortOne payments."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "ITDA",
-                description: "Acquaintance matching platform (DeepLight).\nTech: NestJS, TypeScript, PostgreSQL, Redis, Docker.\nFeatures: Matching system, Real-time Chat, Payments."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Character Chat",
-                description: "AI Real-time Chat Service (DeepLight).\nTech: NestJS, Google Gemini, WebSocket.\nFeatures: AI personas, Real-time messaging."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Monster Hunt GameFi",
-                description: "P2E on-chain game using Solidity, Golang, and Redis.\nFeatures UUPS upgradeable contracts and ERC-20 reward tokens."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "SmartDocs-AI",
-                description: "LLM-based document search engine.\nUtilized LangChain (RAG), FAISS vector DB, and gRPC-connected Kotlin/Python architecture."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Native Asset & Bridge",
-                description: "Developed Coin system applied to Hyperledger Fabric.\nImplemented Bridge for token transfer between Tendermint and Fabric."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Election System",
-                description: "Hyperledger Fabric-based Election System Development for National Election Commission."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Java POS System",
-                description: "POS (Point of Sale) software developed for small business owners during undergraduate studies.\nBuilt using Java Swing and MySQL."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Fat-Free Pet (IoT System)",
-                description: "IoT system for measuring pet exercise and automatic feeding (Undergraduate Project).\nCalculated exercise using Blue-ino acceleration sensor and integrated with automatic feeder via GZLL communication."
-            }
-        ],
-        about: "I am a Backend and Blockchain Engineer focused on long-term scalability and robust structural design. Currently leading development at DeepLight (Musoft). I have extensive experience building systems using Ethereum, Hyperledger Fabric, and Klaytn, as well as designing scalable backend architectures with Go, Java, Kotlin, Node.js, and Python. I value analyzing the root cause of problems and ensuring smooth collaboration across teams. My goal is to integrate Web2, Web3, and AI technologies to build stable, large-scale systems.",
-        motto: {
-            quote: "To lose it is multiplying the loss by two. If I hesitate to cross the second time, I even lose the effort of the first. But if I cross once more, wouldn't the previous effort be counted double?",
-            author: "Liu Bei (유비)",
-            story: "We often hear people say, 'One mistake wiped out everything I've done.' It can be devastating to think that everything you've built could vanish with a single error. In the past, while working part-time, I once burst out in anger after enduring unreasonable demands from the owner. The story of Liu Bei from the Romance of the Three Kingdoms deeply moved me and brought significant changes to my human relations, studies, and work life. For instance, if you face continuous unreasonable demands from a boss at work and quit halfway, all the endurance you showed will disappear instantly, and you might be seen as lacking perseverance or competence. My absolute philosophy is: 'Pay it forward'. Even if the given work feels unfair, I want to take responsibility and see it through to the end once I've accepted it. Only then can we discuss it properly and gain true recognition."
-        }
+export const projects: ProjectItem[] = [
+  {
+    id: 'madezone',
+    title: 'Madezone',
+    subtitle: { en: 'Study Room Management Platform', ko: '스터디룸 관리 플랫폼' },
+    description: {
+      en: 'Full-stack study room management platform with real-time booking, Kakao notifications, and PortOne payment integration.',
+      ko: 'NestJS 기반 스터디룸 예약 관리 플랫폼. 카카오 알림톡, 포트원 결제 모듈 연동.',
     },
-    ko: {
-        experience: [
-            {
-                date: "2025년 7월 – 현재",
-                company: "딥라이트 (Musoft)",
-                title: "팀장 (Backend & Blockchain)",
-                items: [
-                    "'Madezone' 스터디룸 관리 플랫폼 개발 주도",
-                    "NestJS 및 PostgreSQL 기반 'ITDA' 지인 매칭 플랫폼 개발",
-                    "Google Gemini 및 WebSocket을 활용한 AI 캐릭터 채팅 서비스 구축"
-                ]
-            },
-            {
-                date: "2024년 9월 – 2025년 6월",
-                company: "모던라이언",
-                title: "매니저 (Blockchain & Backend)",
-                items: [
-                    "Polygon, Near 기반의 Web3 티켓팅 플랫폼 개발",
-                    "Solidity 기반 Ticket NFT(ERC-721) 및 Chainlink VRF를 활용한 랜덤 추첨 시스템 구현",
-                    "Octet Wallet 연동 및 PortOne/Seatio를 활용한 Web2/Web3 데이터 동기화 처리"
-                ]
-            },
-            {
-                date: "2023년 9월 – 2024년 9월",
-                company: "이노그리드",
-                title: "선임 연구원 (Blockchain & Backend)",
-                items: [
-                    "Hedera Hashgraph 기반의 LGE-COE 광고 플랫폼 및 리워드 구조 개발",
-                    "개인정보 보호를 위한 ZKP(영지식 증명) 기반 설문 시스템 구현",
-                    "Node.js 및 gRPC 기반의 API 서버 구축"
-                ]
-            },
-            {
-                date: "2022년 7월 – 2023년 8월",
-                company: "미디움",
-                title: "매니저 (Blockchain & Backend)",
-                items: [
-                    "Hyperledger Fabric Core 소스 분석 및 수정; Consensus/Gossip 프로토콜 검증",
-                    "Native Asset 시스템 및 Cross-chain Bridge (Mint & Burn) 설계 및 구현",
-                    "대용량 트랜잭션 처리 최적화 및 자동화 스크립트 개발"
-                ]
-            },
-            {
-                date: "2021년 7월 – 2022년 6월",
-                company: "마크애니",
-                title: "대리 (Blockchain & Backend)",
-                items: [
-                    "Hyperledger Fabric 네트워크 모니터링 'AnyBlock' 고도화 및 Prometheus Exporter 개발",
-                    "중앙선거관리위원회(NEC) 블록체인 기반 전자투표 시스템 개발",
-                    "강릉시 시민증을 위한 DID 기반 간편인증 시스템 구축"
-                ]
-            },
-            {
-                date: "2018년 12월 – 2020년 11월",
-                company: "오브젠",
-                title: "대리 (Backend)",
-                items: [
-                    "현대캐피탈: 배치 및 실시간 캠페인 프로세스 설계 및 개발 (Java, Oracle 11g)",
-                    "르노캐피탈: 배치 캠페인 및 설문 프로세스 설계 및 개발",
-                    "하나투어 등 주요 고객사 대상 CRM 프로젝트 수행 및 MCI/EAI 채널 연동",
-                    "대용량 데이터 마트 설계 및 금융권 특화 솔루션 커스텀 개발"
-                ]
-            }
-        ],
-        education: [
-            {
-                school: "강릉원주대학교",
-                date: "2015년 3월 - 2019년 2월",
-                degree: "컴퓨터공학 학사",
-                grade: "학점 : 4.32/4.5 (수석 졸업)"
-            }
-        ],
-        awards: [
-            {
-                title: "제 1회 블록체인 학술대회 최우수상",
-                date: "2018",
-                organization: "서강대 지능형 블록체인 연구센터"
-            },
-            {
-                title: "학업 성적 우수 최우수상",
-                date: "2018.04.18",
-                organization: "강릉원주대학교"
-            },
-            {
-                title: "FIVE Eco 지역인재 실전문제연구팀 연구관리부문 우수상",
-                date: "2017.11.21",
-                organization: "FIVE Eco 지역인재 양성연구단"
-            },
-            {
-                title: "FIVE Eco 지역인재 실전문제연구팀 활동부문 우수상",
-                date: "2017.11.21",
-                organization: "FIVE Eco 지역인재 양성연구단"
-            },
-            {
-                title: "FIVE Eco 지역인재 실전문제연구팀 종합부문 우수상",
-                date: "2017.11.21",
-                organization: "FIVE Eco 지역인재 양성연구단"
-            },
-            {
-                title: "서울어코드활성화사업단 비교과과정 우수상",
-                date: "2016.12.07",
-                organization: "서울어코드활성화사업단"
-            },
-            {
-                title: "학업 성적 우수 최우수상",
-                date: "2016.04.26",
-                organization: "강릉원주대학교"
-            },
-            {
-                title: "프로그래밍 챔피언십 우수상",
-                date: "2015.11.26",
-                organization: "강릉원주대학교"
-            },
-            {
-                title: "서울어코드활성화사업단 비교과과정 최우수상",
-                date: "2015.11.26",
-                organization: "서울어코드활성화사업단"
-            }
-        ],
-        certifications: [
-            {
-                title: "정보처리기사",
-                date: "2018.05",
-                organization: "한국산업인력공단"
-            },
-            {
-                title: "컴퓨터활용능력 1급",
-                date: "2021.07",
-                organization: "대한상공회의소"
-            },
-            {
-                title: "네트워크관리사 2급",
-                date: "2017.09",
-                organization: "한국정보통신자격협회"
-            },
-            {
-                title: "리눅스마스터 2급",
-                date: "2017.05",
-                organization: "한국정보통신진흥협회"
-            },
-            {
-                title: "OCJP (Oracle Certified Professional, Java SE 6 Programmer)",
-                date: "2016.12",
-                organization: "Oracle"
-            }
-        ],
-        projects: [
-            {
-                image: "/images/project.jpg",
-                title: "Madezone (메이드존)",
-                description: "스터디룸 관리 플랫폼 (DeepLight).\nReact Native 앱 및 NestJS 서버 개발.\n카카오 알림톡 및 포트원 결제 모듈 연동."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "ITDA (잇다)",
-                description: "지인 매칭 플랫폼 (DeepLight).\n기술: NestJS, TypeScript, PostgreSQL, Redis, Docker.\n기능: 매칭 시스템, 실시간 채팅, 결제/정산."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "AI Character Chat",
-                description: "AI 실시간 캐릭터 채팅 서비스 (DeepLight).\n기술: NestJS, Google Gemini, WebSocket.\n기능: AI 페르소나 챗봇, 실시간 메시지 전송."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Monster Hunt GameFi",
-                description: "Solidity, Golang, Redis를 활용한 P2E 온체인 게임.\nUUPS 업그레이더블 컨트랙트 및 ERC-20 보상 토큰 구현."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "SmartDocs-AI",
-                description: "LLM 기반 문서 검색 엔진.\nLangChain(RAG), FAISS 벡터 DB, Kotlin/Python gRPC 아키텍처 활용."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Native Asset & Bridge",
-                description: "Hyperledger Fabric용 코인 시스템 개발.\nTendermint와 Fabric 간의 토큰 전송 브릿지 구현."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "전자투표 시스템",
-                description: "중앙선거관리위원회를 위한 Hyperledger Fabric 기반 전자투표 시스템 개발."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Java POS System",
-                description: "학부 시절 소상공인을 위해 개발한 POS (Point of Sale) 소프트웨어.\nJava Swing 및 MySQL 활용."
-            },
-            {
-                image: "/images/project.jpg",
-                title: "Fat하지 않은 Pet (IoT 시스템)",
-                description: "애완견의 운동량을 측정하고 자동으로 급식하는 IoT 시스템 (학부 프로젝트).\n블루이노 가속도 센서로 운동량을 계산하고, GZLL 통신으로 자동 급시기와 연동 구현."
-            }
-        ],
-        about: "장기적인 확장성과 유지보수 가능한 구조적 설계를 중시하는 백엔드 & 블록체인 엔지니어입니다. 현재 딥라이트(Musoft)에서 개발 팀장을 맡고 있습니다. Ethereum, Hyperledger Fabric부터 NestJS, Spring까지 다양한 기술 스택을 보유하고 있으며, Web2, Web3, AI 기술을 융합한 시스템 구축에 주력하고 있습니다.",
-        motto: {
-            quote: "잃어버리는 것과 두 배로 늘어나는 차이입니다. 제가 두 번째로 건너기를 마다하게 되면 첫 번째의 수고로움마저 값을 잃게 됩니다. 그러나 한 번 더 건너면 앞서의 수고로움도 두 배로 셈 쳐 받게 되지 않겠습니까?",
-            author: "유비",
-            story: "'한 번의 실수로 그동안 했던 것을 잃었다.'라는 말을 종종 듣게 됩니다. 여태까지 공들여왔던 것이 단 한 번의 실수로 물거품이 된다는 것은 절망적일 것입니다. 과거 아르바이트를 하던 중 사장님의 무리한 요구를 참으면서 수행하던 중, 끝내 참지 못하고 폭발하였던 적이 있습니다. 삼국지 유비의 일화는 저에게 감명을 주었고, 인간관계, 학업, 직장 생활에 많은 변화를 주었습니다. 한 예로 직장에서 상사의 무리한 요구가 지속되었을 때 중간에 그만두게 된다면 그동안 참으면서 해왔던 모든 것들이 한순간 사라지고, 끈기 없는 사람 혹은 능력 없는 사람으로 간주될 수 있을 것입니다. 저는 제가 가장 좋아하는 문장인 'Pay it forward'를 마음에 새기며 살아갑니다. 만약 해왔던 업무가 부당했다 할지라도 일단 한 번 맡기로 한 이상, 그 맡은 업무가 끝이 날 때까지 책임을 다하고 완수하는 삶을 살고 싶고, 이로 인해 온전히 인정받고 싶습니다."
-        }
-    }
-};
-
-export const skills = [
-    "Go (Gin/gRPC)", "Java/Kotlin (Spring)", "Node.js (NestJS)", "Python", "Rust",
-    "Solidity (ERC-20/721)", "Hyperledger Fabric", "ZKP & DID",
-    "React", "React Native", "Next.js",
-    "Docker", "Kubernetes", "AWS", "CI/CD (GitHub Actions)"
+    type: 'B2C',
+    status: 'live',
+    metrics: [
+      { label: { en: 'Concurrent Users', ko: '동시 접속자' }, value: '500+', unit: 'users' },
+      { label: { en: 'API Response', ko: 'API 응답 시간' }, value: '<120', unit: 'ms' },
+      { label: { en: 'Uptime', ko: '가동률' }, value: '99.9', unit: '%' },
+    ],
+    stack: ['NestJS', 'TypeScript', 'PostgreSQL', 'Redis', 'React Native', 'Docker', 'AWS ECS'],
+    highlights: {
+      en: [
+        'Designed multi-tenant schema with row-level security for concurrent booking conflict prevention',
+        'Implemented Redis-based distributed locking to prevent double-booking race conditions',
+        'Built real-time notification pipeline with Kakao Alimtalk & PortOne webhook integration',
+      ],
+      ko: [
+        '멀티 테넌트 스키마 + Row-level Security로 동시 예약 충돌 방지 설계',
+        'Redis 분산 락으로 이중 예약 레이스 컨디션 제거',
+        '카카오 알림톡 + 포트원 웹훅 기반 실시간 알림 파이프라인 구축',
+      ],
+    },
+    architecture: {
+      en: 'NestJS → PostgreSQL (primary) + Redis (session/lock) → AWS ECS (containerized) → CloudFront CDN',
+      ko: 'NestJS → PostgreSQL (주 DB) + Redis (세션/락) → AWS ECS (컨테이너화) → CloudFront CDN',
+    },
+    color: '#00D2A0',
+  },
+  {
+    id: 'itda',
+    title: 'ITDA',
+    subtitle: { en: 'Acquaintance Matching Platform', ko: '지인 매칭 플랫폼' },
+    description: {
+      en: 'Real-time matching & chat platform with AI-powered recommendations, payment settlement, and WebSocket messaging.',
+      ko: 'WebSocket 기반 실시간 채팅 및 AI 추천 매칭 플랫폼. 결제/정산 시스템 포함.',
+    },
+    type: 'Platform',
+    status: 'live',
+    metrics: [
+      { label: { en: 'Matching Accuracy', ko: '매칭 정확도' }, value: '87', unit: '%' },
+      { label: { en: 'WS Latency', ko: 'WS 지연' }, value: '<50', unit: 'ms' },
+      { label: { en: 'DB Query Opt.', ko: 'DB 쿼리 개선' }, value: '70', unit: '%' },
+    ],
+    stack: ['NestJS', 'TypeScript', 'PostgreSQL', 'Redis', 'WebSocket', 'Docker', 'AWS RDS'],
+    highlights: {
+      en: [
+        'Optimized complex matching queries with composite index strategy — 70% query time reduction',
+        'WebSocket room-based real-time messaging with Redis Pub/Sub for horizontal scaling',
+        'Designed settlement engine with idempotent payment processing to prevent duplicate charges',
+      ],
+      ko: [
+        '복합 인덱스 전략으로 매칭 쿼리 70% 성능 개선',
+        'Redis Pub/Sub 기반 WS 수평 확장으로 실시간 채팅 동시성 확보',
+        '멱등성 결제 처리 엔진으로 이중 청구 방지',
+      ],
+    },
+    architecture: {
+      en: 'NestJS Gateway → Redis Pub/Sub → WS Cluster → PostgreSQL (indexed) → AWS RDS Multi-AZ',
+      ko: 'NestJS Gateway → Redis Pub/Sub → WS 클러스터 → PostgreSQL (인덱스 최적화) → AWS RDS Multi-AZ',
+    },
+    color: '#3B82F6',
+  },
+  {
+    id: 'monster-hunt',
+    title: 'Monster Hunt GameFi',
+    subtitle: { en: 'P2E On-Chain Game', ko: 'P2E 온체인 게임' },
+    description: {
+      en: 'Play-to-Earn blockchain game with UUPS upgradeable smart contracts, ERC-20 reward tokens, and high-frequency on-chain transactions.',
+      ko: 'UUPS 업그레이더블 컨트랙트, ERC-20 보상 토큰 기반 P2E 게임. Golang 고성능 백엔드.',
+    },
+    type: 'Web3',
+    status: 'shipped',
+    metrics: [
+      { label: { en: 'TPS (peak)', ko: '최대 TPS' }, value: '1,200+', unit: 'tx/s' },
+      { label: { en: 'Gas Savings', ko: '가스 절약' }, value: '40', unit: '%' },
+      { label: { en: 'Contract Uptime', ko: '컨트랙트 가동' }, value: '100', unit: '%' },
+    ],
+    stack: ['Solidity', 'Golang', 'Redis', 'Gin', 'ERC-20', 'UUPS Proxy', 'Hardhat'],
+    highlights: {
+      en: [
+        'Implemented UUPS upgradeable proxy pattern for zero-downtime contract upgrades',
+        'Golang + Redis caching layer achieving 1,200+ TPS for game event processing',
+        'ERC-20 reward token with anti-inflation emission schedule and on-chain governance',
+      ],
+      ko: [
+        'UUPS 업그레이더블 프록시 패턴으로 무중단 컨트랙트 업그레이드 구현',
+        'Golang + Redis 캐싱으로 게임 이벤트 처리 1,200+ TPS 달성',
+        'Anti-inflation 발행 스케줄 및 온체인 거버넌스 ERC-20 토큰 설계',
+      ],
+    },
+    architecture: {
+      en: 'Golang API → Redis Cache → Solidity Contracts (UUPS) → Ethereum L2 → Event Indexer',
+      ko: 'Golang API → Redis 캐시 → Solidity 컨트랙트 (UUPS) → Ethereum L2 → 이벤트 인덱서',
+    },
+    color: '#8B5CF6',
+  },
+  {
+    id: 'web3-ticketing',
+    title: 'Web3 Ticketing',
+    subtitle: { en: 'NFT-based Event Ticketing', ko: 'NFT 기반 이벤트 티켓팅' },
+    description: {
+      en: 'Decentralized ticketing platform on Polygon & NEAR with Chainlink VRF lottery and PortOne payment bridge.',
+      ko: 'Polygon, NEAR 네트워크 기반 Web3 티켓팅. Chainlink VRF 랜덤 추첨 및 PortOne 결제 연동.',
+    },
+    type: 'Web3',
+    status: 'shipped',
+    metrics: [
+      { label: { en: 'NFTs Issued', ko: '발행 NFT' }, value: '10K+', unit: '' },
+      { label: { en: 'Fraud Rate', ko: '위조율' }, value: '0', unit: '%' },
+      { label: { en: 'VRF Fairness', ko: 'VRF 무결성' }, value: '100', unit: '%' },
+    ],
+    stack: ['Solidity', 'ERC-721', 'Chainlink VRF', 'Polygon', 'NEAR', 'NestJS', 'PortOne'],
+    highlights: {
+      en: [
+        'ERC-721 Ticket NFT with soulbound option to prevent scalping',
+        'Chainlink VRF integration for provably fair random draw lotteries',
+        'Web2/Web3 data sync pipeline between PortOne, Seatio, and on-chain state',
+      ],
+      ko: [
+        'ERC-721 Ticket NFT + Soulbound 옵션으로 암표 방지',
+        'Chainlink VRF로 검증 가능한 공정 추첨 시스템 구현',
+        'PortOne, Seatio, 온체인 상태 간 Web2/Web3 데이터 동기화 파이프라인',
+      ],
+    },
+    architecture: {
+      en: 'NestJS → PortOne → Solidity (ERC-721) → Polygon RPC → Chainlink VRF Oracle',
+      ko: 'NestJS → PortOne → Solidity (ERC-721) → Polygon RPC → Chainlink VRF 오라클',
+    },
+    color: '#F59E0B',
+  },
+  {
+    id: 'smartdocs-ai',
+    title: 'SmartDocs-AI',
+    subtitle: { en: 'LLM-powered Document Search', ko: 'LLM 기반 문서 검색 엔진' },
+    description: {
+      en: 'Semantic document search with RAG pipeline, FAISS vector store, and gRPC-connected Kotlin/Python microservice architecture.',
+      ko: 'LangChain RAG, FAISS 벡터 DB, gRPC 연결 Kotlin/Python 마이크로서비스 아키텍처.',
+    },
+    type: 'AI',
+    status: 'research',
+    metrics: [
+      { label: { en: 'Search Relevance', ko: '검색 정확도' }, value: '92', unit: '%' },
+      { label: { en: 'P95 Latency', ko: 'P95 지연' }, value: '<800', unit: 'ms' },
+      { label: { en: 'Doc Ingestion', ko: '문서 처리량' }, value: '5K', unit: 'docs/h' },
+    ],
+    stack: ['LangChain', 'FAISS', 'Python', 'Kotlin', 'gRPC', 'RAG', 'OpenAI'],
+    highlights: {
+      en: [
+        'RAG pipeline with chunked embedding and hybrid BM25+semantic retrieval',
+        'gRPC-based polyglot service: Kotlin orchestrator + Python ML inference worker',
+        'FAISS index with incremental update strategy for real-time document ingestion',
+      ],
+      ko: [
+        'BM25 + 시맨틱 하이브리드 검색 RAG 파이프라인 구축',
+        'gRPC 폴리글랏: Kotlin 오케스트레이터 + Python ML 추론 워커',
+        '실시간 문서 수집을 위한 FAISS 인덱스 증분 업데이트 전략',
+      ],
+    },
+    architecture: {
+      en: 'Kotlin API → gRPC → Python LangChain Worker → FAISS Index → OpenAI Embeddings',
+      ko: 'Kotlin API → gRPC → Python LangChain 워커 → FAISS 인덱스 → OpenAI 임베딩',
+    },
+    color: '#EC4899',
+  },
+  {
+    id: 'hyperledger-bridge',
+    title: 'Native Asset & Bridge',
+    subtitle: { en: 'Cross-chain Bridge on Hyperledger Fabric', ko: 'Hyperledger Fabric 크로스체인 브릿지' },
+    description: {
+      en: 'Native coin system on Hyperledger Fabric with Mint & Burn cross-chain bridge to Tendermint networks.',
+      ko: 'Hyperledger Fabric 네이티브 코인 시스템 및 Tendermint ↔ Fabric 크로스체인 브릿지.',
+    },
+    type: 'Web3',
+    status: 'shipped',
+    metrics: [
+      { label: { en: 'Bridge TPS', ko: '브릿지 TPS' }, value: '800+', unit: 'tx/s' },
+      { label: { en: 'Finality', ko: '최종성' }, value: '<3', unit: 's' },
+      { label: { en: 'Consensus', ko: '합의 검증' }, value: 'BFT', unit: '' },
+    ],
+    stack: ['Hyperledger Fabric', 'Go', 'Tendermint', 'gRPC', 'Protobuf', 'Docker'],
+    highlights: {
+      en: [
+        'Modified Hyperledger Fabric core consensus (Raft/BFT) and Gossip protocol source code',
+        'Designed Mint & Burn bridge with atomic cross-chain finality guarantee',
+        'Built Prometheus Exporter for real-time Fabric network monitoring',
+      ],
+      ko: [
+        'Hyperledger Fabric Core 합의(Raft/BFT) 및 Gossip 프로토콜 소스 수정',
+        '원자적 크로스체인 최종성 보장 Mint & Burn 브릿지 설계',
+        'Prometheus Exporter로 Fabric 네트워크 실시간 모니터링 구축',
+      ],
+    },
+    architecture: {
+      en: 'Fabric Peer (Go chaincode) → Bridge Service → Tendermint Node → Atomic Swap Protocol',
+      ko: 'Fabric Peer (Go 체인코드) → 브릿지 서비스 → Tendermint 노드 → Atomic Swap 프로토콜',
+    },
+    color: '#06B6D4',
+  },
 ];
+
+// ─── Experience ─────────────────────────────────────────────
+export interface ExperienceItem {
+  period: { en: string; ko: string };
+  company: string;
+  role: { en: string; ko: string };
+  type: string;
+  impact: { en: string[]; ko: string[] };
+  tech: string[];
+}
+
+export const experiences: ExperienceItem[] = [
+  {
+    period: { en: 'Jul 2025 – Present', ko: '2025.07 – 현재' },
+    company: 'DeepLight (Musoft)',
+    role: { en: 'Team Lead — Backend & Blockchain', ko: '팀장 — Backend & Blockchain' },
+    type: 'Team Lead',
+    impact: {
+      en: [
+        'Leading 6-person engineering team — defining architecture decisions & code review standards',
+        'Delivered Madezone SaaS platform: multi-tenant booking with 99.9% uptime',
+        'Built real-time AI character chat (Google Gemini + WebSocket) serving production users',
+      ],
+      ko: [
+        '6인 엔지니어링 팀 리드 — 아키텍처 결정 및 코드 리뷰 기준 정립',
+        'Madezone SaaS 플랫폼 출시: 멀티 테넌트 예약 시스템 99.9% 가동률 달성',
+        '구글 Gemini + WebSocket 기반 AI 캐릭터 채팅 서비스 프로덕션 배포',
+      ],
+    },
+    tech: ['NestJS', 'PostgreSQL', 'Redis', 'AWS ECS', 'React Native', 'Google Gemini'],
+  },
+  {
+    period: { en: 'Sep 2024 – Jun 2025', ko: '2024.09 – 2025.06' },
+    company: 'Modern Lion',
+    role: { en: 'Manager — Blockchain & Backend', ko: '매니저 — Blockchain & Backend' },
+    type: 'Senior',
+    impact: {
+      en: [
+        'Architected Web3 ticketing on Polygon & NEAR — issued 10K+ NFT tickets with 0% fraud',
+        'Implemented Chainlink VRF lottery ensuring provably fair random selection',
+        'Bridged Web2/Web3 payments via PortOne + on-chain state sync (Seatio integration)',
+      ],
+      ko: [
+        'Polygon, NEAR 기반 Web3 티켓팅 아키텍처 설계 — NFT 10K+ 발행, 위조율 0%',
+        'Chainlink VRF 기반 검증 가능 공정 추첨 시스템 구현',
+        'PortOne + 온체인 상태 동기화로 Web2/Web3 결제 브릿지 (Seatio 연동)',
+      ],
+    },
+    tech: ['Solidity', 'ERC-721', 'Chainlink VRF', 'Polygon', 'NEAR', 'NestJS'],
+  },
+  {
+    period: { en: 'Sep 2023 – Sep 2024', ko: '2023.09 – 2024.09' },
+    company: 'Innogrid',
+    role: { en: 'Senior Researcher — Blockchain & Backend', ko: '선임 연구원 — Blockchain & Backend' },
+    type: 'Senior',
+    impact: {
+      en: [
+        'Built LGE-COE ad platform on Hedera Hashgraph with reward token distribution system',
+        'Implemented ZKP (Zero-Knowledge Proof) survey system for GDPR-grade privacy protection',
+        'Designed gRPC-based microservice API with Node.js achieving sub-100ms p99 latency',
+      ],
+      ko: [
+        'Hedera Hashgraph 기반 LGE-COE 광고 플랫폼 + 리워드 토큰 분배 시스템 구축',
+        'ZKP(영지식 증명) 기반 개인정보 보호 설문 시스템 구현',
+        'Node.js gRPC 마이크로서비스 API — p99 100ms 미만 지연 달성',
+      ],
+    },
+    tech: ['Hedera Hashgraph', 'ZKP', 'Node.js', 'gRPC', 'NestJS'],
+  },
+  {
+    period: { en: 'Jul 2022 – Aug 2023', ko: '2022.07 – 2023.08' },
+    company: 'Medium',
+    role: { en: 'Manager — Blockchain & Backend', ko: '매니저 — Blockchain & Backend' },
+    type: 'Senior',
+    impact: {
+      en: [
+        'Modified Hyperledger Fabric Core source (Raft consensus + Gossip protocol validation)',
+        'Designed Native Asset system & cross-chain bridge with atomic Mint & Burn protocol',
+        'Optimized high-volume transaction processing — 800+ TPS on permissioned ledger',
+      ],
+      ko: [
+        'Hyperledger Fabric Core 소스 수정 (Raft 합의 + Gossip 프로토콜 검증)',
+        'Native Asset 시스템 및 Atomic Mint & Burn 크로스체인 브릿지 설계',
+        '고용량 트랜잭션 처리 최적화 — 허가형 원장에서 800+ TPS 달성',
+      ],
+    },
+    tech: ['Hyperledger Fabric', 'Go', 'Tendermint', 'gRPC', 'Docker'],
+  },
+  {
+    period: { en: 'Jul 2021 – Jun 2022', ko: '2021.07 – 2022.06' },
+    company: 'MarkAny',
+    role: { en: 'Assistant Manager — Blockchain & Backend', ko: '대리 — Blockchain & Backend' },
+    type: 'Engineer',
+    impact: {
+      en: [
+        'Advanced AnyBlock: Hyperledger Fabric monitoring with custom Prometheus Exporters',
+        'Developed e-voting system for National Election Commission (NEC) with Fabric',
+        'Built DID-based simplified identity system for Gangneung City citizen ID cards',
+      ],
+      ko: [
+        'AnyBlock 고도화: Fabric 모니터링 + Prometheus Exporter 직접 개발',
+        '중앙선거관리위원회 블록체인 기반 전자투표 시스템 개발',
+        '강릉시 시민증을 위한 DID 기반 간편인증 시스템 구축',
+      ],
+    },
+    tech: ['Hyperledger Fabric', 'Go', 'Prometheus', 'DID', 'Docker'],
+  },
+  {
+    period: { en: 'Dec 2018 – Nov 2020', ko: '2018.12 – 2020.11' },
+    company: 'Obzen',
+    role: { en: 'Assistant Manager — Backend', ko: '대리 — Backend' },
+    type: 'Engineer',
+    impact: {
+      en: [
+        'Hyundai Capital: Designed batch & real-time campaign pipeline (Java, Oracle 11g)',
+        'Renault Capital: Batch campaign and customer survey process architecture',
+        'Hana Tour: CRM project execution + MCI/EAI channel integration for large-scale data mart',
+      ],
+      ko: [
+        '현대캐피탈: Java/Oracle 11g 배치 + 실시간 캠페인 파이프라인 설계',
+        '르노캐피탈: 배치 캠페인 및 고객 설문 프로세스 아키텍처',
+        '하나투어 CRM + MCI/EAI 채널 연동 및 대용량 데이터 마트 설계',
+      ],
+    },
+    tech: ['Java', 'Oracle 11g', 'Spring', 'MCI/EAI', 'CRM'],
+  },
+];
+
+// ─── Tech Stack ─────────────────────────────────────────────
+export interface TechItem {
+  name: string;
+  level: 'production' | 'proficient' | 'familiar';
+  years?: number;
+}
+
+export interface TechCategory {
+  id: string;
+  label: { en: string; ko: string };
+  icon: string;
+  color: string;
+  items: TechItem[];
+}
+
+export const techStack: TechCategory[] = [
+  {
+    id: 'backend',
+    label: { en: 'Backend', ko: '백엔드' },
+    icon: '⚙️',
+    color: '#00D2A0',
+    items: [
+      { name: 'NestJS', level: 'production', years: 3 },
+      { name: 'Spring Boot', level: 'production', years: 4 },
+      { name: 'Node.js', level: 'production', years: 5 },
+      { name: 'Go (Gin/gRPC)', level: 'production', years: 3 },
+      { name: 'Kotlin', level: 'proficient', years: 2 },
+      { name: 'Python', level: 'proficient', years: 2 },
+      { name: 'REST / GraphQL', level: 'production', years: 5 },
+      { name: 'WebSocket', level: 'production', years: 3 },
+    ],
+  },
+  {
+    id: 'blockchain',
+    label: { en: 'Blockchain / Web3', ko: '블록체인 / Web3' },
+    icon: '🔗',
+    color: '#8B5CF6',
+    items: [
+      { name: 'Hyperledger Fabric', level: 'production', years: 4 },
+      { name: 'Solidity (ERC-20/721)', level: 'production', years: 3 },
+      { name: 'Ethereum / Polygon', level: 'production', years: 3 },
+      { name: 'Chainlink VRF', level: 'production', years: 2 },
+      { name: 'NEAR Protocol', level: 'proficient', years: 1 },
+      { name: 'Hedera Hashgraph', level: 'production', years: 1 },
+      { name: 'ZKP / DID', level: 'production', years: 2 },
+      { name: 'Tendermint', level: 'proficient', years: 1 },
+    ],
+  },
+  {
+    id: 'database',
+    label: { en: 'Database & Cache', ko: '데이터베이스 & 캐시' },
+    icon: '🗄️',
+    color: '#F59E0B',
+    items: [
+      { name: 'PostgreSQL', level: 'production', years: 4 },
+      { name: 'MySQL / Oracle', level: 'production', years: 5 },
+      { name: 'Redis', level: 'production', years: 3 },
+      { name: 'FAISS (Vector DB)', level: 'proficient', years: 1 },
+      { name: 'Schema & Index Tuning', level: 'production', years: 5 },
+      { name: 'Query Optimization', level: 'production', years: 5 },
+    ],
+  },
+  {
+    id: 'cloud',
+    label: { en: 'Cloud & DevOps', ko: '클라우드 & DevOps' },
+    icon: '☁️',
+    color: '#3B82F6',
+    items: [
+      { name: 'AWS EC2 / ECS', level: 'production', years: 4 },
+      { name: 'AWS RDS / S3', level: 'production', years: 4 },
+      { name: 'AWS CloudFront', level: 'production', years: 3 },
+      { name: 'Docker', level: 'production', years: 4 },
+      { name: 'GitHub Actions CI/CD', level: 'production', years: 3 },
+      { name: 'Kubernetes', level: 'proficient', years: 1 },
+      { name: 'Prometheus / Grafana', level: 'production', years: 2 },
+    ],
+  },
+];
+
+// ─── Architecture Nodes (for showcase) ──────────────────────
+export interface ArchNode {
+  id: string;
+  label: string;
+  type: 'client' | 'gateway' | 'service' | 'db' | 'infra' | 'external';
+  x: number;
+  y: number;
+  description: { en: string; ko: string };
+}
+
+export interface ArchEdge {
+  from: string;
+  to: string;
+  label?: string;
+  style?: 'solid' | 'dashed';
+}
+
+export const architectureNodes: ArchNode[] = [
+  { id: 'client', label: 'Client\n(Web/App)', type: 'client', x: 50, y: 50, description: { en: 'React / React Native frontend', ko: 'React / React Native 프론트엔드' } },
+  { id: 'cdn', label: 'CloudFront\nCDN', type: 'infra', x: 200, y: 50, description: { en: 'AWS CloudFront for global edge caching', ko: 'AWS CloudFront 글로벌 엣지 캐싱' } },
+  { id: 'gateway', label: 'API Gateway\n(NestJS)', type: 'gateway', x: 370, y: 50, description: { en: 'NestJS REST + WebSocket gateway with JWT auth', ko: 'NestJS REST + WebSocket 게이트웨이, JWT 인증' } },
+  { id: 'redis', label: 'Redis\nCache/Pub-Sub', type: 'db', x: 550, y: 20, description: { en: 'Session cache, distributed lock, Pub/Sub', ko: '세션 캐시, 분산 락, Pub/Sub' } },
+  { id: 'postgres', label: 'PostgreSQL\nRDS Multi-AZ', type: 'db', x: 550, y: 100, description: { en: 'Primary database on AWS RDS Multi-AZ', ko: 'AWS RDS Multi-AZ 주 데이터베이스' } },
+  { id: 'worker', label: 'Job Worker\n(BullMQ)', type: 'service', x: 370, y: 160, description: { en: 'Async job queue for heavy processing', ko: '무거운 처리를 위한 비동기 잡 큐' } },
+  { id: 'ecs', label: 'AWS ECS\n(Fargate)', type: 'infra', x: 200, y: 160, description: { en: 'Containerized microservices on ECS Fargate', ko: 'ECS Fargate 컨테이너화 마이크로서비스' } },
+  { id: 'blockchain', label: 'Blockchain\n(Fabric/EVM)', type: 'external', x: 550, y: 160, description: { en: 'Hyperledger Fabric or EVM-compatible chain', ko: 'Hyperledger Fabric 또는 EVM 호환 체인' } },
+];
+
+export const architectureEdges: ArchEdge[] = [
+  { from: 'client', to: 'cdn', label: 'HTTPS' },
+  { from: 'cdn', to: 'gateway', label: 'Forward' },
+  { from: 'gateway', to: 'redis', label: 'Cache/Lock' },
+  { from: 'gateway', to: 'postgres', label: 'ORM' },
+  { from: 'gateway', to: 'worker', label: 'Queue', style: 'dashed' },
+  { from: 'worker', to: 'blockchain', label: 'TX', style: 'dashed' },
+  { from: 'ecs', to: 'gateway', label: 'Scale' },
+];
+
+// ─── Certifications & Awards ─────────────────────────────────
+export const certifications = [
+  { title: { en: 'Information Processing Engineer', ko: '정보처리기사' }, date: '2019.05', org: 'HRDK' },
+  { title: { en: 'Computer Specialist Level-1', ko: '컴퓨터활용능력 1급' }, date: '2021.07', org: 'KCCI' },
+  { title: { en: 'Network Master Level-2', ko: '네트워크관리사 2급' }, date: '2017.09', org: 'ICQA' },
+  { title: { en: 'Linux Master Level-2', ko: '리눅스마스터 2급' }, date: '2017.05', org: 'KAIT' },
+  { title: { en: 'OCJP (Java SE 6)', ko: 'OCJP (Java SE 6)' }, date: '2016.12', org: 'Oracle' },
+];
+
+export const awards = [
+  { title: { en: '1st Prize — 1st Blockchain Academy (Sogang University)', ko: '제1회 블록체인 학술대회 최우수상 (서강대)' }, date: '2018' },
+  { title: { en: 'Academic Excellence Award (Grand Prize)', ko: '학업 성적 우수 최우수상' }, date: '2018' },
+  { title: { en: 'Programming Championship Excellence Award', ko: '프로그래밍 챔피언십 우수상' }, date: '2015' },
+];
+
+// ─── Personal Info ────────────────────────────────────────────
+export const personalInfo = {
+  name: 'Youngsoo Sa',
+  brandName: 'Dotorio',
+  title: { en: 'Backend · Cloud · Blockchain Engineer', ko: '백엔드 · 클라우드 · 블록체인 엔지니어' },
+  tagline: {
+    en: 'Engineering Resilient Systems & Scalable Architectures',
+    ko: '회복력 있는 시스템과 확장 가능한 아키텍처를 설계합니다',
+  },
+  about: {
+    en: 'Backend and Blockchain Engineer with 6+ years of experience building high-availability distributed systems. Specialize in concurrent processing, query optimization, and distributed ledger design across Web2, Web3, and AI stacks. Currently leading engineering at DeepLight (Musoft).',
+    ko: '6년+ 경력의 백엔드 & 블록체인 엔지니어. 고가용성 분산 시스템 구축, 동시성 처리, 쿼리 최적화, 분산 원장 설계를 전문으로 합니다. Web2, Web3, AI 스택을 아우르며, 현재 딥라이트(Musoft)에서 개발 팀장으로 재직 중입니다.',
+  },
+  location: 'Seoul, South Korea',
+  email: 'leo.yssa@gmail.com',
+  github: 'https://github.com/leo-yssa',
+  linkedin: 'https://linkedin.com/in/youngsoo-sa',
+  status: { en: 'Open for collaboration', ko: '협업 문의 환영' },
+};
