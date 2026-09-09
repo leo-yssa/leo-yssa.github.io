@@ -71,8 +71,8 @@ export default function HeroSection({ locale }: HeroSectionProps) {
         />
       </div>
 
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-        <motion.div variants={container} initial="hidden" animate="show">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+        <motion.div variants={container} initial="hidden" animate="show" className="max-w-2xl">
             {/* Status pill */}
             <motion.div variants={item} className="inline-flex items-center gap-2 mb-6">
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#00D2A0]/10 border border-[#00D2A0]/25 text-[#00D2A0] text-xs font-medium">
