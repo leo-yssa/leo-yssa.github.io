@@ -45,22 +45,21 @@ export interface ProjectItem {
 
 export const projects: ProjectItem[] = [
   {
-    id: 'kkuk-ai',
-    title: '꾸욱 (KKUK)',
+    id: 'ccuc-ai',
+    title: '꾸욱 (CCUC)',
     subtitle: {
       en: 'AI Character Interaction & Simulation Platform',
       ko: '생성형 AI 캐릭터 대화 및 시뮬레이션 플랫폼',
     },
     description: {
       en: 'Full-stack AI character platform featuring multi-LLM orchestration (Gemini/Claude), real-time WebSocket chunk streaming, token optimization (Lagged & Rolling Summary), and automated PostgreSQL monthly partitioning.',
-      ko: 'Gemini, Claude 등 멀티 LLM 오케스트레이션과 실시간 웹소켓 청크 스트리밍, 1턴 지연 및 동적 롤링 요약 기반 토큰 최적화, 대용량 대화 로그 자동 월별 파티셔닝이 적용된 AI 인터랙션 플랫폼.',
+      ko: 'Gemini, Claude 등 멀티 LLM 오케스트레이션과 실시간 웹소켓 청크 스트리밍, 1턴 지연 및 동적 롤링 요약 기반 토큰 최적화, 대화 로그 자동 월별 파티셔닝이 적용된 AI 인터랙션 플랫폼.',
     },
     type: 'AI',
     status: 'live',
     metrics: [
-      { label: { en: 'Token Cost Cut', ko: '토큰 비용 절감' }, value: '70%+', unit: '' },
-      { label: { en: 'Stream Latency', ko: '스트림 지연' }, value: '<50', unit: 'ms' },
-      { label: { en: 'DB Query P99', ko: 'DB 조회 속도' }, value: '<15', unit: 'ms' },
+      { label: { en: 'Cost Bomb Prevention', ko: '비용 폭탄 방지' }, value: '100', unit: '%' },
+      { label: { en: 'Context Retained', ko: '대화 맥락 보존' }, value: '1,000+', unit: 'turns' },
     ],
     stack: [
       'NestJS',
@@ -80,13 +79,13 @@ export const projects: ProjectItem[] = [
         'Designed Lagged Summarization (1-turn delay) to eliminate memory distortion and prevent double-summary billing on regeneration',
         'Built Rolling Summary pipeline by model max tokens, preserving long-term context over 1,000+ turns without context overflow',
         'Engineered decoupled WebSocket stream architecture: token streaming + statusDelta game stats + situational image generation triggers',
-        'Implemented automatic monthly table partitioning (ChatPartitionService) for millions of chat_messages records',
+        'Implemented automatic monthly table partitioning (ChatPartitionService) for the chat_messages table to maintain query performance and archiving stability',
       ],
       ko: [
         '1턴 지연 요약(Lagged Summarization) 기법을 자체 고안하여 답변 재생성 시 기억 왜곡 방지 및 중복 과금 100% 차단',
         '모델별 Max Token 기반 동적 청크 롤링 요약(Rolling Summary) 파이프라인으로 수천 턴 대화에서도 비용 폭증 방지 및 맥락 보존',
         'WebSocket 기반 실시간 청크 스트리밍과 게임 스탯(호감도/도파민/HP 변동 delta), 상황 이미지 생성 트리거를 분리 비동기 처리',
-        '월별 수백만 건 이상의 chat_messages 테이블 자동 파티셔닝(ChatPartitionService) 구축으로 인덱스 크기 축소 및 쿼리 성능 유지',
+        '월별 chat_messages 테이블 자동 파티셔닝(ChatPartitionService) 구축으로 쿼리 성능 유지 및 데이터 아카이빙 안정성 확보',
       ],
     },
     architecture: {
@@ -95,8 +94,8 @@ export const projects: ProjectItem[] = [
     },
     architectureDoc: {
       overview: {
-        en: 'High-concurrency realtime AI interaction architecture optimized for minimal latency, token efficiency, and high-volume persistence.',
-        ko: '초저지연 실시간 스트리밍, 대화 토큰 비용 최적화, 수백만 건의 대화 로그 안정적 저장을 위한 고가용성 아키텍처.',
+        en: 'Realtime AI interaction architecture optimized for token efficiency and stable conversation log persistence.',
+        ko: '실시간 스트리밍, 대화 토큰 비용 최적화, 안정적인 대화 로그 저장을 위한 아키텍처.',
       },
       keyDecisions: [
         {
@@ -109,8 +108,8 @@ export const projects: ProjectItem[] = [
         {
           title: { en: 'PostgreSQL Monthly Partitioning', ko: 'PostgreSQL 월별 자동 파티셔닝' },
           desc: {
-            en: 'Partitioned chat_messages tables by month to maintain B-Tree index size within RAM and speed up historical message retrieval.',
-            ko: '월별 파티셔닝 테이블을 자동 생성·라우팅하여 인덱스 블로트를 방지하고 P99 조회 성능을 15ms 미만으로 유지합니다.',
+            en: 'Partitioned chat_messages tables by month to maintain query performance and ensure stable data archiving.',
+            ko: '월별 파티셔닝 테이블을 자동 생성·라우팅하여 쿼리 성능 유지 및 데이터 아카이빙 안정성을 확보합니다.',
           },
         },
       ],
@@ -131,15 +130,14 @@ export const projects: ProjectItem[] = [
       ko: '대규모 트래픽 NFT 티켓팅 & 체인 인덱서 플랫폼',
     },
     description: {
-      en: 'Scalable NFT ticketing platform on Polygon, Ethereum, and NEAR Protocol with Chainlink VRF on-chain lottery, GitOps deployment (K8s/ArgoCD), and PortOne Web2/Web3 payment bridges.',
-      ko: 'Polygon, Ethereum, NEAR 체인 기반 대규모 티켓팅 플랫폼. Chainlink VRF 온체인 무작위 추첨, Kubernetes/ArgoCD 기반 GitOps, PortOne 결제/정산 연동 및 Seatsio 실시간 지정좌석제 구현.',
+      en: 'NFT ticketing platform on Polygon, Ethereum, and NEAR Protocol with a Chainlink VRF on-chain lottery and GitOps deployment (K8s/ArgoCD).',
+      ko: 'Polygon, Ethereum, NEAR 체인 기반 NFT 티켓팅 플랫폼. Chainlink VRF 온체인 무작위 추첨 및 Kubernetes/ArgoCD 기반 GitOps 배포 구현.',
     },
     type: 'Web3',
     status: 'live',
     metrics: [
-      { label: { en: 'Fraud Rate', ko: '위조율' }, value: '0', unit: '%' },
-      { label: { en: 'VRF Fairness', ko: '추첨 무결성' }, value: '100', unit: '%' },
-      { label: { en: 'Peak Users', ko: '피크 동시접속' }, value: '10K+', unit: '' },
+      { label: { en: 'Draw Mechanism', ko: '추첨 방식' }, value: 'Chainlink VRF', unit: '' },
+      { label: { en: 'Deployment', ko: '배포 방식' }, value: 'GitOps', unit: '' },
     ],
     stack: [
       'NestJS',
@@ -151,21 +149,17 @@ export const projects: ProjectItem[] = [
       'ArgoCD',
       'Keycloak',
       'PostgreSQL',
-      'PortOne',
-      'Seatsio',
     ],
     highlights: {
       en: [
         'Implemented on-chain verifiable lottery smart contract using Chainlink VRF (Verifiable Random Function)',
         'Built Near Protocol smart contracts and realtime ledger data extraction & indexing pipeline',
         'Operated GitOps deployment workflows on Kubernetes & ArgoCD, maintaining enterprise auth via Keycloak',
-        'Integrated Web2/Web3 payment and settlement pipeline with PortOne and Seatsio seat allocation',
       ],
       ko: [
-        'Chainlink VRF(검증 가능한 온체인 난수) 기반 스마트 컨트랙트 개발로 티켓팅 추첨의 공정성 100% 보장',
+        'Chainlink VRF(검증 가능한 온체인 난수) 기반 스마트 컨트랙트 개발로 티켓팅 추첨의 공정성과 투명성 확보',
         'Near Protocol 스마트 컨트랙트(Rust/JS) 개발 및 온체인 원장 데이터의 실시간 수집·가공·인덱싱 파이프라인 구축',
-        'Kubernetes 및 ArgoCD 기반 GitOps 무중단 배포 운영 및 Keycloak 인증/인가 체계 유지보수',
-        'PortOne 결제/정산 연동 및 Seatsio 기반 실시간 지정좌석제 시스템 구현',
+        'Kubernetes 및 ArgoCD 기반 GitOps 배포 파이프라인 운영 및 Keycloak 인증/인가 체계 유지보수',
       ],
     },
     architecture: {
@@ -199,36 +193,33 @@ export const projects: ProjectItem[] = [
     id: 'lge-web3-survey',
     title: 'LGE Web3 ZKP Survey Platform',
     subtitle: {
-      en: 'Zero-Knowledge Privacy-Preserving Survey & Rewards',
-      ko: '영지식 증명(ZKP) 기반 익명 설문 및 리워드 플랫폼',
+      en: 'Zero-Knowledge Privacy-Preserving Anonymous Survey',
+      ko: '영지식 증명(ZKP) 기반 익명 설문 플랫폼',
     },
     description: {
-      en: 'Enterprise decentralized survey platform on Ethereum and Hedera Hashgraph using zk-SNARKs and Merkle Trees for anonymous participant validation without exposing identity.',
-      ko: 'Ethereum 및 Hedera Hashgraph 상에서 zk-SNARK 및 Merkle Tree를 활용하여 참여자의 신원을 노출하지 않고 유효 참여자 여부를 검증하는 영지식 증명(ZKP) 기반 익명 설문 시스템.',
+      en: 'Enterprise anonymous survey smart contract on Ethereum and Hedera Hashgraph using zk-SNARKs and Merkle Trees to validate eligible participants without exposing identity.',
+      ko: 'Ethereum 및 Hedera Hashgraph 상에서 zk-SNARK 및 Merkle Tree를 활용하여 참여자의 신원을 노출하지 않고 유효 참여자 여부를 검증하는 영지식 증명(ZKP) 기반 익명 설문 스마트 컨트랙트.',
     },
     type: 'Web3',
     status: 'shipped',
     metrics: [
-      { label: { en: 'P99 Latency', ko: 'P99 응답지연' }, value: '<100', unit: 'ms' },
       { label: { en: 'Privacy Grade', ko: '개인정보 보호' }, value: 'ZKP', unit: '' },
       { label: { en: 'Ledger Network', ko: '블록체인 네트워크' }, value: 'Hedera/ETH', unit: '' },
     ],
-    stack: ['Solidity', 'Node.js', 'gRPC', 'Golang', 'zk-SNARK', 'Merkle Tree', 'ethers.js', 'Hedera Hashgraph'],
+    stack: ['Solidity', 'NestJS', 'zk-SNARK', 'Merkle Tree', 'Hedera Hashgraph'],
     highlights: {
       en: [
-        'Developed zk-SNARK & Merkle tree verification logic to prove voter eligibility anonymously',
-        'Engineered high-throughput gRPC backend server with Node.js and Golang block collector',
-        'Built smart contract reward distribution engine on Hedera Hashgraph',
+        'Developed zk-SNARK & Merkle tree verification logic to prove participant eligibility anonymously',
+        'Built the anonymous survey smart contract and NestJS backend',
       ],
       ko: [
         'zk-SNARK 및 Merkle Tree 라이브러리를 활용한 익명 증명(ZKP) 파이프라인 및 Solidity 컨트랙트 구현',
-        'Node.js gRPC 서버 및 Golang 기반 블록 데이터 수집 서버 아키텍처 구축',
-        'Hedera Hashgraph 및 EVM 체인 기반 토큰 분배 및 리워드 로직 개발',
+        '익명 설문 스마트 컨트랙트 개발 및 NestJS 백엔드 구축',
       ],
     },
     architecture: {
-      en: 'Client (ZKP Proof Generation) → Node.js gRPC Server → Golang Block Collector → EVM / Hedera Smart Contract',
-      ko: '클라이언트 (ZKP 증명 생성) → Node.js gRPC 서버 → Golang 블록 수집기 → EVM / Hedera 스마트 컨트랙트',
+      en: 'Client (ZKP Proof Generation) → NestJS Backend → Ethereum / Hedera Smart Contract',
+      ko: '클라이언트 (ZKP 증명 생성) → NestJS 백엔드 → Ethereum / Hedera 스마트 컨트랙트',
     },
     color: '#3B82F6',
   },
@@ -247,8 +238,7 @@ export const projects: ProjectItem[] = [
     status: 'shipped',
     metrics: [
       { label: { en: 'Standards', ko: '표준 준수' }, value: 'W3C DID', unit: '' },
-      { label: { en: 'Throughput', ko: '처리량' }, value: '800+', unit: 'TPS' },
-      { label: { en: 'Integrity', ko: '데이터 무결성' }, value: '100', unit: '%' },
+      { label: { en: 'Ledger', ko: '원장' }, value: 'Hyperledger Fabric', unit: '' },
     ],
     stack: ['Hyperledger Fabric', 'Go (Chaincode)', 'NestJS', 'TypeScript', 'W3C DID/VC', 'Docker', 'Python'],
     highlights: {
@@ -283,16 +273,15 @@ export const projects: ProjectItem[] = [
     type: 'Fintech',
     status: 'shipped',
     metrics: [
-      { label: { en: 'Daily Batch', ko: '일일 배치 처리' }, value: '1M+', unit: 'records' },
-      { label: { en: 'Manual Time Cut', ko: '수작업 시간 단축' }, value: '95%+', unit: '' },
-      { label: { en: 'Delivery SLA', ko: '발송 SLA 준수' }, value: '99.9', unit: '%' },
+      { label: { en: 'Manual Process', ko: '수작업 처리' }, value: 'Days → 1-Click', unit: '' },
+      { label: { en: 'Role', ko: '역할' }, value: 'Project Leader', unit: '' },
     ],
     stack: ['Java', 'Spring Framework', 'JPA', 'PostgreSQL', 'Oracle 11g', 'Angular', 'Python'],
     highlights: {
       en: [
         'Served as Project Leader (PL), directing interface design and technical scheduling',
         'Invented automated customer group combination and channel distribution scheduling algorithm (SMS/Alimtalk/Email)',
-        'Designed high-volume ETL data marts and optimized complex SQL queries for multi-million customer segments',
+        'Designed high-volume ETL data marts and optimized complex SQL queries for large customer segments',
       ],
       ko: [
         '프로젝트 리더(PL)로서 고객사 인터페이스 설계, 개발 일정 조율 및 팀 분장 총괄',
@@ -311,27 +300,25 @@ export const projects: ProjectItem[] = [
     title: 'Madezone',
     subtitle: { en: 'Smart Study Space Management Platform', ko: '스마트 독서실 관리 시스템' },
     description: {
-      en: 'Full-stack study space management platform with real-time seat reservation, attendance tracking, PortOne payment, and multi-tenant expansion.',
-      ko: '실시간 좌석 예약, 출결 관리, 스케줄링, 포트원 결제 연동 및 지점 확장이 가능한 스마트 독서실 풀스택 관리 시스템.',
+      en: 'Full-stack study space management platform with real-time attendance tracking and PortOne payment integration.',
+      ko: '실시간 출결 관리 및 포트원 결제 연동이 적용된 스마트 독서실 풀스택 관리 시스템.',
     },
     type: 'Platform',
     status: 'live',
     metrics: [
-      { label: { en: 'Active Branches', ko: '운영 지점' }, value: '3+', unit: 'branches' },
-      { label: { en: 'API Latency', ko: 'API 응답 시간' }, value: '<100', unit: 'ms' },
-      { label: { en: 'Uptime', ko: '가동률' }, value: '99.9', unit: '%' },
+      { label: { en: 'Role', ko: '역할' }, value: 'Full-Stack', unit: '' },
     ],
     stack: ['React Native', 'NestJS', 'TypeScript', 'PostgreSQL', 'PortOne', 'Docker'],
     highlights: {
       en: [
         'Developed full-stack mobile app (React Native) and backend API services',
-        'Built real-time attendance, seat booking, and automated pass/meal payment via PortOne',
-        'Delivered responsive manager dashboard to monitor branch capacity and student status',
+        'Built real-time attendance and payment integration via PortOne',
+        'Delivered manager dashboard for branch operations',
       ],
       ko: [
         '모바일 앱(React Native) 및 백엔드 전반 풀스택 개발',
-        '실시간 출결 상태, 좌석 배정, 스케줄 관리 및 포트원 결제 시스템 연동',
-        '점주용 실시간 관리자 대시보드 구축 및 3개 지점 확장 지원',
+        '실시간 출결 상태 및 결제 시스템 연동',
+        '점주용 관리자 대시보드 구축',
       ],
     },
     architecture: {
@@ -361,14 +348,14 @@ export const experiences: ExperienceItem[] = [
     impact: {
       en: [
         'Led tech decisions from product planning through architecture ADR & code review (Full-stack)',
-        'KKUK: Multi-LLM (Gemini/Claude) orchestration, Lagged & Rolling Summary token optimization (70%+ cost cut), WebSocket real-time streaming, monthly DB partitioning',
-        'Madezone: Smart study room SaaS full-stack mobile & backend development with PortOne payment',
+        'CCUC: Multi-LLM (Gemini/Claude) orchestration, Lagged & Rolling Summary token optimization to prevent cost overruns, WebSocket real-time streaming, monthly DB partitioning',
+        'Madezone: Smart study room management full-stack mobile & backend development with PortOne payment',
         'Pioneered AI-assisted developer workflows (Cursor, Claude Code, Gemini CLI) to boost team velocity',
       ],
       ko: [
         '서비스 기획부터 아키텍처 ADR, 풀스택 설계, 코드 리뷰까지 기술 의사결정 및 팀 리딩 총괄',
-        '꾸욱(KKUK): 멀티 LLM 오케스트레이션, 1턴 지연 및 동적 롤링 요약 기반 토큰 최적화(비용 70%+ 절감), 웹소켓 스트리밍, 대화 로그 자동 월별 파티셔닝 구축',
-        '메이드존: 실시간 출결 및 좌석 관리 모바일 앱(React Native) & 백엔드 풀스택 개발 및 포트원 결제 연동',
+        '꾸욱(CCUC): 멀티 LLM 오케스트레이션, 1턴 지연 및 동적 롤링 요약 기반 토큰 비용 폭탄 방지, 웹소켓 스트리밍, 대화 로그 자동 월별 파티셔닝 구축',
+        '메이드존: 실시간 출결 관리 모바일 앱(React Native) & 백엔드 풀스택 개발 및 포트원 결제 연동',
         'Cursor, Claude Code, Gemini CLI 등 최신 AI 개발 도구를 팀 표준 워크플로우로 도입하여 개발 생산성 극대화',
       ],
     },
@@ -381,16 +368,14 @@ export const experiences: ExperienceItem[] = [
     type: 'Senior',
     impact: {
       en: [
-        'Architected Web3 ticketing on Polygon & NEAR — issued 10K+ NFT tickets with 0% fraud rate',
-        'Implemented Chainlink VRF on-chain lottery smart contract ensuring provably fair random draws',
-        'Constructed Near Protocol smart contracts (Rust/JS) and realtime ledger data extraction & indexing pipeline',
+        'Developed and integrated a Chainlink VRF (Verifiable Random Function) on-chain lottery system to ensure fairness and transparency in NFT ticketing draws',
         'Operated GitOps deployment workflows on Kubernetes & ArgoCD, maintaining Keycloak enterprise auth',
+        'Built Near Protocol smart contracts and a realtime ledger data extraction & indexing pipeline for the Near Chain migration',
       ],
       ko: [
-        'Polygon, NEAR 기반 Web3 티켓팅 아키텍처 설계 — NFT 10K+ 발행, 위조율 0% 달성',
-        'Chainlink VRF 기반 검증 가능한 온체인 공정 무작위 추첨 스마트 컨트랙트 개발',
-        'Near Protocol 스마트 컨트랙트(Rust/JS) 개발 및 온체인 블록 데이터의 실시간 수집·가공·인덱싱 파이프라인 구축',
-        'Kubernetes 및 ArgoCD 기반 GitOps 배포 파이프라인 운영 및 Keycloak 인증/인가 체계 유지보수',
+        '티켓팅 추첨의 공정성과 투명성 확보를 위해 Chainlink VRF 기반의 온체인 무작위 추첨 시스템 개발 및 연동',
+        'Kubernetes 및 ArgoCD 기반 GitOps 배포 파이프라인 운영 및 Keycloak 기반 인증/인가 시스템 유지보수',
+        'Near Chain 전환에 따른 Near Protocol 스마트 컨트랙트 개발 및 블록체인 원장 데이터의 실시간 수집·가공·인덱싱 파이프라인 구축',
       ],
     },
     tech: ['Solidity', 'Near Protocol (Rust)', 'Chainlink VRF', 'Polygon', 'Ethereum', 'Kubernetes', 'ArgoCD', 'Keycloak', 'NestJS'],
@@ -402,17 +387,15 @@ export const experiences: ExperienceItem[] = [
     type: 'Senior',
     impact: {
       en: [
-        'LGE Web3 Project: Built zk-SNARK & Merkle tree pipeline for anonymous participant verification without exposing identity',
-        'Engineered high-throughput gRPC backend server with Node.js and Golang block collector (<100ms p99 latency)',
+        'LGE Web3 Project: Developed anonymous survey smart contract and NestJS backend; built zk-SNARK & Merkle tree pipeline for anonymous participant verification without exposing identity',
         'Architected distributed advertising platform backend and REST APIs in Golang',
       ],
       ko: [
-        'LGE Web3 프로젝트: zk-SNARK 및 Merkle Tree를 활용하여 참여자 신원을 노출하지 않고 유효 투표권자임을 검증하는 ZKP 파이프라인 구현',
-        'Node.js gRPC 서버 및 Golang 기반 블록 데이터 수집 서버 구축 (p99 100ms 미만 지연 달성)',
-        'Go 언어 기반 분산 광고 트래픽 처리 백엔드 아키텍처 및 REST API 개발',
+        'LGE Web3 프로젝트: 익명 설문 스마트 컨트랙트 개발, NestJS 백엔드 구축 / zk-SNARK 및 Merkle Tree를 활용하여 참여자 신원을 노출하지 않고 유효 참여자임을 검증하는 ZKP 파이프라인 구현',
+        'Go 언어 기반 분산 광고 플랫폼 백엔드 아키텍처 및 API 개발',
       ],
     },
-    tech: ['Solidity', 'zk-SNARK', 'Merkle Tree', 'Node.js', 'gRPC', 'Golang', 'Hedera Hashgraph', 'NestJS'],
+    tech: ['Solidity', 'zk-SNARK', 'Merkle Tree', 'Golang', 'Hedera Hashgraph', 'NestJS'],
   },
   {
     period: { en: 'Jul 2022 – Sep 2023', ko: '2022.07 – 2023.09' },
@@ -421,17 +404,15 @@ export const experiences: ExperienceItem[] = [
     type: 'Senior',
     impact: {
       en: [
-        'Developed Tendermint ↔ Hyperledger Fabric cross-chain bridge smart contracts and NestJS API gateway',
-        'Modified Hyperledger Fabric Core source code (Raft consensus + Gossip protocol + Endorser/Commit pipelines)',
-        'Introduced ERC-20 compliant token economy and transaction fee structures to enterprise permissioned ledgers',
+        'Analyzed enterprise private blockchain consensus/ledger engine and customized Hyperledger Fabric Core',
+        'Built Go-based Chaincode and Java Spring / NestJS backend services',
       ],
       ko: [
-        'Tendermint와 Hyperledger Fabric 블록체인 간의 토큰 교환을 중개하는 스마트 컨트랙트 및 NestJS API 서버 개발',
-        'Hyperledger Fabric Core 소스 수정 (Raft 합의 및 Gossip 프로토콜 검증, Endorser 및 Commit 프로세스 커스텀)',
-        '프라이빗 블록체인 상에 ERC-20 규격 토큰 및 트랜잭션 수수료 체계 도입',
+        '엔터프라이즈 프라이빗 블록체인 합의/원장 엔진 분석 및 Hyperledger Fabric 코어 커스텀',
+        'Go 기반 Chaincode 및 Java Spring / NestJS 백엔드 구축',
       ],
     },
-    tech: ['Hyperledger Fabric', 'Golang (Chaincode)', 'Tendermint', 'NestJS', 'Solidity', 'Java Spring', 'Docker'],
+    tech: ['Hyperledger Fabric', 'Golang (Chaincode)', 'NestJS', 'Java Spring', 'Docker'],
   },
   {
     period: { en: 'Jul 2021 – Jul 2022', ko: '2021.07 – 2022.07' },
@@ -564,8 +545,8 @@ export const coreStrengths = [
   {
     title: { en: 'LLM Orchestration & Token Optimization', ko: 'LLM 오케스트레이션 & 토큰 최적화' },
     desc: {
-      en: 'Lagged Summarization & Model-aware Rolling Summaries saving 70%+ token cost while guaranteeing infinite conversation retention',
-      ko: '1턴 지연 요약 및 모델별 동적 롤링 요약 파이프라인으로 토큰 비용 70%+ 절감 및 무제한 장기 대화 맥락 보존',
+      en: 'Lagged Summarization & model-aware Rolling Summaries preventing runaway token cost while preserving long-term conversation context',
+      ko: '1턴 지연 요약 및 모델별 동적 롤링 요약 파이프라인으로 비용 폭탄 방지 및 장기 대화 맥락 보존',
     },
   },
   {
@@ -576,10 +557,10 @@ export const coreStrengths = [
     },
   },
   {
-    title: { en: 'High-Volume Partitioned DB', ko: '대용량 DB 자동 파티셔닝' },
+    title: { en: 'Automated Partitioned DB', ko: '대화 로그 자동 파티셔닝' },
     desc: {
-      en: 'Automated PostgreSQL monthly partitioning maintaining sub-15ms P99 query latency over millions of chat logs',
-      ko: '수백만 건의 대화 로그를 PostgreSQL 월별 자동 파티셔닝으로 관리하여 P99 15ms 미만의 조회 속도 및 안정성 확보',
+      en: 'Automated PostgreSQL monthly partitioning to maintain query performance and stable log archiving',
+      ko: '대화 로그를 PostgreSQL 월별 자동 파티셔닝으로 관리하여 쿼리 성능 및 안정성 확보',
     },
   },
   {
@@ -729,15 +710,15 @@ export const personalInfo = {
   brandName: 'Dotorio',
   title: {
     en: 'Team Lead · Full-Stack & Backend Engineer (7+ Years)',
-    ko: '개발팀 팀장 · 풀스택 & 백엔드 엔지니어 (7년 5개월)',
+    ko: '개발팀 팀장 · 풀스택 & 백엔드 엔지니어 (7년 4개월)',
   },
   tagline: {
-    en: 'Bridging High-Scale Backend, Generative AI Orchestration & Web3 Systems',
-    ko: '대용량 백엔드부터 생성형 AI 오케스트레이션·Web3 시스템까지 기술의 경계를 넓혀갑니다',
+    en: 'Bridging Enterprise Backend, Generative AI Orchestration & Web3 Systems',
+    ko: '엔터프라이즈 백엔드부터 생성형 AI 오케스트레이션·Web3 시스템까지 기술의 경계를 넓혀갑니다',
   },
   about: {
-    en: '7+ years experienced Backend & Full-stack Team Lead specializing in high-concurrency systems, generative AI orchestration (token cost optimization, streaming WebSocket architectures), high-volume database partitioning, and enterprise Web3/Fintech platforms. Passionate about solving business bottlenecks through clean architecture and empowering engineering teams with cutting-edge developer tools.',
-    ko: '7년 5개월 차 풀스택/백엔드 개발팀 팀장. 생성형 AI 오케스트레이션(1턴 지연 요약 및 롤링 요약을 통한 토큰 비용 70%+ 절감, 실시간 웹소켓 스트리밍), 대용량 DB 자동 파티셔닝, 엔터프라이즈 Web3 및 핀테크 CRM 시스템 구축을 주도했습니다. 비즈니스 병목을 아키텍처로 근본 해결하고 최신 AI 개발 도구로 팀 생산성을 혁신하는 엔지니어링을 지향합니다.',
+    en: '7+ years experienced Backend & Full-stack Team Lead specializing in high-concurrency systems, generative AI orchestration (token cost optimization, streaming WebSocket architectures), automated database partitioning, and enterprise Web3/Fintech platforms. Passionate about solving business bottlenecks through clean architecture and empowering engineering teams with cutting-edge developer tools.',
+    ko: '7년 4개월 차 풀스택/백엔드 개발팀 팀장. 생성형 AI 오케스트레이션(1턴 지연 요약 및 롤링 요약을 통한 토큰 비용 폭탄 방지, 실시간 웹소켓 스트리밍), DB 자동 파티셔닝, 엔터프라이즈 Web3 및 핀테크 CRM 시스템 구축을 주도했습니다. 비즈니스 병목을 아키텍처로 근본 해결하고 최신 AI 개발 도구로 팀 생산성을 혁신하는 엔지니어링을 지향합니다.',
   },
   location: 'Incheon / Seoul, South Korea',
   email: 'yssa@kakao.com',

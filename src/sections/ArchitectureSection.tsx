@@ -217,7 +217,7 @@ export default function ArchitectureSection({ locale }: ArchitectureSectionProps
                 {[
                   { en: '1-turn delayed summarization eliminates dirty state and double billing', ko: '1턴 지연 요약으로 미확정 상태 및 중복 요약 과금 방지', color: '#00D2A0' },
                   { en: 'Dynamic chunk rolling summaries retain infinite conversation context', ko: '동적 청크 롤링 요약으로 1,000+ 턴 대화 맥락 온전 보존', color: '#10B981' },
-                  { en: 'PostgreSQL monthly partitioning keeps index size within RAM limit', ko: 'PostgreSQL 월별 자동 파티셔닝으로 대용량 로그 인덱스 블로트 방지', color: '#F59E0B' },
+                  { en: 'PostgreSQL monthly partitioning keeps query performance and index bloat in check', ko: 'PostgreSQL 월별 자동 파티셔닝으로 쿼리 성능 유지 및 인덱스 블로트 방지', color: '#F59E0B' },
                   { en: 'Redis distributed locks ensure turn idempotency under high concurrency', ko: 'Redis 분산 락 및 룸 격리로 동시 접속 시 멱등성 및 정합성 보장', color: '#EF4444' },
                   { en: 'Chainlink VRF guarantees provably fair on-chain random lotteries', ko: 'Chainlink VRF로 조작 불가능한 온체인 공정 추첨 무결성 보장', color: '#8B5CF6' },
                 ].map((item) => (
