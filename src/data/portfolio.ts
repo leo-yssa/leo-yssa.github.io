@@ -425,6 +425,51 @@ export const projects: ProjectItem[] = [
     },
     color: '#10B981',
   },
+  {
+    id: 'ble-medical-sdk',
+    title: 'Android Bluetooth SDK',
+    subtitle: {
+      en: 'In-House Short-Term Project — BLE Medical Device Communication SDK',
+      ko: '사내 단기 프로젝트 — BLE 의료기기 통신 SDK',
+    },
+    description: {
+      en: 'Reusable Android library (AAR) module for communicating with a BLE (Bluetooth Low Energy) medical device — custom binary protocol parsing, device authentication/registration handshake, and history (dose/injection site) sync with local persistence.',
+      ko: 'BLE(Bluetooth Low Energy) 의료기기와 통신하는 재사용 가능한 Android 라이브러리(AAR) 모듈. 커스텀 바이너리 프로토콜 파싱, 기기 인증/등록 핸드셰이크, 이력(주사 용량/부위) 동기화 및 로컬 영속 저장을 담당.',
+    },
+    type: 'Platform',
+    status: 'shipped',
+    metrics: [
+      { label: { en: 'Duration', ko: '개발 기간' }, value: '~1', unit: 'week' },
+      { label: { en: 'Delivery Format', ko: '배포 형태' }, value: 'AAR Library', unit: '' },
+      { label: { en: 'Protocol', ko: '프로토콜' }, value: 'Custom BLE Binary', unit: '' },
+    ],
+    stack: ['Kotlin', 'Android Library Module', 'RxJava2/RxAndroid', 'RxAndroidBLE', 'Gson', 'JUnit'],
+    highlights: {
+      en: [
+        'Designed a custom BLE binary protocol parser handling STX-framed packets (command/length/payload/CRC16) alongside ASCII responses (firmware version, RTC time, factory mode), with a CRC16 checksum utility implemented from scratch for packet integrity verification',
+        'Built a BLE manager on RxAndroidBLE handling device scanning, GATT connection, MTU negotiation, and notification subscriptions as RxJava Observable chains',
+        'Implemented a state-based device registration/authentication handshake with a re-registration fallback on auth failure',
+        'Exposed connection state, logs, and the latest packet reactively via BehaviorSubject, with per-command handlers for settings sync, historical data sync, and real-time event reception',
+        'Built local persistence with Gson serialization over SharedPreferences, including timestamp-based deduplication and most-recent-first sorting',
+        'Modeled the domain with Kotlin data classes and configured the module for external distribution (package namespace refactor, JVM compatibility, build configuration)',
+        'Wrote JUnit unit tests for the protocol parser',
+      ],
+      ko: [
+        'STX 프레이밍, 커맨드/길이/페이로드/CRC16 구조의 바이너리 패킷과 ASCII 응답(펌웨어 버전, RTC 시간, 팩토리 모드)을 함께 처리하는 커스텀 BLE 프로토콜 파서 설계, CRC16 체크섬 유틸리티 직접 구현으로 패킷 무결성 검증',
+        'RxAndroidBLE 기반 BLE 매니저 구현: 기기 스캔, GATT 연결, MTU 협상, Notification 구독을 RxJava Observable 체인으로 처리',
+        '상태 기반 기기 등록/인증 핸드셰이크 및 인증 실패 시 재등록 폴백 로직 구현',
+        'BehaviorSubject로 연결 상태·로그·최근 패킷을 외부에 반응형으로 노출, 기기 설정 동기화·과거 이력 동기화·실시간 이벤트 수신 등 커맨드별 핸들러 구현',
+        'Gson 직렬화 + SharedPreferences 기반 로컬 영속 저장소 구현, 타임스탬프 기준 중복 제거 및 최신순 정렬 로직 포함',
+        'Kotlin data class 기반 도메인 모델 설계 및 외부 배포를 위한 패키지 네임스페이스 리팩토링, JVM 호환성 설정, 빌드 구성 작업',
+        '프로토콜 파서에 대한 JUnit 단위 테스트 작성',
+      ],
+    },
+    architecture: {
+      en: 'BLE Medical Device ↔ RxAndroidBLE GATT Layer ↔ Custom Binary Protocol Parser (STX/CRC16) ↔ Command Handlers ↔ Local Persistence (Gson/SharedPreferences)',
+      ko: 'BLE 의료기기 ↔ RxAndroidBLE GATT 레이어 ↔ 커스텀 바이너리 프로토콜 파서(STX/CRC16) ↔ 커맨드 핸들러 ↔ 로컬 영속 저장소(Gson/SharedPreferences)',
+    },
+    color: '#EC4899',
+  },
 ];
 
 // ─── Experience ─────────────────────────────────────────────
