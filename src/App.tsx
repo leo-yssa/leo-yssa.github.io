@@ -10,7 +10,7 @@ import './styles/global.css';
 import type { Locale } from './data/portfolio';
 
 function App() {
-  const [locale, setLocale] = useState<Locale>('en');
+  const [locale, setLocale] = useState<Locale>('ko');
 
   return (
     <div className="min-h-screen bg-[#0B0F17] text-slate-50 overflow-x-hidden">

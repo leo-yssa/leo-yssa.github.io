@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mail, Terminal, Cpu, Database, Cloud, Layers } from 'lucide-react';
+import { ArrowRight, Mail, Layers } from 'lucide-react';
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -27,102 +26,20 @@ const techPills = [
   { label: 'WebSocket', color: '#00D2A0' },
 ];
 
-const TERMINAL_LINES = [
-  { delay: 0,    text: '$ dotorio --status', type: 'cmd' },
-  { delay: 600,  text: '→ Systems: Online ✓', type: 'ok' },
-  { delay: 1000, text: '→ TPS: 1,200+ tx/s', type: 'metric' },
-  { delay: 1400, text: '→ Uptime: 99.9%', type: 'metric' },
-  { delay: 1800, text: '→ DB query opt: 70%↑', type: 'metric' },
-  { delay: 2200, text: '', type: 'blank' },
-  { delay: 2400, text: '$ git log --oneline -3', type: 'cmd' },
-  { delay: 3000, text: 'a3f2c1b feat: UUPS upgradeable contracts', type: 'log' },
-  { delay: 3200, text: '9e4b7d0 perf: composite index strategy', type: 'log' },
-  { delay: 3400, text: '1c8a9f3 feat: cross-chain bridge (Mint&Burn)', type: 'log' },
-  { delay: 3800, text: '', type: 'blank' },
-  { delay: 4000, text: '$ ./start-collaboration.sh', type: 'cmd' },
-  { delay: 4600, text: '✦ Ready to build resilient systems', type: 'success' },
-];
-
-function TerminalWidget() {
-  const [visibleLines, setVisibleLines] = useState<number[]>([]);
-  const [cursor, setCursor] = useState(true);
-  const endRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timers = TERMINAL_LINES.map((line, i) =>
-      setTimeout(() => setVisibleLines((prev) => [...prev, i]), line.delay)
-    );
-    const cursorTimer = setInterval(() => setCursor((c) => !c), 530);
-    return () => { timers.forEach(clearTimeout); clearInterval(cursorTimer); };
-  }, []);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [visibleLines]);
-
-  const getColor = (type: string) => {
-    switch (type) {
-      case 'cmd': return 'text-[#00D2A0]';
-      case 'ok': return 'text-emerald-400';
-      case 'metric': return 'text-blue-400';
-      case 'log': return 'text-slate-300';
-      case 'success': return 'text-[#00D2A0] font-semibold';
-      default: return 'text-slate-500';
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative"
-    >
-      {/* Glow effect */}
-      <div className="absolute -inset-4 bg-gradient-to-br from-[#00D2A0]/20 to-[#3B82F6]/10 rounded-2xl blur-2xl" />
-
-      <div className="relative glass rounded-xl overflow-hidden border border-slate-700/50 shadow-2xl">
-        {/* Terminal title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-slate-900/80 border-b border-slate-700/50">
-          <span className="w-3 h-3 rounded-full bg-red-500/80" />
-          <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
-          <span className="w-3 h-3 rounded-full bg-green-500/80" />
-          <div className="flex-1 flex items-center justify-center gap-1.5">
-            <Terminal className="w-3 h-3 text-slate-500" />
-            <span className="text-xs text-slate-500 font-mono">dotorio ~ zsh</span>
-          </div>
-        </div>
-
-        {/* Terminal body */}
-        <div className="p-4 font-mono text-xs sm:text-sm leading-relaxed min-h-[280px] max-h-[320px] overflow-y-auto scrollbar-hide bg-[#0d1117]/90">
-          {TERMINAL_LINES.map((line, i) =>
-            visibleLines.includes(i) ? (
-              <div key={i} className={`${getColor(line.type)} ${line.type === 'blank' ? 'h-3' : 'mb-1'}`}>
-                {line.text}
-              </div>
-            ) : null
-          )}
-          <span className={`inline-block w-2 h-4 bg-[#00D2A0] ${cursor ? 'opacity-100' : 'opacity-0'} transition-opacity`} />
-          <div ref={endRef} />
-        </div>
-
-        {/* Live metrics footer */}
-        <div className="grid grid-cols-3 gap-px border-t border-slate-700/50 bg-slate-700/20">
-          {[
-            { icon: <Cpu className="w-3 h-3" />, label: 'Services', value: '6+' },
-            { icon: <Database className="w-3 h-3" />, label: 'Production', value: '99.9%' },
-            { icon: <Cloud className="w-3 h-3" />, label: 'Experience', value: '6 yrs' },
-          ].map((m) => (
-            <div key={m.label} className="flex flex-col items-center py-2.5 bg-slate-900/50">
-              <div className="flex items-center gap-1 text-slate-500 mb-0.5">{m.icon}<span className="text-[10px]">{m.label}</span></div>
-              <span className="text-xs font-bold text-[#00D2A0] font-mono">{m.value}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+const headlineLines: Record<string, { text: string; accent?: boolean }[]> = {
+  en: [
+    { text: 'Engineering', accent: true },
+    { text: 'Resilient Systems' },
+    { text: '& Scalable' },
+    { text: 'Architectures', accent: true },
+  ],
+  ko: [
+    { text: '안정적인 시스템과', accent: true },
+    { text: '확장 가능한' },
+    { text: '아키텍처를' },
+    { text: '설계합니다', accent: true },
+  ],
+};
 
 const container = {
   hidden: {},
@@ -154,10 +71,8 @@ export default function HeroSection({ locale }: HeroSectionProps) {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Text content */}
-          <motion.div variants={container} initial="hidden" animate="show">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+        <motion.div variants={container} initial="hidden" animate="show">
             {/* Status pill */}
             <motion.div variants={item} className="inline-flex items-center gap-2 mb-6">
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#00D2A0]/10 border border-[#00D2A0]/25 text-[#00D2A0] text-xs font-medium">
@@ -178,13 +93,14 @@ export default function HeroSection({ locale }: HeroSectionProps) {
               variants={item}
               className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black leading-[1.1] tracking-tight mb-6"
             >
-              <span className="gradient-text-mint">Engineering</span>
-              <br />
-              <span className="text-slate-100">Resilient Systems</span>
-              <br />
-              <span className="text-slate-100">& Scalable</span>
-              <br />
-              <span className="gradient-text-mint">Architectures</span>
+              {headlineLines[locale].map((line, i) => (
+                <span key={i}>
+                  <span className={line.accent ? 'gradient-text-mint' : 'text-slate-100'}>
+                    {line.text}
+                  </span>
+                  {i < headlineLines[locale].length - 1 && <br />}
+                </span>
+              ))}
             </motion.h1>
 
             {/* Subtitle */}
@@ -236,13 +152,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
                 GitHub
               </a>
             </motion.div>
-          </motion.div>
-
-          {/* Right: Terminal widget */}
-          <div>
-            <TerminalWidget />
-          </div>
-        </div>
+        </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
