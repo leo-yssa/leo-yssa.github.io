@@ -76,6 +76,11 @@ function ProjectModal({
           >
             {typeMeta.label}
           </span>
+          {project.personal && (
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-700/50 text-slate-300 border border-slate-600/50">
+              {locale === 'en' ? 'Personal Project' : '개인 프로젝트'}
+            </span>
+          )}
           <span className="flex items-center gap-1.5 text-xs text-slate-400">
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusMeta.dot }} />
             {statusMeta.label[locale]}
@@ -268,13 +273,18 @@ function ProjectCard({
       <div className="p-5 sm:p-6">
         {/* Badges */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span
               className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
               style={{ backgroundColor: typeMeta.color + '20', color: typeMeta.color }}
             >
               {typeMeta.label}
             </span>
+            {project.personal && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-700/50 text-slate-300 border border-slate-600/50">
+                {locale === 'en' ? 'Personal' : '개인'}
+              </span>
+            )}
             <span className="flex items-center gap-1.5 text-[11px]" style={{ color: statusMeta.dot }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusMeta.dot }} />
               {statusMeta.label[locale]}

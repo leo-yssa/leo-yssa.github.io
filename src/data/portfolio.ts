@@ -41,6 +41,7 @@ export interface ProjectItem {
   github?: string;
   live?: string;
   color: string;
+  personal?: boolean;
 }
 
 export const projects: ProjectItem[] = [
@@ -258,6 +259,103 @@ export const projects: ProjectItem[] = [
       ko: '모바일 지갑 (VC) ↔ NestJS 발급/검증 API ↔ Fabric Peer (Go DID 체인코드) ↔ Universal Resolver',
     },
     color: '#06B6D4',
+  },
+  {
+    id: 'did-vc-payment-reference',
+    title: 'DID/VC 신원인증 결제 플랫폼 레퍼런스 구현',
+    subtitle: {
+      en: 'Personal Project — On-Chain Identity & Verifiable Credential Payment Reference Architecture',
+      ko: '개인 프로젝트 — 온체인 신원증명(DID/VC) 기반 결제 레퍼런스 아키텍처',
+    },
+    description: {
+      en: 'A personal reference architecture combining on-chain DID/VC identity verification with a gasless payment relay pipeline, built on a private Hyperledger Besu network with a custom QBFT validator cluster.',
+      ko: '사설 Hyperledger Besu 네트워크와 자체 QBFT 검증자 클러스터 위에서, 온체인 DID/VC 신원 검증과 가스리스 결제 릴레이 파이프라인을 결합한 개인 레퍼런스 아키텍처 프로젝트.',
+    },
+    type: 'Web3',
+    status: 'research',
+    personal: true,
+    metrics: [
+      { label: { en: 'Ingestion Latency', ko: '수신 API 응답' }, value: '<50', unit: 'ms' },
+      { label: { en: 'Fault Tolerance', ko: '장애 허용' }, value: 'f=1', unit: '4-node QBFT' },
+      { label: { en: 'Quorum', ko: '쿼럼' }, value: '2f+1=3', unit: '' },
+    ],
+    stack: [
+      'Hyperledger Besu',
+      'Solidity',
+      'QBFT',
+      'did:ethr',
+      'BBS+',
+      'OpenID4VCI/VP',
+      'ICAO PKD',
+      'EIP-712',
+      'ERC-2771',
+      'Kafka',
+      'Redis',
+      'React',
+      'WebCrypto',
+      'JWT',
+    ],
+    highlights: {
+      en: [
+        'Designed three on-chain identity contracts — DIDRegistry (did:ethr), IssuerRegistry, and RevocationRegistry — so issuer trust and credential revocation status are always read from-chain rather than trusted to backend logic',
+        'Built both a single-node dev profile and a 4-validator QBFT cluster profile; wrote and ran a failover test killing one of four validators to confirm safety and liveness held (f=1 fault tolerance, quorum 2f+1=3)',
+        'Implemented BBS+ selective-disclosure credential issuance with OpenID4VCI/OpenID4VP flows, plus an ICAO PKD CSCA certificate sync pipeline so passport-based credential issuance validates against real international trust anchors',
+        'Built an EIP-712 + ERC-2771 gasless meta-transaction relay pipeline so users sign without holding gas',
+        'Split the payment submission API into fast ingestion and async verification/broadcast over Kafka, keeping ingestion response time under 50ms; managed a multi-relayer hot-wallet key pool with Redis atomic INCR nonce tracking (no per-request on-chain lookups), TTL-lock round-robin concurrency, and nonce rollback/DLQ routing on failure',
+        'Added JWT-based role separation for admin/merchant access and settlement statistics API guards',
+        'Built React wallet and merchant demo apps with WebCrypto keyring signing, plus an admin console and on-chain event explorer to visualize the full DID/VC issue-submit-verify flow',
+      ],
+      ko: [
+        'DIDRegistry(did:ethr), IssuerRegistry, RevocationRegistry 3개 온체인 컨트랙트를 직접 설계하여 발급기관 신뢰 여부·자격증명 폐기 상태를 백엔드가 임의 판단하지 않고 항상 온체인에서 조회하도록 강제',
+        '단일 노드 개발 프로파일과 4-validator QBFT 클러스터 프로파일을 각각 구성, 4노드 중 1노드를 강제 종료하는 failover 테스트를 작성·실행해 안전성·활성 유지 확인 (f=1 장애 허용, 쿼럼 2f+1=3)',
+        'BBS+ 서명 기반 선택적 공개(Selective Disclosure) 자격증명 발급 및 OpenID4VCI/OpenID4VP 흐름 구현, ICAO PKD CSCA 인증서 동기화 파이프라인 구축으로 여권 기반 VC 발급 시 실제 국제 표준 신뢰 앵커 검증',
+        'EIP-712 서명 + ERC-2771 기반 가스리스 메타트랜잭션 릴레이 파이프라인 구현',
+        '결제 제출 API를 빠른 수신(Fast Ingestion)과 Kafka 기반 비동기 검증/브로드캐스트로 분리해 수신 응답 시간을 50ms 이내로 유지, 다중 릴레이어 핫월렛 키 풀을 Redis 원자적 INCR로 관리(매 요청 온체인 조회 없이 nonce 추적)하고 TTL 락 기반 라운드로빈 동시성 처리, 실패 시 nonce 롤백/DLQ 라우팅 구현',
+        'JWT 기반 관리자/가맹점 역할 분리 가드 및 정산 통계 API 접근 제어 추가',
+        'WebCrypto 기반 키링 서명을 사용하는 React 지갑/가맹점 데모 앱과, DID/VC 발급-제출-검증 전 과정을 시각적으로 확인할 수 있는 관리 콘솔 및 온체인 이벤트 익스플로러 구축',
+      ],
+    },
+    architecture: {
+      en: 'Wallet/Merchant Client → Fast Ingestion API → Kafka → Async Verification Workers (EIP-712 + On-chain VC Check) → Meta-tx Relayer (ERC-2771) → Besu QBFT Network (DIDRegistry / IssuerRegistry / RevocationRegistry)',
+      ko: '지갑/가맹점 클라이언트 → 빠른 수신 API → Kafka → 비동기 검증 워커 (EIP-712 서명 + 온체인 VC 검증) → 메타트랜잭션 릴레이어 (ERC-2771) → Besu QBFT 네트워크 (DIDRegistry / IssuerRegistry / RevocationRegistry)',
+    },
+    architectureDoc: {
+      overview: {
+        en: 'A personal reference implementation demonstrating how on-chain identity trust (DID/VC) can be combined with a high-throughput, gasless payment relay without compromising verification integrity.',
+        ko: '온체인 신원 신뢰 체계(DID/VC)를 검증 무결성 손상 없이 고처리량 가스리스 결제 릴레이와 결합하는 방법을 보여주는 개인 레퍼런스 구현.',
+      },
+      keyDecisions: [
+        {
+          title: { en: 'On-Chain Trust Source of Truth', ko: '온체인 신뢰 소스' },
+          desc: {
+            en: 'Issuer trust and revocation checks are always read from IssuerRegistry/RevocationRegistry on-chain rather than cached or trusted in application code, removing a single point of falsifiable trust.',
+            ko: '발급기관 신뢰 여부와 자격증명 폐기 상태를 애플리케이션 코드에서 캐싱하거나 임의로 신뢰하지 않고, 항상 IssuerRegistry/RevocationRegistry 온체인 조회로 판단하도록 강제하여 위변조 가능한 단일 신뢰 지점을 제거.',
+          },
+        },
+        {
+          title: { en: 'QBFT Fault Tolerance', ko: 'QBFT 장애 허용 설계' },
+          desc: {
+            en: 'A 4-validator QBFT cluster tolerates 1 validator failure (f=1, quorum 2f+1=3); validated with an actual failover test that killed one node and confirmed continued safety and liveness.',
+            ko: '4-validator QBFT 클러스터로 1개 노드 장애까지 허용(f=1, 쿼럼 2f+1=3)하도록 설계했고, 실제 노드 1개를 강제 종료하는 failover 테스트로 안전성·활성 유지를 검증.',
+          },
+        },
+        {
+          title: { en: 'Fast Ingestion / Async Verification Split', ko: '빠른 수신 / 비동기 검증 분리' },
+          desc: {
+            en: 'Payment submission is split into a fast-ack ingestion API and Kafka-driven async workers that perform EIP-712 signature and on-chain VC verification, keeping client-facing latency under 50ms regardless of verification cost.',
+            ko: '결제 제출을 빠른 응답의 수신 API와 Kafka 기반 비동기 검증 워커(EIP-712 서명 및 온체인 VC 검증)로 분리하여, 검증 비용과 무관하게 클라이언트 응답 지연을 50ms 이내로 유지.',
+          },
+        },
+      ],
+      dataFlow: [
+        'Wallet/Merchant signs payment intent (EIP-712) and submits to the Fast Ingestion API',
+        'Ingestion API acknowledges immediately and publishes the signed intent to Kafka',
+        'Async worker verifies the EIP-712 signature and checks IssuerRegistry/RevocationRegistry on-chain state',
+        'Verified transaction is handed to the meta-tx relayer, which pulls a nonce via Redis atomic INCR from the hot-wallet key pool and submits via ERC-2771',
+        'On failure, the nonce is rolled back and the transaction routes to a DLQ for retry/inspection',
+      ],
+    },
+    color: '#6366F1',
   },
   {
     id: 'fintech-crm',
