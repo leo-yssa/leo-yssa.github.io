@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Resume - Full-Stack & Backend Engineer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+            color: #000;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 35px;
+            color: #0056b3;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            font-size: 17px;
+            margin-bottom: 5px;
+            margin-top: 20px;
+        }
+
+        .contact {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .summary {
+            background: #f4f7fa;
+            padding: 20px;
+            border-left: 5px solid #0056b3;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        .experience-item {
+            margin-bottom: 30px;
+        }
+
+        .date {
+            float: right;
+            font-size: 14px;
+            color: #888;
+            font-weight: 400;
+        }
+
+        .company {
+            font-weight: 700;
+            font-size: 18px;
+            color: #222;
+        }
+
+        .title {
+            color: #0056b3;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 14.5px;
+            color: #444;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .skill-category {
+            font-weight: 700;
+            font-size: 14px;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #000;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+
+            .summary {
+                background: #f4f7fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .download-btn {
+                display: none !important;
+            }
+        }
+
+        .download-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0056b3;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            background: #004494;
+        }
+
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>사 영 수</h1>
+    <div class="contact">
+        📧 yssa@kakao.com | 📱 010-4448-8124 | 🔗 https://leo-yssa.github.io
+    </div>
+
+    <div class="summary">
+        <strong>Full-Stack & Backend Engineer (7 Years 4 Months Experience)</strong><br>
+        엔터프라이즈 대용량 데이터 처리부터 Web3 분산 시스템, 최신 생성형 AI 서비스까지 백엔드 기술의 최전선에서 성장해 온 풀스택/백엔드 개발자입니다.
+        현재 주식회사 엠유소프트 개발팀 팀장으로서 실시간 AI 캐릭터 대화 플랫폼의 기획, 아키텍처 설계, 풀스택 개발 및 팀 리딩을 총괄하고 있습니다.
+    </div>
+
+    <h2>Technical Skills</h2>
+    <div class="skills-grid">
+        <div>
+            <div class="skill-category">Language & Ecosystem</div>
+            <ul>
+                <li><strong>Node.js</strong> (NestJS, TypeScript)</li>
+                <li><strong>Java</strong> (Spring Boot)</li>
+                <li><strong>Go</strong> (Golang, Chaincode)</li>
+                <li><strong>Python</strong> (Django)</li>
+                <li><strong>Web3</strong> (Solidity, Ethereum)</li>
+                <li><strong>Cloud</strong> (AWS)</li>
+                <li><strong>Containerization</strong> (Docker, Kubernetes, ArgoCD)</li>
+                <li><strong>CI/CD</strong> (GitHub Actions)</li>
+                <li><strong>Database</strong> (PostgreSQL, RDBMS, NoSQL, Redis)</li>
+                <li><strong>Version Control</strong> (Git, GitHub)</li>
+            </ul>
+        </div>
+        <div>
+            <div class="skill-category">AI & Blockchain</div>
+            <ul>
+                <li>Google Gemini, Claude Opus, Vertex AI</li>
+                <li>Hyperledger Fabric, Chainlink VRF, Near Protocol</li>
+                <li>zk-SNARK, Merkle Tree, W3C DID/VC</li>
+                <li>Keycloak (OAuth2/OIDC)</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Professional Experience</h2>
+
+    <div class="experience-item">
+        <span class="date">2025.07 – 재직중</span>
+        <div class="company">주식회사 엠유소프트</div>
+        <div class="title">개발팀 팀장</div>
+        <ul>
+            <li><strong>꾸욱(CCUC)</strong>: AI 캐릭터 대화 및 시뮬레이션 플랫폼의 기획, 아키텍처 설계, 백엔드/프론트엔드 전 과정 총괄 리드 (NestJS, TypeORM, PostgreSQL, Redis, React, React Native, Google Gemini/Claude Opus/Vertex AI).</li>
+            <li>1턴 지연 요약 및 모델별 Max Token 기반 청크 롤링 요약 파이프라인을 설계하여 컨텍스트 한도 초과 및 비용 폭탄 문제 해결.</li>
+            <li>WebSocket 기반 실시간 청크 스트리밍과 게임 스탯·이미지 생성 트리거를 분리 처리하여 안정적인 실시간 UX 제공.</li>
+            <li>월별 chat_messages 테이블 자동 파티셔닝(ChatPartitionService) 도입으로 쿼리 성능 유지 및 데이터 아카이빙 안정성 확보.</li>
+            <li><strong>메이드존</strong>: React Native 모바일 앱 및 백엔드 전반 풀스택 개발, 실시간 출결 상태·결제 시스템 연동 및 관리자 대시보드 구축.</li>
+        </ul>
+    </div>
+
+    <div class="experience-item">
+        <span class="date">2024.09 – 2025.06</span>
+        <div class="company">모던라이언(주)</div>
+        <div class="title">블록체인 매니저</div>
+        <ul>
+            <li><strong>Konkrit</strong>: 대규모 트래픽 NFT 티켓팅 플랫폼(Polygon, Ethereum). 티켓팅 추첨의 공정성과 투명성 확보를 위한 Chainlink VRF 기반 온체인 무작위 추첨 시스템 개발 및 연동.</li>
+            <li>Kubernetes 및 ArgoCD 기반 GitOps 배포 파이프라인 운영 및 Keycloak 기반 인증/인가 시스템 유지보수.</li>
+            <li><strong>Konkrit Renewal</strong>: Near Chain 전환 및 인덱서 구축 — Near Chain 블록체인 원장 데이터의 실시간 수집, 가공 및 인덱싱 파이프라인 구축.</li>
+        </ul>
+    </div>
+
+    <div class="experience-item">
+        <span class="date">2023.09 – 2024.09</span>
+        <div class="company">주식회사 이노그리드</div>
+        <div class="title">블록체인 선임연구원</div>
+        <ul>
+            <li><strong>LGE Web3 프로젝트</strong>(Ethereum, Hedera): 익명 설문 스마트 컨트랙트 개발, NestJS 백엔드 구축. zk-SNARK 및 Merkle Tree 기반 라이브러리를 활용해 참여자 신원을 노출하지 않고 유효 참여자 여부를 검증하는 ZKP 파이프라인 구현.</li>
+            <li>분산 광고 플랫폼: Go 기반 백엔드 아키텍처 및 API 개발.</li>
+        </ul>
+    </div>
+
+    <div class="experience-item">
+        <span class="date">2022.07 – 2023.09</span>
+        <div class="company">주식회사 미디움</div>
+        <div class="title">코어팀 매니저</div>
+        <ul>
+            <li>Hyperledger Fabric 코어 커스텀 & Chaincode 개발: 엔터프라이즈 프라이빗 블록체인 합의/원장 엔진 분석 및 Go 기반 Chaincode, Java Spring / NestJS 백엔드 구축.</li>
+        </ul>
+    </div>
+
+    <div class="experience-item">
+        <span class="date">2021.07 – 2022.07</span>
+        <div class="company">(주)마크애니</div>
+        <div class="title">블록체인사업부 대리</div>
+        <ul>
+            <li>W3C 표준 분산 신원증명(DID/VC) 플랫폼 PoC 및 데모 시스템: Issuer/Verifier API 서버를 NestJS 기반으로 설계·구현, DID Document Resolver & Storage 체인코드(Go) 및 Universal Resolver 연동 모듈 개발.</li>
+            <li>공공기관(중앙선거관리위원회, 강릉시민증) 블록체인 전자투표/시민증 PoC: 투표 데이터 무결성 검증 체인코드 및 비동기 트랜잭션 처리 NestJS 미들웨어 API 서버 구축.</li>
+            <li>AnyBlock(Hyperledger Fabric 네트워크 관리 솔루션): 블록체인 노드 모니터링, 채널 관리 및 체인코드 배포 자동화 웹 솔루션 백엔드 유지보수 및 기능 추가(Java Spring, Angular, Python/Django).</li>
+        </ul>
+    </div>
+
+    <div class="experience-item">
+        <span class="date">2018.11 – 2020.12</span>
+        <div class="company">오브젠(주)</div>
+        <div class="title">Project Service Operation 대리</div>
+        <ul>
+            <li><strong>현대캐피탈</strong> 등 금융권 엔터프라이즈 CRM 솔루션 커스터마이징 & ETL: 대용량 데이터 마트 설계, 마케팅 채널(SMS/알림톡) 분산 배치 스케줄링 알고리즘 구축.</li>
+            <li>프로젝트 리더(PL)로서 개발 일정 조율 및 인터페이스 설계 주도.</li>
+        </ul>
+    </div>
+
+    <h2>Education & Certifications</h2>
+    <ul>
+        <li><strong>강릉원주대학교(원주) 컴퓨터공학과 학사</strong> (2015.03 – 2019.02, 졸업 / 학점 4.31/4.5)</li>
+        <li><strong>정보처리기사</strong> (2018.05), <strong>OCJP-Oracle</strong> (2016.12)</li>
+        <li>(국가공인)네트워크관리사 2급 (2017.09), 리눅스마스터 2급 (2017.09)</li>
+    </ul>
+    <button class="download-btn" onclick="window.print()">
+        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                clip-rule="evenodd"></path>
+        </svg>
+        PDF 다운로드
+    </button>
+</body>
+
+</html>
