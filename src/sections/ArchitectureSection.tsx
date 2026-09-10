@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { architectureNodes, architectureEdges, coreStrengths } from '../data/portfolio';
+import { architectureBlueprints } from '../data/portfolio';
 import type { ArchNode, Locale } from '../data/portfolio';
 
 interface ArchitectureSectionProps {
@@ -8,10 +8,18 @@ interface ArchitectureSectionProps {
 }
 
 export default function ArchitectureSection({ locale }: ArchitectureSectionProps) {
-  const [activeNode, setActiveNode] = useState<ArchNode | null>(architectureNodes[0]);
+  const [activeBlueprintId, setActiveBlueprintId] = useState(architectureBlueprints[0].id);
+  const blueprint = architectureBlueprints.find((b) => b.id === activeBlueprintId) || architectureBlueprints[0];
 
-  const NODES = architectureNodes;
-  const EDGES = architectureEdges;
+  const [activeNode, setActiveNode] = useState<ArchNode | null>(blueprint.nodes[0]);
+
+  useEffect(() => {
+    setActiveNode(blueprint.nodes[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeBlueprintId]);
+
+  const NODES = blueprint.nodes;
+  const EDGES = blueprint.edges;
 
   const getNode = (id: string) => NODES.find((n) => n.id === id) || NODES[0];
 
@@ -35,16 +43,34 @@ export default function ArchitectureSection({ locale }: ArchitectureSectionProps
           <h2 className="text-3xl sm:text-4xl font-black text-slate-50 mb-4">
             {locale === 'en' ? 'Core System Architecture' : '코어 시스템 아키텍처 블루프린트'}
           </h2>
-          <p className="text-slate-400 max-w-2xl text-sm sm:text-base">
-            {locale === 'en'
-              ? 'Real-time multi-LLM orchestration, PostgreSQL monthly partitioning, and Redis-backed state machine. Click nodes to inspect.'
-              : '실시간 멀티 LLM 스트리밍, 대화 로그 자동 월별 파티셔닝 및 Redis 분산 락/세션이 결합된 고성능 아키텍처입니다. 노드를 클릭해 세부 동작을 확인해 보세요.'}
-          </p>
+
+          {/* Project switcher */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {architectureBlueprints.map((bp) => {
+              const active = bp.id === activeBlueprintId;
+              return (
+                <button
+                  key={bp.id}
+                  onClick={() => setActiveBlueprintId(bp.id)}
+                  className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold border transition-all"
+                  style={
+                    active
+                      ? { backgroundColor: `${bp.accentColor}20`, borderColor: bp.accentColor, color: bp.accentColor }
+                      : { backgroundColor: 'transparent', borderColor: 'rgba(148,163,184,0.3)', color: 'rgba(148,163,184,0.8)' }
+                  }
+                >
+                  {bp.label[locale]}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="text-slate-400 max-w-2xl text-sm sm:text-base">{blueprint.description[locale]}</p>
         </motion.div>
 
         {/* Strengths cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          {coreStrengths.map((cs, i) => (
+          {blueprint.strengths.map((cs, i) => (
             <motion.div
               key={cs.title.en}
               initial={{ opacity: 0, y: 20 }}
@@ -54,7 +80,7 @@ export default function ArchitectureSection({ locale }: ArchitectureSectionProps
               className="glass rounded-xl border border-slate-700/50 p-4 hover:border-slate-600 transition-all"
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-[#00D2A0]" />
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: blueprint.accentColor }} />
                 <h3 className="font-bold text-slate-200 text-sm">{cs.title[locale]}</h3>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">{cs.desc[locale]}</p>
@@ -72,7 +98,7 @@ export default function ArchitectureSection({ locale }: ArchitectureSectionProps
             className="lg:col-span-2 glass rounded-2xl border border-slate-700/60 p-4 sm:p-6 overflow-x-auto shadow-2xl"
           >
             <div className="flex items-center justify-between mb-4 text-xs text-slate-400">
-              <span className="font-mono text-[#00D2A0]">LLM + High-Concurrency Architecture</span>
+              <span className="font-mono" style={{ color: blueprint.accentColor }}>{blueprint.diagramTitle[locale]}</span>
               <span className="text-[11px] text-slate-500">Interactive Blueprint</span>
             </div>
 
@@ -214,13 +240,7 @@ export default function ArchitectureSection({ locale }: ArchitectureSectionProps
                 {locale === 'en' ? 'Core Architectural Principles' : '핵심 아키텍처 설계 원칙'}
               </h4>
               <ul className="space-y-3">
-                {[
-                  { en: '1-turn delayed summarization eliminates dirty state and double billing', ko: '1턴 지연 요약으로 미확정 상태 및 중복 요약 과금 방지', color: '#00D2A0' },
-                  { en: 'Dynamic chunk rolling summaries retain infinite conversation context', ko: '동적 청크 롤링 요약으로 1,000+ 턴 대화 맥락 온전 보존', color: '#10B981' },
-                  { en: 'PostgreSQL monthly partitioning keeps query performance and index bloat in check', ko: 'PostgreSQL 월별 자동 파티셔닝으로 쿼리 성능 유지 및 인덱스 블로트 방지', color: '#F59E0B' },
-                  { en: 'Redis distributed locks ensure turn idempotency under high concurrency', ko: 'Redis 분산 락 및 룸 격리로 동시 접속 시 멱등성 및 정합성 보장', color: '#EF4444' },
-                  { en: 'Chainlink VRF guarantees provably fair on-chain random lotteries', ko: 'Chainlink VRF로 조작 불가능한 온체인 공정 추첨 무결성 보장', color: '#8B5CF6' },
-                ].map((item) => (
+                {blueprint.principles.map((item) => (
                   <li key={item.en} className="flex items-start gap-2.5">
                     <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: item.color }} />
                     <span className="text-xs text-slate-300 leading-relaxed">{item[locale]}</span>

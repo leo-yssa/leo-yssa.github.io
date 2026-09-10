@@ -146,8 +146,12 @@ export const projects: ProjectItem[] = [
       'Solidity',
       'Chainlink VRF',
       'Polygon',
+      'Alchemy (Web3 RPC/WS)',
+      'AWS SQS',
+      'Kong API Gateway',
       'Kubernetes',
       'ArgoCD',
+      'Datadog',
       'Keycloak',
       'PostgreSQL',
     ],
@@ -155,22 +159,26 @@ export const projects: ProjectItem[] = [
       en: [
         'Implemented on-chain verifiable lottery smart contract using Chainlink VRF (Verifiable Random Function)',
         'Built Near Protocol smart contracts and realtime ledger data extraction & indexing pipeline',
-        'Operated GitOps deployment workflows on Kubernetes & ArgoCD, maintaining enterprise auth via Keycloak',
+        'Isolated admin- and user-facing wallet transactions into separate execute → wait → result-handler worker stages (6 independent deployments) so a stuck user transaction can never block admin operations',
+        'Ran an event-listener subscribing to on-chain logs (Transfer / OrderFulfilled / OrderCancelled / OwnershipTransferred) over Alchemy WS, fanning them out to per-event SQS queues to decouple chain ingestion from downstream processing',
+        'Operated GitOps deployment workflows on Kubernetes & ArgoCD (24 Helm charts, auto-sync + self-heal) with Datadog APM/log auto-instrumentation across every service, plus enterprise auth via Keycloak',
       ],
       ko: [
         'Chainlink VRF(검증 가능한 온체인 난수) 기반 스마트 컨트랙트 개발로 티켓팅 추첨의 공정성과 투명성 확보',
         'Near Protocol 스마트 컨트랙트(Rust/JS) 개발 및 온체인 원장 데이터의 실시간 수집·가공·인덱싱 파이프라인 구축',
-        'Kubernetes 및 ArgoCD 기반 GitOps 배포 파이프라인 운영 및 Keycloak 인증/인가 체계 유지보수',
+        '관리자용·사용자용 지갑 트랜잭션을 execute → wait → result-handler 3단계 워커로 완전히 분리(총 6개 독립 배포)하여 사용자 트랜잭션 지연이 관리자 운영에 영향을 주지 않도록 격리',
+        'Alchemy WS로 온체인 이벤트(Transfer/OrderFulfilled/OrderCancelled/OwnershipTransferred)를 구독하는 event-listener를 구축, 이벤트별 SQS 큐로 팬아웃하여 체인 수집과 후속 처리를 분리',
+        'Kubernetes/ArgoCD 기반 GitOps 배포 파이프라인 운영(Helm 차트 24개, 자동 sync·self-heal)과 전 서비스 Datadog APM/로그 자동계측, Keycloak 인증/인가 체계 유지보수',
       ],
     },
     architecture: {
-      en: 'Client ↔ NestJS Gateway ↔ Keycloak Auth ↔ Near/Polygon Contract ↔ Chainlink VRF Oracle ↔ Indexer Worker',
-      ko: '클라이언트 ↔ NestJS 게이트웨이 ↔ Keycloak 인증 ↔ Near/Polygon 컨트랙트 ↔ Chainlink VRF 오라클 ↔ 인덱서 워커',
+      en: 'Client ↔ Kong Gateway ↔ Keycloak Auth ↔ Domain APIs (Originals/Payment/Wallet, DB-per-service) ↔ Wallet Tx Pipeline (Execute→Wait→Result, admin/user isolated) ↔ Polygon/Ethereum/NEAR + Chainlink VRF, event-listener → SQS ↔ Kubernetes/ArgoCD GitOps',
+      ko: '클라이언트 ↔ Kong 게이트웨이 ↔ Keycloak 인증 ↔ 도메인 API (Originals/Payment/Wallet, 서비스별 DB) ↔ 지갑 Tx 파이프라인 (Execute→Wait→Result, 관리자/사용자 격리) ↔ Polygon/Ethereum/NEAR + Chainlink VRF, event-listener → SQS ↔ Kubernetes/ArgoCD GitOps',
     },
     architectureDoc: {
       overview: {
-        en: 'Fair on-chain ticketing with hybrid Web2 payment and Web3 NFT issuance architecture.',
-        ko: '공정한 온체인 추첨과 Web2 결제·Web3 NFT 발급이 결합된 하이브리드 티켓팅 아키텍처.',
+        en: 'Fair on-chain ticketing with hybrid Web2 payment and Web3 NFT issuance, built as ~24 independently deployed Helm services behind a database-per-service boundary.',
+        ko: '공정한 온체인 추첨과 Web2 결제·Web3 NFT 발급이 결합된 하이브리드 티켓팅 아키텍처. 서비스별 DB 경계를 지키는 24개 독립 Helm 서비스로 구성됩니다.',
       },
       keyDecisions: [
         {
@@ -180,12 +188,27 @@ export const projects: ProjectItem[] = [
             ko: '중앙 서버 추첨 대신 블록체인 온체인에서 수학적으로 증명 가능한 난수를 사용하여 조작 불가능한 추첨 시스템을 완성했습니다.',
           },
         },
+        {
+          title: { en: 'Admin/User Transaction Isolation', ko: '관리자·사용자 트랜잭션 격리' },
+          desc: {
+            en: 'The same worker chart is deployed 3 ways (execute / wait / result-handler) for admin and again for user wallets — 6 fully independent deployments so congestion or bugs on one side never starve the other.',
+            ko: '동일한 워커 차트를 execute/wait/result-handler 3역할로, 관리자용과 사용자용 각각 배포해 총 6개의 완전히 독립된 워커로 운영합니다. 한쪽에서 지연·장애가 나도 다른 쪽 트랜잭션 처리에는 영향이 없습니다.',
+          },
+        },
+        {
+          title: { en: 'Event-Driven Chain Indexing', ko: '이벤트 기반 온체인 인덱싱' },
+          desc: {
+            en: 'event-listener subscribes to on-chain logs over an Alchemy WS connection and fans them out into per-event-type SQS queues, decoupling chain ingestion from whatever consumes it downstream.',
+            ko: 'event-listener가 Alchemy WS 연결로 온체인 로그를 구독하고, 이벤트 타입별 SQS 큐로 팬아웃합니다. 체인 수집(ingestion)과 후속 처리 로직을 완전히 분리하는 구조입니다.',
+          },
+        },
       ],
       dataFlow: [
-        'User enters lottery → Entry recorded with signed transaction',
-        'Lottery trigger calls Chainlink VRF Coordinator contract',
-        'Random seed returned in callback → Winners selected on-chain',
-        'Indexer service detects event → Syncs state to PostgreSQL and notifies user',
+        'Wallet API receives a signed transaction request → enqueues it onto the wallet-transaction SQS queue',
+        'Execute worker dequeues the job and broadcasts the transaction to Polygon/Ethereum via Alchemy RPC',
+        'Wait worker polls for confirmation; Result-handler worker persists the outcome and calls back into Wallet API',
+        'In parallel, event-listener subscribes to on-chain events (WS) and publishes them to SQS for indexers/notifications',
+        'Chainlink VRF Coordinator returns the random seed for lottery draws → winners selected on-chain → indexer syncs state to PostgreSQL',
       ],
     },
     color: '#8B5CF6',
@@ -777,37 +800,6 @@ export const techStack: TechCategory[] = [
 ];
 
 // ─── Core strengths ──────────────────────────────────────────
-export const coreStrengths = [
-  {
-    title: { en: 'LLM Orchestration & Token Optimization', ko: 'LLM 오케스트레이션 & 토큰 최적화' },
-    desc: {
-      en: 'Lagged Summarization & model-aware Rolling Summaries preventing runaway token cost while preserving long-term conversation context',
-      ko: '1턴 지연 요약 및 모델별 동적 롤링 요약 파이프라인으로 비용 폭탄 방지 및 장기 대화 맥락 보존',
-    },
-  },
-  {
-    title: { en: 'Realtime Streaming & Concurrency', ko: '실시간 스트리밍 & 동시성 제어' },
-    desc: {
-      en: 'WebSocket chunk streaming, Redis distributed locking, and decoupled async game status/image generation triggers',
-      ko: '웹소켓 청크 스트리밍, Redis 분산 락, 비동기 게임 스탯(delta) 및 상황 이미지 생성 트리거 분리 처리',
-    },
-  },
-  {
-    title: { en: 'Automated Partitioned DB', ko: '대화 로그 자동 파티셔닝' },
-    desc: {
-      en: 'Automated PostgreSQL monthly partitioning to maintain query performance and stable log archiving',
-      ko: '대화 로그를 PostgreSQL 월별 자동 파티셔닝으로 관리하여 쿼리 성능 및 안정성 확보',
-    },
-  },
-  {
-    title: { en: 'Enterprise Batch & Web3 Security', ko: '엔터프라이즈 배치 & Web3 보안' },
-    desc: {
-      en: 'Financial CRM marketing batch distribution algorithms, Chainlink VRF on-chain lotteries, and ZKP/DID identity verification',
-      ko: '금융권 마케팅 분산 배치 스케줄링 알고리즘 구축, Chainlink VRF 온체인 공정 추첨 및 ZKP/DID 신원인증 시스템 구현',
-    },
-  },
-];
-
 // ─── Architecture Nodes (Live Interactive Diagram) ───────────
 export interface ArchNode {
   id: string;
@@ -827,94 +819,296 @@ export interface ArchEdge {
   dashed?: boolean;
 }
 
-export const architectureNodes: ArchNode[] = [
-  {
-    id: 'client',
-    label: 'Client Apps',
-    sublabel: 'React / React Native',
-    type: 'client',
-    color: '#00D2A0',
-    x: 80,
-    y: 110,
-    desc: {
-      en: 'Cross-platform Web & Mobile clients with real-time WebSocket connection and Markdown stream rendering.',
-      ko: '실시간 웹소켓 연결 및 마크다운 청크 렌더링을 지원하는 React 웹 / React Native 모바일 클라이언트.',
-    },
-  },
-  {
-    id: 'gateway',
-    label: 'API Gateway',
-    sublabel: 'NestJS / WsGuard',
-    type: 'gateway',
-    color: '#3B82F6',
-    x: 280,
-    y: 110,
-    desc: {
-      en: 'Handles JWT/Redis session auth, rate limiting, and routes WebSocket events & REST APIs.',
-      ko: 'JWT 및 Redis 세션 인증, 속도 제한, 웹소켓 룸 격리 및 REST API 라우팅을 총괄하는 NestJS 게이트웨이.',
-    },
-  },
-  {
-    id: 'llm_orchestrator',
-    label: 'LLM Orchestrator',
-    sublabel: 'Lagged & Rolling Summary',
-    type: 'service',
-    color: '#10B981',
-    x: 480,
-    y: 40,
-    desc: {
-      en: 'Manages context window assembly, 1-turn delayed summarization, model token budgeting, and multi-model fallbacks.',
-      ko: '1턴 지연 요약, 모델별 Max Token 기반 동적 롤링 요약, 상황 프롬프트 조립 및 멀티 LLM 스트리밍 처리 엔진.',
-    },
-  },
-  {
-    id: 'redis_pubsub',
-    label: 'Redis Cluster',
-    sublabel: 'Cache / Pub-Sub / Lock',
-    type: 'db',
-    color: '#EF4444',
-    x: 480,
-    y: 180,
-    desc: {
-      en: 'Provides distributed locking for idempotent turns, Pub/Sub for horizontal WS clustering, and hot cache.',
-      ko: '멱등성 보장을 위한 분산 락, 웹소켓 수평 확장을 위한 Pub/Sub, 세션 및 핫 데이터 캐싱 레이어.',
-    },
-  },
-  {
-    id: 'postgres_partition',
-    label: 'PostgreSQL DB',
-    sublabel: 'Monthly Partitioned',
-    type: 'db',
-    color: '#F59E0B',
-    x: 680,
-    y: 110,
-    desc: {
-      en: 'Primary persistence layer with automated monthly table partitioning for scalable chat message archiving.',
-      ko: '대화 로그 자동 월별 테이블 파티셔닝(ChatPartitionService)이 적용된 고성능 주 데이터베이스.',
-    },
-  },
-  {
-    id: 'external_llm_chain',
-    label: 'AI & Web3 Network',
-    sublabel: 'Vertex AI / Gemini / Chainlink',
-    type: 'external',
-    color: '#8B5CF6',
-    x: 680,
-    y: 200,
-    desc: {
-      en: 'External integrations: Google Vertex AI, Gemini 2.0, Claude Opus, and Chainlink VRF on-chain contracts.',
-      ko: 'Google Vertex AI, Gemini 2.0, Claude Opus 및 블록체인 온체인 컨트랙트(Chainlink VRF) 연동.',
-    },
-  },
-];
+export interface ArchPrinciple {
+  en: string;
+  ko: string;
+  color: string;
+}
 
-export const architectureEdges: ArchEdge[] = [
-  { from: 'client', to: 'gateway', label: 'WebSocket / REST' },
-  { from: 'gateway', to: 'llm_orchestrator', label: 'Prompt Payload' },
-  { from: 'gateway', to: 'redis_pubsub', label: 'Session / Lock' },
-  { from: 'llm_orchestrator', to: 'external_llm_chain', label: 'Stream Tokens' },
-  { from: 'llm_orchestrator', to: 'postgres_partition', label: 'Partitioned Write', dashed: true },
-  { from: 'gateway', to: 'postgres_partition', label: 'TypeORM / Query' },
+export interface ArchBlueprint {
+  id: string;
+  projectId: string;
+  label: { en: string; ko: string };
+  accentColor: string;
+  diagramTitle: { en: string; ko: string };
+  description: { en: string; ko: string };
+  strengths: { title: { en: string; ko: string }; desc: { en: string; ko: string } }[];
+  nodes: ArchNode[];
+  edges: ArchEdge[];
+  principles: ArchPrinciple[];
+}
+
+export const architectureBlueprints: ArchBlueprint[] = [
+  {
+    id: 'ccuc-ai',
+    projectId: 'ccuc-ai',
+    label: { en: '꾸욱 (CCUC)', ko: '꾸욱 (CCUC)' },
+    accentColor: '#00D2A0',
+    diagramTitle: { en: 'LLM + High-Concurrency Architecture', ko: 'LLM + 고동시성 아키텍처' },
+    description: {
+      en: 'Real-time multi-LLM orchestration, PostgreSQL monthly partitioning, and a Redis-backed state machine. Click nodes to inspect.',
+      ko: '실시간 멀티 LLM 스트리밍, 대화 로그 자동 월별 파티셔닝 및 Redis 분산 락/세션이 결합된 고성능 아키텍처입니다. 노드를 클릭해 세부 동작을 확인해 보세요.',
+    },
+    strengths: [
+      {
+        title: { en: 'LLM Orchestration & Token Optimization', ko: 'LLM 오케스트레이션 & 토큰 최적화' },
+        desc: {
+          en: 'Lagged Summarization & model-aware Rolling Summaries preventing runaway token cost while preserving long-term conversation context',
+          ko: '1턴 지연 요약 및 모델별 동적 롤링 요약 파이프라인으로 비용 폭탄 방지 및 장기 대화 맥락 보존',
+        },
+      },
+      {
+        title: { en: 'Realtime Streaming & Concurrency', ko: '실시간 스트리밍 & 동시성 제어' },
+        desc: {
+          en: 'WebSocket chunk streaming, Redis distributed locking, and decoupled async game status/image generation triggers',
+          ko: '웹소켓 청크 스트리밍, Redis 분산 락, 비동기 게임 스탯(delta) 및 상황 이미지 생성 트리거 분리 처리',
+        },
+      },
+      {
+        title: { en: 'Automated Partitioned DB', ko: '대화 로그 자동 파티셔닝' },
+        desc: {
+          en: 'Automated PostgreSQL monthly partitioning to maintain query performance and stable log archiving',
+          ko: '대화 로그를 PostgreSQL 월별 자동 파티셔닝으로 관리하여 쿼리 성능 및 안정성 확보',
+        },
+      },
+      {
+        title: { en: 'Idempotent Regeneration & Cost Guard', ko: '멱등성 & 재생성 비용 가드' },
+        desc: {
+          en: 'Turn-level idempotency and lagged-write ordering prevent double-summary billing when users regenerate or delete a message',
+          ko: '턴 단위 멱등성 처리와 지연 쓰기 순서 제어로 재생성/삭제 시 중복 요약 과금을 원천 차단',
+        },
+      },
+    ],
+    nodes: [
+      {
+        id: 'client',
+        label: 'Client Apps',
+        sublabel: 'React / React Native',
+        type: 'client',
+        color: '#00D2A0',
+        x: 80,
+        y: 110,
+        desc: {
+          en: 'Cross-platform Web & Mobile clients with real-time WebSocket connection and Markdown stream rendering.',
+          ko: '실시간 웹소켓 연결 및 마크다운 청크 렌더링을 지원하는 React 웹 / React Native 모바일 클라이언트.',
+        },
+      },
+      {
+        id: 'gateway',
+        label: 'API Gateway',
+        sublabel: 'NestJS / WsGuard',
+        type: 'gateway',
+        color: '#3B82F6',
+        x: 280,
+        y: 110,
+        desc: {
+          en: 'Handles JWT/Redis session auth, rate limiting, and routes WebSocket events & REST APIs.',
+          ko: 'JWT 및 Redis 세션 인증, 속도 제한, 웹소켓 룸 격리 및 REST API 라우팅을 총괄하는 NestJS 게이트웨이.',
+        },
+      },
+      {
+        id: 'llm_orchestrator',
+        label: 'LLM Orchestrator',
+        sublabel: 'Lagged & Rolling Summary',
+        type: 'service',
+        color: '#10B981',
+        x: 480,
+        y: 40,
+        desc: {
+          en: 'Manages context window assembly, 1-turn delayed summarization, model token budgeting, and multi-model fallbacks.',
+          ko: '1턴 지연 요약, 모델별 Max Token 기반 동적 롤링 요약, 상황 프롬프트 조립 및 멀티 LLM 스트리밍 처리 엔진.',
+        },
+      },
+      {
+        id: 'redis_pubsub',
+        label: 'Redis Cluster',
+        sublabel: 'Cache / Pub-Sub / Lock',
+        type: 'db',
+        color: '#EF4444',
+        x: 480,
+        y: 180,
+        desc: {
+          en: 'Provides distributed locking for idempotent turns, Pub/Sub for horizontal WS clustering, and hot cache.',
+          ko: '멱등성 보장을 위한 분산 락, 웹소켓 수평 확장을 위한 Pub/Sub, 세션 및 핫 데이터 캐싱 레이어.',
+        },
+      },
+      {
+        id: 'postgres_partition',
+        label: 'PostgreSQL DB',
+        sublabel: 'Monthly Partitioned',
+        type: 'db',
+        color: '#F59E0B',
+        x: 680,
+        y: 110,
+        desc: {
+          en: 'Primary persistence layer with automated monthly table partitioning for scalable chat message archiving.',
+          ko: '대화 로그 자동 월별 테이블 파티셔닝(ChatPartitionService)이 적용된 고성능 주 데이터베이스.',
+        },
+      },
+      {
+        id: 'external_ai',
+        label: 'AI Model Network',
+        sublabel: 'Vertex AI / Gemini / Claude',
+        type: 'external',
+        color: '#8B5CF6',
+        x: 680,
+        y: 200,
+        desc: {
+          en: 'External model integrations: Google Vertex AI, Gemini 2.0, and Claude Opus, selected per-request via multi-model fallback.',
+          ko: 'Google Vertex AI, Gemini 2.0, Claude Opus 등 외부 LLM 연동. 요청별로 멀티 모델 폴백을 통해 모델을 선택합니다.',
+        },
+      },
+    ],
+    edges: [
+      { from: 'client', to: 'gateway', label: 'WebSocket / REST' },
+      { from: 'gateway', to: 'llm_orchestrator', label: 'Prompt Payload' },
+      { from: 'gateway', to: 'redis_pubsub', label: 'Session / Lock' },
+      { from: 'llm_orchestrator', to: 'external_ai', label: 'Stream Tokens' },
+      { from: 'llm_orchestrator', to: 'postgres_partition', label: 'Partitioned Write', dashed: true },
+      { from: 'gateway', to: 'postgres_partition', label: 'TypeORM / Query' },
+    ],
+    principles: [
+      { en: '1-turn delayed summarization eliminates dirty state and double billing', ko: '1턴 지연 요약으로 미확정 상태 및 중복 요약 과금 방지', color: '#00D2A0' },
+      { en: 'Dynamic chunk rolling summaries retain infinite conversation context', ko: '동적 청크 롤링 요약으로 1,000+ 턴 대화 맥락 온전 보존', color: '#10B981' },
+      { en: 'PostgreSQL monthly partitioning keeps query performance and index bloat in check', ko: 'PostgreSQL 월별 자동 파티셔닝으로 쿼리 성능 유지 및 인덱스 블로트 방지', color: '#F59E0B' },
+      { en: 'Redis distributed locks ensure turn idempotency under high concurrency', ko: 'Redis 분산 락 및 룸 격리로 동시 접속 시 멱등성 및 정합성 보장', color: '#EF4444' },
+    ],
+  },
+  {
+    id: 'konkrit-web3',
+    projectId: 'konkrit-web3',
+    label: { en: 'Konkrit', ko: 'Konkrit' },
+    accentColor: '#8B5CF6',
+    diagramTitle: { en: 'NFT Ticketing + GitOps Blockchain Pipeline', ko: 'NFT 티켓팅 + GitOps 블록체인 파이프라인' },
+    description: {
+      en: '24 independently deployed Helm services behind a Kong gateway, an isolated admin/user wallet transaction pipeline, and event-driven on-chain indexing. Click nodes to inspect.',
+      ko: 'Kong 게이트웨이 뒤에서 24개 Helm 서비스가 독립 배포되고, 관리자/사용자 지갑 트랜잭션이 완전히 격리되며, 온체인 이벤트를 이벤트 기반으로 인덱싱하는 구조입니다. 노드를 클릭해 세부 동작을 확인해 보세요.',
+    },
+    strengths: [
+      {
+        title: { en: 'Provably Fair On-Chain Draws', ko: '온체인 공정 추첨' },
+        desc: {
+          en: 'Chainlink VRF replaces black-box server draws with tamper-proof cryptographic randomness verifiable directly on-chain',
+          ko: 'Chainlink VRF로 중앙 서버 추첨 대신 온체인에서 수학적으로 검증 가능한 난수를 사용, 조작 불가능한 추첨 구현',
+        },
+      },
+      {
+        title: { en: 'Isolated Admin/User Tx Pipelines', ko: '관리자·사용자 트랜잭션 파이프라인 분리' },
+        desc: {
+          en: 'The same worker chart deployed 3 ways (execute/wait/result) for admin and again for user wallets — 6 independent deployments so one side never blocks the other',
+          ko: '동일 워커 차트를 execute/wait/result 3역할로 관리자·사용자 각각 배포, 총 6개 독립 워커로 상호 장애 격리',
+        },
+      },
+      {
+        title: { en: 'Event-Driven Chain Indexing', ko: '이벤트 기반 온체인 인덱싱' },
+        desc: {
+          en: 'event-listener subscribes to on-chain logs over Alchemy WS and fans them out to per-event SQS queues, decoupling ingestion from processing',
+          ko: 'event-listener가 Alchemy WS로 온체인 로그를 구독해 이벤트별 SQS 큐로 팬아웃, 수집과 처리 로직을 분리',
+        },
+      },
+      {
+        title: { en: 'GitOps Deployment & Observability', ko: 'GitOps 배포 & 관측성' },
+        desc: {
+          en: 'Kubernetes + ArgoCD auto-sync/self-heal across 24 Helm charts, with Datadog APM/log auto-instrumentation on every service',
+          ko: 'Kubernetes/ArgoCD 자동 sync·self-heal로 24개 Helm 차트 배포 관리, 전 서비스 Datadog APM/로그 자동계측',
+        },
+      },
+    ],
+    nodes: [
+      {
+        id: 'client',
+        label: 'Client Apps',
+        sublabel: 'Market / Inapp / Claim',
+        type: 'client',
+        color: '#00D2A0',
+        x: 80,
+        y: 110,
+        desc: {
+          en: 'market-frontend, in-app webview, and the claim-originals flow — ticket purchase, wallet connect, and NFT claim UIs.',
+          ko: 'market-frontend, 인앱 웹뷰, claim-originals 등 티켓 구매·지갑 연결·NFT 클레임 화면.',
+        },
+      },
+      {
+        id: 'gateway',
+        label: 'API Gateway',
+        sublabel: 'Kong + Keycloak',
+        type: 'gateway',
+        color: '#3B82F6',
+        x: 280,
+        y: 110,
+        desc: {
+          en: 'Kong edge gateway in front of Keycloak-backed auth, including nonce-based wallet-signature login (Sign-In with wallet).',
+          ko: 'Kong 엣지 게이트웨이 뒤에 Keycloak 기반 인증을 두고, nonce 기반 지갑 서명 로그인(Web3 로그인)을 처리합니다.',
+        },
+      },
+      {
+        id: 'core_backend',
+        label: 'Core Domain APIs',
+        sublabel: 'Originals / Payment / Wallet',
+        type: 'service',
+        color: '#10B981',
+        x: 480,
+        y: 40,
+        desc: {
+          en: 'NestJS domain services (originals, payment, wallet-api) plus admin-proxy, a BFF that routes and holds direct DB connections across several of them.',
+          ko: 'originals, payment, wallet-api 등 NestJS 도메인 서비스와, 여러 서비스 DB에 직접 연결해 라우팅하는 BFF인 admin-proxy로 구성됩니다.',
+        },
+      },
+      {
+        id: 'wallet_pipeline',
+        label: 'Wallet Tx Pipeline',
+        sublabel: 'Execute → Wait → Result',
+        type: 'service',
+        color: '#EF4444',
+        x: 480,
+        y: 180,
+        desc: {
+          en: 'Admin and user wallets each get 3 independent workers (execute/wait/result-handler) — 6 deployments total. Result-handler calls back into Wallet API to persist state and notify.',
+          ko: '관리자·사용자 지갑마다 execute/wait/result-handler 3개씩, 총 6개의 독립 워커가 동작합니다. result-handler가 Wallet API로 콜백해 상태 저장과 알림을 트리거합니다.',
+        },
+      },
+      {
+        id: 'data_layer',
+        label: 'PostgreSQL + SQS',
+        sublabel: 'DB-per-service · Event Queue',
+        type: 'db',
+        color: '#F59E0B',
+        x: 680,
+        y: 110,
+        desc: {
+          en: 'Each service owns its own PostgreSQL database (payment, originals, wallet, auth...); AWS SQS carries wallet-tx jobs and on-chain event fan-out.',
+          ko: 'payment, originals, wallet, auth 등 서비스별로 분리된 PostgreSQL을 소유하며, AWS SQS가 지갑 Tx 작업과 온체인 이벤트 팬아웃을 전달합니다.',
+        },
+      },
+      {
+        id: 'chain_network',
+        label: 'Chain Network',
+        sublabel: 'Polygon / Ethereum / NEAR · VRF',
+        type: 'external',
+        color: '#8B5CF6',
+        x: 680,
+        y: 200,
+        desc: {
+          en: 'Polygon/Ethereum access via Alchemy RPC/WS, NEAR Protocol ledger indexing, and Chainlink VRF for verifiable on-chain lottery draws.',
+          ko: 'Alchemy RPC/WS로 Polygon/Ethereum에 접근하고, NEAR Protocol 원장을 인덱싱하며, Chainlink VRF로 검증 가능한 온체인 추첨을 수행합니다.',
+        },
+      },
+    ],
+    edges: [
+      { from: 'client', to: 'gateway', label: 'REST / 지갑 서명(Nonce)' },
+      { from: 'gateway', to: 'core_backend', label: 'Route (BFF)' },
+      { from: 'core_backend', to: 'wallet_pipeline', label: 'Tx 요청 Enqueue' },
+      { from: 'wallet_pipeline', to: 'chain_network', label: '서명·전송 / Polling' },
+      { from: 'core_backend', to: 'data_layer', label: '서비스별 CRUD' },
+      { from: 'chain_network', to: 'data_layer', label: '온체인 이벤트 → SQS', dashed: true },
+    ],
+    principles: [
+      { en: 'Chainlink VRF guarantees provably fair, tamper-proof on-chain lottery draws', ko: 'Chainlink VRF로 조작 불가능한 온체인 공정 추첨 무결성 보장', color: '#8B5CF6' },
+      { en: 'Admin/user wallet pipelines are fully isolated (6 independent workers) so one never blocks the other', ko: '관리자·사용자 지갑 파이프라인을 완전히 분리(독립 워커 6개)해 상호 장애를 격리', color: '#EF4444' },
+      { en: 'event-listener subscribes to on-chain logs over Alchemy WS and fans them out via SQS', ko: 'event-listener가 Alchemy WS로 온체인 로그를 구독해 SQS로 비동기 전파', color: '#F59E0B' },
+      { en: 'ArgoCD auto-sync + self-heal drives GitOps deployment across 24 Helm charts', ko: 'ArgoCD 자동 sync·self-heal 기반 GitOps로 24개 Helm 차트 배포 관리', color: '#3B82F6' },
+    ],
+  },
 ];
 
 // ─── Certifications & Awards ─────────────────────────────────
