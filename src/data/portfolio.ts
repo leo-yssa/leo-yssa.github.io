@@ -470,6 +470,99 @@ export const projects: ProjectItem[] = [
     },
     color: '#EC4899',
   },
+  {
+    id: 'trade-sandbox',
+    title: 'trade-sandbox',
+    subtitle: {
+      en: 'Personal Project — Go-Based Crypto Exchange Matching Engine & On-Chain Settlement Pipeline',
+      ko: '개인 프로젝트 — Go 기반 크립토 거래소 매칭 엔진 & 온체인 정산 파이프라인',
+    },
+    description: {
+      en: 'A from-scratch exchange-like pipeline: a price-time priority matching engine, an asynchronous Kafka settlement pipeline with deterministic no-loss delivery, and Merkle-batched on-chain settlement on Ethereum.',
+      ko: '가격-시간 우선순위 매칭 엔진부터 Kafka 기반 비동기 정산, Merkle 배치를 이용한 이더리움 온체인 정산까지 — 실제 거래소와 유사한 구조의 파이프라인을 처음부터 직접 설계·구현한 사이드 프로젝트.',
+    },
+    type: 'Web3',
+    status: 'research',
+    personal: true,
+    metrics: [
+      { label: { en: 'Load Test', ko: '부하 테스트' }, value: '1M orders', unit: '0 drops' },
+      { label: { en: 'On-Chain E2E', ko: '온체인 E2E 검증' }, value: '2,500', unit: 'tx' },
+      { label: { en: 'Price Index', ko: '가격 인덱스' }, value: 'O(log n)', unit: '' },
+    ],
+    stack: [
+      'Go',
+      'Kafka (Sarama)',
+      'PostgreSQL',
+      'Solidity',
+      'Hardhat',
+      'go-ethereum',
+      'OpenZeppelin',
+      '동시성 프로그래밍',
+      '이벤트 소싱',
+      '블록체인',
+    ],
+    highlights: {
+      en: [
+        'Implemented price-time priority matching in a single-goroutine actor-pattern event loop — all order book state is touched only by that goroutine, with external communication via channels only, keeping the hot path lock-free',
+        'Built the price index as a skip list for O(log n) insert/delete/best-price lookup, replacing an O(n) sorted-slice approach',
+        'Designed a Kafka async settlement pipeline; found that "non-blocking send + drop logging" left a race window against the scheduler, so built a never-blocking dispatcher (job channel + growable overflow ring buffer + worker pool) downstream and switched the engine side back to blocking sends — turning probabilistic no-loss into deterministic no-loss',
+        'Applied the same generic dispatcher+ring-buffer design uniformly across all three event channels (trades/orders/book updates), each with its own Kafka topic, worker pool size, and Snappy-compressed batch publishing',
+        'Enforced a strict graceful-shutdown order (close engine channel → stop each dispatcher → fully drain overflow queue → stop workers → flush Kafka producer) to avoid "send on closed channel" panics',
+        'Used SELECT FOR UPDATE with balances always locked in ascending user_id order to eliminate deadlocks, plus ON CONFLICT DO NOTHING for idempotency against Kafka at-least-once delivery; validated zero drops across all three channels over a 1M-order run against a real (non-Docker) Kafka broker',
+        'Built a batch-builder that Merkle-batches trade events into a keccak256 tree compatible with OpenZeppelin MerkleProof (sorted-pair hashing, double-hash leaves, odd-node promotion), restores original trade order across parallel Kafka consumer workers via a TradeID-based resequencing buffer, and commits/verifies batches on a DexSettlement Solidity contract with double-settlement prevention — validated end-to-end on a local Hardhat node over 2,500 real transactions, with Go-computed and on-chain Merkle roots and BatchCommitted event counts matching exactly',
+      ],
+      ko: [
+        '가격-시간 우선순위 매칭 알고리즘을 단일 goroutine 이벤트 루프(액터 패턴)로 구현 — 오더북 상태는 이 goroutine만 다루고 외부와는 채널로만 통신해 락 없는 핫패스 유지',
+        '가격 인덱스를 스킵리스트로 구현해 O(log n) 삽입/삭제/최우선가 조회 달성 (기존 정렬 슬라이스의 O(n) 삽입 문제 해결)',
+        'Kafka 비동기 정산 파이프라인 설계 중 "논블로킹 전송 + 드롭 로깅" 방식이 스케줄러와의 경쟁 상태로 완전한 무손실을 보장하지 못함을 발견 → 절대 블로킹되지 않는 dispatcher(작업 채널 + 성장형 오버플로우 링버퍼 + 워커 풀)를 먼저 만들고 엔진 쪽은 블로킹 전송으로 되돌려 확률적 무손실을 결정론적 무손실로 전환',
+        '동일한 제네릭 dispatcher+링버퍼 구조를 체결/주문/호가업데이트 3개 채널 모두에 적용, 각각 독립적인 Kafka 토픽·워커 풀 크기로 Snappy 압축 배치 발행',
+        '"엔진 채널 close → 각 dispatcher 종료 → 오버플로우 큐 완전 드레인 → 워커 종료 → Kafka 프로듀서 flush" 순서를 엄격히 강제하는 graceful shutdown으로 "send on closed channel" 패닉 방지',
+        'SELECT FOR UPDATE로 두 사용자 잔고를 항상 user_id 오름차순으로 잠가 데드락 원천 차단, ON CONFLICT DO NOTHING으로 Kafka at-least-once에 대한 멱등성 보장 — 실제 Kafka 브로커로 100만 건 주문 데모를 반복해 세 채널 모두 드롭 0건 검증',
+        'Kafka 체결 이벤트를 소비해 OpenZeppelin MerkleProof와 호환되는 keccak256 Merkle 트리(sorted-pair 해싱, double-hash leaf, 홀수 노드 승격)로 배치 커밋하는 batch-builder 구축, 멀티 워커 병렬 처리로 흐트러지는 체결 순서는 TradeID 기반 시퀀서로 복원, Solidity DexSettlement 컨트랙트(배치 루트 커밋·Merkle Proof 검증·이중 정산 방지)에 커밋/검증 — 로컬 Hardhat 노드 대상 2,500건 실제 트랜잭션으로 End-to-End 검증, Go 계산 루트·온체인 저장값·BatchCommitted 이벤트 수까지 정확히 일치 확인',
+      ],
+    },
+    architecture: {
+      en: 'Matching Engine (Actor Goroutine) → Kafka (Trades/Orders/Book Updates) → Settlement Worker (PostgreSQL) ⇢ Batch Builder (Merkle Tree) → DexSettlement Contract (Hardhat/Ethereum)',
+      ko: '매칭 엔진(액터 goroutine) → Kafka(체결/주문/호가 이벤트) → 정산 워커(PostgreSQL) ⇢ 배치 빌더(Merkle 트리) → DexSettlement 컨트랙트(Hardhat/Ethereum)',
+    },
+    architectureDoc: {
+      overview: {
+        en: 'A personal exchange-pipeline project built in three phases — a lock-free single-threaded matching core, a deterministic-delivery Kafka settlement pipeline, and a Merkle-batched on-chain settlement layer — each phase driven by a concrete engineering failure mode found and fixed along the way.',
+        ko: '락 없는 단일 스레드 매칭 코어, 결정론적 무손실 Kafka 정산 파이프라인, Merkle 배치 기반 온체인 정산까지 3단계로 구축한 개인 거래소 파이프라인 프로젝트. 각 단계는 실제로 마주친 구체적인 엔지니어링 실패 사례를 원인 분석 후 해결하는 방식으로 진행.',
+      },
+      keyDecisions: [
+        {
+          title: { en: 'Lock-Free Matching via Single-Goroutine Actor', ko: '단일 Goroutine 액터 기반 락-프리 매칭' },
+          desc: {
+            en: 'All order book mutations are confined to one goroutine reached only through channels, and the price index uses a skip list for O(log n) operations — removing both lock contention and the O(n) insert cost of a sorted slice.',
+            ko: '오더북 변경은 채널을 통해서만 접근 가능한 단일 goroutine에 격리하고, 가격 인덱스는 스킵리스트로 구현해 O(log n) 연산을 달성 — 락 경합과 정렬 슬라이스의 O(n) 삽입 비용을 동시에 제거.',
+          },
+        },
+        {
+          title: { en: 'Deterministic (Not Probabilistic) No-Loss Delivery', ko: '확률적이 아닌 결정론적 무손실 전송' },
+          desc: {
+            en: 'A non-blocking-send-with-drop-logging design left a race window against the Go scheduler. Fixing it required inverting the design: a never-blocking downstream dispatcher (job channel + growable overflow ring buffer + worker pool) absorbs bursts, while the engine side switched back to a blocking send — creating a real synchronization point instead of a best-effort one.',
+            ko: '논블로킹 전송 + 드롭 로깅 방식은 Go 스케줄러와의 경쟁 상태로 무손실을 보장하지 못했음. 절대 블로킹되지 않는 다운스트림 dispatcher(작업 채널 + 성장형 오버플로우 링버퍼 + 워커 풀)로 순간 부하를 흡수하게 하고, 엔진 쪽은 오히려 블로킹 전송으로 되돌려 진짜 동기화 지점을 만드는 방식으로 설계를 반대로 뒤집어 해결.',
+          },
+        },
+        {
+          title: { en: 'Order-Preserving Parallel Settlement On-Chain', ko: '순서를 보존하는 병렬 온체인 정산' },
+          desc: {
+            en: 'Multiple Kafka consumer workers process trade events in parallel for throughput, but on-chain settlement needs original trade order — solved with a TradeID-based resequencing buffer before Merkle-batching and committing to the DexSettlement contract.',
+            ko: '처리량을 위해 여러 Kafka 컨슈머 워커가 체결 이벤트를 병렬 처리하지만, 온체인 정산에는 원래 체결 순서가 필요함 — TradeID 기반 시퀀서(재정렬 버퍼)로 순서를 복원한 뒤 Merkle 배치로 묶어 DexSettlement 컨트랙트에 커밋.',
+          },
+        },
+      ],
+      dataFlow: [
+        'Order enters the matching goroutine via channel and is matched against the skip-list price index',
+        'Trade/order/book-update events pass through per-channel dispatchers into an overflow ring buffer, get batched, and are published to Kafka (Snappy-compressed)',
+        'A settlement worker consumes trade events and updates PostgreSQL balances under SELECT FOR UPDATE, locking user rows in ascending user_id order',
+        'batch-builder consumes the same trade events, resequences them by TradeID, and Merkle-batches them on an N-trades/T-seconds trigger',
+        'The batch root is committed on-chain via DexSettlement.commitBatch; individual trades are later settled via verifyAndSettleTrade with a Merkle proof',
+      ],
+    },
+    color: '#0EA5E9',
+  },
 ];
 
 // ─── Experience ─────────────────────────────────────────────
