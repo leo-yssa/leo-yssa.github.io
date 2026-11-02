@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "taxYear": 2026,
+  "updatedAt": "2026-11-01",
+  "notice": "2026년 귀속(2027년 1~2월 연말정산) 기준 요율입니다.",
+  "insurance": {
+    "pension": {
+      "employeeRate": 0.0475,
+      "periods": [
+        { "from": "2026-01", "to": "2026-06", "min": 400000, "max": 6370000 },
+        { "from": "2026-07", "to": "2027-06", "min": 410000, "max": 6590000 }
+      ]
+    },
+    "healthEmployeeRate": 0.03595,
+    "longTermCareIncomeRate": 0.009448,
+    "employmentEmployeeRate": 0.009
+  },
+  "withholding": {
+    "pensionRate": 0.045,
+    "pensionMin": 390000,
+    "pensionMax": 6170000,
+    "childDeductionOne": 12500,
+    "childDeductionTwo": 29160,
+    "childDeductionExtra": 25000
+  },
+  "incomeTax": {
+    "brackets": [
+      [14000000, 0.06, 0],
+      [50000000, 0.15, 1260000],
+      [88000000, 0.24, 5760000],
+      [150000000, 0.35, 15440000],
+      [300000000, 0.38, 19940000],
+      [500000000, 0.40, 25940000],
+      [1000000000, 0.42, 35940000],
+      [null, 0.45, 65940000]
+    ],
+    "localRate": 0.1
+  },
+  "yearEnd": {
+    "personalDeduction": 1500000,
+    "standardCredit": 130000,
+    "childCredit": [250000, 300000, 400000],
+    "childCreditMinAge": 9,
+    "birthCredit": [300000, 500000, 700000],
+    "marriageCredit": 500000,
+    "card": {
+      "thresholdRate": 0.25,
+      "creditRate": 0.15,
+      "debitRate": 0.30,
+      "cultureRate": 0.30,
+      "marketRate": 0.40,
+      "transitRate": 0.40,
+      "highIncome": 70000000,
+      "baseLimitLow": 3000000,
+      "baseLimitHigh": 2500000,
+      "childLimitLow": 500000,
+      "childLimitHigh": 250000,
+      "childLimitMaxLow": 1000000,
+      "childLimitMaxHigh": 500000,
+      "extraLimitLow": 3000000,
+      "extraLimitHigh": 2000000
+    },
+    "pensionAccount": {
+      "savingsLimit": 6000000,
+      "totalLimit": 9000000,
+      "rateLow": 0.15,
+      "rateHigh": 0.12,
+      "incomeThreshold": 55000000
+    },
+    "rent": {
+      "rateLow": 0.17,
+      "rateHigh": 0.15,
+      "lowIncome": 55000000,
+      "maxIncome": 80000000,
+      "limit": 10000000
+    },
+    "insuranceCredit": { "rate": 0.12, "limit": 1000000 },
+    "medical": { "rate": 0.15, "floorRate": 0.03, "generalLimit": 7000000 },
+    "educationRate": 0.15,
+    "donation": { "rate": 0.15, "highRate": 0.30, "highThreshold": 10000000 },
+    "hometown": { "fullUpTo": 100000, "midUpTo": 200000, "midRate": 0.40, "rate": 0.15 }
+  }
+}
