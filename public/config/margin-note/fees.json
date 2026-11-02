@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "updatedAt": "2026-11-01",
+ "notice": "수수료는 공개된 정책 기준 예시입니다. 계약 조건·프로모션에 따라 다를 수 있으니 판매자센터 정산 내역과 비교해 주세요.",
+ "vatRate": 0.1,
+ "smartstore": {
+  "source": "네이버페이 주문관리 수수료(2025-10-01 인하), 판매수수료(2025-06-02 개편). 모두 VAT 별도",
+  "grades": [
+   {"id": "tiny", "label": "영세 (연 카드매출 3억 이하)", "rate": 0.0177},
+   {"id": "sme1", "label": "중소1 (3억~5억)", "rate": 0.0233},
+   {"id": "sme2", "label": "중소2 (5억~10억)", "rate": 0.0248},
+   {"id": "sme3", "label": "중소3 (10억~30억)", "rate": 0.0273},
+   {"id": "general", "label": "일반 (30억 초과)", "rate": 0.0330}
+  ],
+  "storeTypes": [
+   {"id": "smart", "label": "스마트스토어", "searchRate": 0.0273, "marketingRate": 0.0091},
+   {"id": "brand", "label": "브랜드스토어", "searchRate": 0.0364, "marketingRate": 0.0182}
+  ]
+ },
+ "coupang": {
+  "source": "쿠팡 마켓플레이스 카테고리별 판매수수료(공개 자료 기준, VAT 별도), 배송비 수수료 3%(VAT 별도), 판매자 서비스 이용료 월 55,000원",
+  "shippingRate": 0.03,
+  "monthlyServiceFee": 55000,
+  "categories": [
+   {"id": "digital", "label": "가전/디지털", "rate": 0.078},
+   {"id": "living", "label": "생활용품", "rate": 0.078},
+   {"id": "beauty", "label": "뷰티", "rate": 0.096},
+   {"id": "food", "label": "식품", "rate": 0.106},
+   {"id": "fashion", "label": "패션의류·잡화", "rate": 0.105},
+   {"id": "baby", "label": "출산/유아동", "rate": 0.10},
+   {"id": "auto", "label": "자동차용품", "rate": 0.10},
+   {"id": "furniture", "label": "가구/홈인테리어", "rate": 0.108},
+   {"id": "kitchen", "label": "주방용품", "rate": 0.108},
+   {"id": "sports", "label": "스포츠/레저", "rate": 0.108},
+   {"id": "toys", "label": "완구/취미", "rate": 0.108},
+   {"id": "stationery", "label": "문구/사무", "rate": 0.108},
+   {"id": "pet", "label": "반려동물용품", "rate": 0.108},
+   {"id": "books", "label": "도서/음반", "rate": 0.108}
+  ]
+ }
+}
