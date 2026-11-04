@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LyricSync · 음원과 가사로 싱크 가사 자동 만들기</title>
+<meta name="description" content="음원 파일과 가사를 넣으면 줄·단어 단위 타임스탬프(LRC, SRT, ASS 가라오케)를 자동으로 만들어 드려요. 무료, 가입 없음.">
+<meta property="og:title" content="LyricSync · 싱크 가사 자동 생성">
+<meta property="og:description" content="음원 + 가사 → LRC · SRT · ASS 가라오케 자막">
+<script>window.LYRICSYNC_API = "https://WORKSPACE--lyricsync.modal.run";</script>
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262a33;--fg:#e8eaf0;--mut:#8b91a0;--acc:#5b8cff;--ok:#3ecf8e;--warn:#f5b84b;--err:#ff6b6b;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+  header{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line)}
+  header h1{font-size:17px;margin:0;letter-spacing:.3px}
+  header .env{margin-left:auto;font-size:12px;color:var(--mut)}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line);margin-left:6px}
+  .pill.on{border-color:var(--ok);color:var(--ok)} .pill.off{border-color:var(--warn);color:var(--warn)}
+  main{max-width:1080px;margin:0 auto;padding:22px}
+  .steps{display:flex;gap:8px;margin-bottom:18px;font-size:13px;color:var(--mut)}
+  .steps span{padding:4px 10px;border-radius:6px;border:1px solid var(--line)}
+  .steps span.cur{color:var(--fg);border-color:var(--acc)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+  textarea,select,input[type=text]{width:100%;background:#0c0e12;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
+  textarea{min-height:260px;font-family:inherit;resize:vertical}
+  .drop{border:2px dashed var(--line);border-radius:10px;padding:34px 16px;text-align:center;color:var(--mut);cursor:pointer;transition:.15s}
+  .drop.over{border-color:var(--acc);color:var(--fg)} .drop b{color:var(--fg)}
+  button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
+  button:disabled{opacity:.45;cursor:default}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  /* progress */
+  .stage{display:grid;grid-template-columns:28px 1fr 90px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stage:last-child{border-bottom:0}
+  .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--mut)}
+  .dot.done{background:var(--ok);border-color:var(--ok);color:#06281a} .dot.run{border-color:var(--acc);color:var(--acc);animation:pulse 1.2s infinite}
+  .dot.err{background:var(--err);border-color:var(--err);color:#fff}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(91,140,255,.5)}50%{box-shadow:0 0 0 7px rgba(91,140,255,0)}}
+  .bar{height:6px;background:#0c0e12;border-radius:3px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+  .stage .msg{font-size:12px;color:var(--mut);font-family:var(--mono)}
+  .stage .t{text-align:right;font-family:var(--mono);font-size:12px;color:var(--mut)}
+  .big{font-size:34px;font-family:var(--mono);font-weight:600}
+  /* result */
+  .lines{max-height:60vh;overflow:auto;border:1px solid var(--line);border-radius:8px}
+  .ln{display:grid;grid-template-columns:86px 1fr 60px 60px;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
+  .ln:hover{background:#1c2029} .ln.now{background:#1b2a4a}
+  .ln .ts{font-family:var(--mono);font-size:12px;color:var(--mut)} .ln .ts.edited{color:var(--acc)}
+  .ln .cf{font-family:var(--mono);font-size:11px;text-align:right}
+  .ln.low .cf{color:var(--warn)} .ln.interp .cf{color:var(--err)}
+  .ln .words b{color:var(--acc)}
+  .nudge{display:flex;gap:3px;justify-content:flex-end}
+  .nudge button{padding:2px 6px;font-size:11px;background:#0c0e12;border:1px solid var(--line);color:var(--fg)}
+  audio{width:100%;margin:10px 0}
+  .legend{font-size:12px;color:var(--mut)} .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:middle}
+  .hidden{display:none}
+  pre.err{color:var(--err);white-space:pre-wrap;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>LyricSync</h1>
+  <span style="color:var(--mut);font-size:13px">음원 + 가사 → 타임스탬프 자동 싱크</span>
+  <div class="env" id="env"></div>
+</header>
+<main>
+  <div class="steps"><span id="s1" class="cur">1 입력</span><span id="s2">2 진행</span><span id="s3">3 결과</span></div>
+
+  <!-- ===== 1. INPUT ===== -->
+  <section id="view-input" class="card">
+    <div class="grid">
+      <div>
+        <label>음원 파일</label>
+        <div class="drop" id="drop"><b>여기에 드롭</b> 또는 클릭하여 선택<br><span style="font-size:12px">mp3 · wav · flac · m4a</span>
+          <input type="file" id="file" accept="audio/*" class="hidden"></div>
+        <div id="fileinfo" style="margin-top:8px;font-size:13px;color:var(--mut)"></div>
+        <div class="grid" style="gap:10px" id="advanced">
+          <div><label>언어</label>
+            <select id="lang"><option value="">자동 감지</option><option value="ko">한국어</option><option value="en">English</option><option value="ja">日本語</option><option value="zh">中文</option><option value="es">Español</option></select></div>
+          <div><label>정렬 방식</label>
+            <select id="aligner"><option value="ctc">CTC 강제 정렬 (권장)</option><option value="whisper">Whisper 인식 + 퍼지 매칭</option></select></div>
+          <div><label>CTC 모델</label>
+            <select id="ctc_backend"><option value="ko">한국어 wav2vec2 (Apache-2.0, 상용 가능)</option><option value="mms">MMS_FA 다국어 (CC-BY-NC, 비상업용)</option></select></div>
+          <div><label>시간 가이드 (CTC 방식일 때, stable-ts)</label>
+            <select id="guide"><option value="small">small (권장)</option><option value="medium">medium (느림)</option><option value="none">없음 (CTC만)</option></select></div>
+          <div><label>Whisper 모델 (CPU, Whisper 방식일 때)</label>
+            <select id="model"><option value="small">small (빠름)</option><option value="medium">medium (정확)</option><option value="large-v3">large-v3 (느림)</option></select></div>
+        </div>
+        <label><input type="checkbox" id="sep" checked> 보컬 분리 (Demucs) — 반주가 큰 곡에 권장, 시간 +1~2분</label>
+        <label id="rights" class="hidden" style="color:var(--fg)"><input type="checkbox" id="rights-ok"> 직접 만들었거나 사용 허락을 받은 음원·가사만 올립니다. 올린 파일은 처리 후 30분 안에 자동 삭제돼요.</label>
+        <div id="demo-box" class="hidden"><label>개발용: 정답 JSON으로 ASR 시뮬레이션</label><input type="text" id="truth" placeholder="/path/to/1.json"></div>
+      </div>
+      <div>
+        <label>가사 (한 줄 = 한 라인, [Verse] 같은 표기는 무시됨)</label>
+        <textarea id="lyrics" placeholder="네가 없이 웃을 수 있을까&#10;생각만 해도 눈물이나&#10;..."></textarea>
+        <div id="lyricinfo" style="font-size:12px;color:var(--mut);margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:16px;justify-content:flex-end">
+      <button id="start" disabled>싱크 시작</button>
+    </div>
+  </section>
+
+  <!-- ===== 2. PROGRESS ===== -->
+  <section id="view-progress" class="card hidden">
+    <div class="row" style="justify-content:space-between">
+      <div><div style="color:var(--mut);font-size:13px" id="p-title"></div><div class="big" id="p-elapsed">0.0s</div></div>
+      <div style="text-align:right;color:var(--mut);font-size:13px">전체 진행<br><span class="big" id="p-total">0%</span></div>
+    </div>
+    <div class="bar" style="height:10px;margin:10px 0 18px"><i id="p-bar"></i></div>
+    <div id="stages"></div>
+    <div id="ad-wait"></div>
+    <pre class="err hidden" id="p-error"></pre>
+    <div class="row" style="margin-top:14px;justify-content:flex-end"><button class="ghost" id="p-back">새 작업</button></div>
+  </section>
+
+  <!-- ===== 3. RESULT ===== -->
+  <section id="view-result" class="card hidden">
+    <div class="row" style="justify-content:space-between">
+      <div id="r-summary" style="font-size:13px;color:var(--mut)"></div>
+      <div class="legend">신뢰도: <i style="background:var(--ok)"></i>높음 <i style="background:var(--warn)"></i>낮음(확인 권장) <i style="background:var(--err)"></i>보간됨(매칭 실패)</div>
+    </div>
+    <audio id="player" controls preload="metadata"></audio>
+    <div class="row" style="margin-bottom:10px">
+      <label style="margin:0"><input type="checkbox" id="showwords"> 단어 타임스탬프 표시</label>
+      <span style="flex:1"></span>
+      <span style="font-size:12px;color:var(--mut)">내보내기:</span>
+      <button class="ghost" data-fmt="lrc">LRC</button><button class="ghost" data-fmt="elrc">Enhanced LRC</button>
+      <button class="ghost" data-fmt="srt">SRT</button><button class="ghost" data-fmt="ass">ASS 가라오케</button><button class="ghost" data-fmt="json">JSON</button>
+    </div>
+    <div class="lines" id="lines"></div>
+    <div class="row" style="margin-top:14px;justify-content:space-between">
+      <span style="font-size:12px;color:var(--mut)">라인 클릭 = 해당 위치 재생 · ◂ ▸ = ±0.1s 미세조정 (내보내기에 반영)</span>
+      <button class="ghost" id="r-back">새 작업</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const STAGES=["prepare","separate","transcribe","align","postprocess","export"];
+let audioFile=null, uploadId=null, job=null, lines=[], es=null, PUBLIC=false;
+/* 호스팅 버전은 페이지에서 window.LYRICSYNC_API = 'https://…modal.run' 을 먼저 정의한다. 로컬은 같은 서버. */
+const API=(window.LYRICSYNC_API||'').replace(/\/$/,'');
+
+/* ---- env ---- */
+fetch(API+'/api/env').then(r=>r.json()).then(e=>{
+  PUBLIC=!!e.public;
+  if(PUBLIC){ $('#advanced').classList.add('hidden'); $('#rights').classList.remove('hidden'); $('#env').textContent=`파일 ${e.max_upload_mb}MB 이하`; check(); return; }
+  $('#env').innerHTML=`Whisper <span class="pill ${e.whisper?'on':'off'}">${e.whisper?'설치됨':'미설치'}</span> Demucs <span class="pill ${e.demucs?'on':'off'}">${e.demucs?'설치됨':'미설치'}</span>`;
+  if(!e.whisper){ $('#demo-box').classList.remove('hidden'); if(e.demo_truth_dir) $('#truth').placeholder=e.demo_truth_dir+'/1.json'; }
+});
+
+/* ---- input ---- */
+const drop=$('#drop'), fileIn=$('#file');
+drop.onclick=()=>fileIn.click();
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]));
+fileIn.onchange=()=>setFile(fileIn.files[0]);
+$('#rights-ok').onchange=()=>check();
+function setFile(f){ if(!f) return; audioFile=f; uploadId=null;
+  $('#fileinfo').textContent=`${f.name} · ${(f.size/1048576).toFixed(1)} MB`; check(); }
+$('#lyrics').oninput=()=>{ const n=$('#lyrics').value.split('\n').filter(l=>l.trim()&&!/^\s*[\[\(].*[\]\)]\s*$/.test(l)).length;
+  $('#lyricinfo').textContent=n?`${n} 라인`:''; check(); };
+function check(){ $('#start').disabled=!(audioFile&&$('#lyrics').value.trim()&&(!PUBLIC||$('#rights-ok').checked)); }
+async function fail(r){ let m='요청을 처리하지 못했어요'; try{ m=(await r.json()).error||m; }catch(_){}
+  alert(m); $('#start').textContent='싱크 시작'; check(); }
+
+$('#start').onclick=()=>startJob().catch(()=>{ alert('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.'); $('#start').textContent='싱크 시작'; check(); });
+async function startJob(){
+  $('#start').disabled=true; $('#start').textContent='업로드 중…';
+  if(!uploadId){
+    const r=await fetch(API+'/api/upload?name='+encodeURIComponent(audioFile.name),{method:'PUT',body:audioFile});
+    if(!r.ok) return fail(r);
+    uploadId=(await r.json()).upload;
+  }
+  const body={upload:uploadId,lyrics:$('#lyrics').value,language:$('#lang').value||null,model:$('#model').value,aligner:$('#aligner').value,guide:$('#guide').value,ctc_backend:$('#ctc_backend').value,
+              separate:$('#sep').checked,simulate_truth:$('#truth').value||null};
+  const r=await fetch(API+'/api/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok) return fail(r);
+  job=(await r.json()).id; $('#start').textContent='싱크 시작';
+  showView(2); listen();
+}
+
+/* ---- progress ---- */
+function showView(n){ [1,2,3].forEach(i=>{ $('#s'+i).classList.toggle('cur',i===n); });
+  $('#view-input').classList.toggle('hidden',n!==1); $('#view-progress').classList.toggle('hidden',n!==2); $('#view-result').classList.toggle('hidden',n!==3); }
+function listen(){
+  if(es) es.close();
+  es=new EventSource(`${API}/api/jobs/${job}/events`);
+  es.onmessage=e=>{ const s=JSON.parse(e.data); render(s); if(s.state==='done'){ es.close(); setTimeout(loadResult,600);} if(s.state==='error') es.close(); };
+  es.onerror=()=>{ es.close(); setTimeout(()=>fetch(`${API}/api/jobs/${job}`).then(r=>r.json()).then(s=>{render(s); if(s.state==='done') loadResult(); else if(s.state!=='error') listen();}),1500); };
+}
+function fmtT(s){ return s==null?'':(s<60?s.toFixed(1)+'s':Math.floor(s/60)+'m '+(s%60).toFixed(0)+'s'); }
+function render(s){
+  $('#p-title').textContent=s.audio_name; $('#p-elapsed').textContent=fmtT(s.elapsed);
+  let doneSum=0; STAGES.forEach(k=>doneSum+=s.stages[k].pct);
+  const tot=Math.round(doneSum/STAGES.length*100); $('#p-total').textContent=tot+'%'; $('#p-bar').style.width=tot+'%';
+  $('#stages').innerHTML=STAGES.map((k,i)=>{ const st=s.stages[k]; const cls=st.status==='done'?'done':st.status==='running'?'run':st.status==='error'?'err':'';
+    return `<div class="stage"><div class="dot ${cls}">${st.status==='done'?'✓':st.status==='error'?'!':i+1}</div>
+      <div><div>${s.labels[k]}</div>${st.status==='running'?`<div class="bar"><i style="width:${Math.round(st.pct*100)}%"></i></div>`:''}<div class="msg">${st.message||''}</div></div>
+      <div class="t">${st.seconds!=null?fmtT(st.seconds):(st.status==='running'?Math.round(st.pct*100)+'%':'')}</div></div>`; }).join('');
+  const err=$('#p-error'); err.classList.toggle('hidden',!s.error); err.textContent=s.error||'';
+}
+$('#p-back').onclick=$('#r-back').onclick=()=>{ if(es) es.close(); showView(1); check(); };
+
+/* ---- result ---- */
+async function loadResult(){
+  const r=await fetch(`${API}/api/jobs/${job}/result`); lines=(await r.json()).lines;
+  const snap=await (await fetch(`${API}/api/jobs/${job}`)).json(); const su=snap.summary||{};
+  $('#r-summary').innerHTML=`<b style="color:var(--fg)">${snap.audio_name}</b> — ${su.lines} 라인 · 인식 단어 ${su.words} · 낮은 신뢰도 ${su.low_confidence} · 보간 ${su.interpolated} · ${fmtT(snap.elapsed)} 소요`;
+  $('#player').src=`${API}/api/jobs/${job}/audio`; drawLines(); showView(3);
+}
+function ts(t){ const m=Math.floor(t/60), s=(t%60); return `${String(m).padStart(2,'0')}:${s.toFixed(2).padStart(5,'0')}`; }
+function drawLines(){
+  const sw=$('#showwords').checked;
+  $('#lines').innerHTML=lines.map((l,i)=>`<div class="ln ${l.confidence<0.6?'low':''} ${l.interpolated?'interp':''}" data-i="${i}">
+    <span class="ts ${l._edited?'edited':''}">${ts(l.start)}</span>
+    <span class="words">${sw&&l.words?.length?l.words.map(w=>`<b>&lt;${ts(w.start)}&gt;</b>${w.text}`).join(' '):l.text}</span>
+    <span class="cf">${l.interpolated?'보간':Math.round(l.confidence*100)+'%'}</span>
+    <span class="nudge"><button data-d="-0.1">◂</button><button data-d="0.1">▸</button></span></div>`).join('');
+}
+$('#showwords').onchange=drawLines;
+$('#lines').onclick=e=>{ const row=e.target.closest('.ln'); if(!row) return; const i=+row.dataset.i;
+  if(e.target.dataset.d){ const d=+e.target.dataset.d; const l=lines[i]; l.start=Math.max(0,l.start+d); if(l.end!=null) l.end+=d; (l.words||[]).forEach(w=>{w.start+=d;w.end+=d}); l._edited=true; drawLines(); return; }
+  $('#player').currentTime=lines[i].start; $('#player').play(); };
+$('#player').ontimeupdate=()=>{ const t=$('#player').currentTime; let cur=-1; lines.forEach((l,i)=>{ if(l.start<=t) cur=i; });
+  document.querySelectorAll('.ln').forEach((el,i)=>el.classList.toggle('now',i===cur)); };
+
+/* export: if user nudged lines, build client-side so edits are kept */
+document.querySelectorAll('[data-fmt]').forEach(b=>b.onclick=()=>{
+  const fmt=b.dataset.fmt; if(!lines.some(l=>l._edited)){ location.href=`${API}/api/jobs/${job}/export?fmt=${fmt}`; return; }
+  let text='';
+  if(fmt==='lrc') text=lines.map(l=>`[${ts(l.start)}]${l.text}`).join('\n');
+  else if(fmt==='elrc') text=lines.map(l=>`[${ts(l.start)}]`+(l.words||[]).map(w=>`<${ts(w.start)}>${w.text}`).join(' ')).join('\n');
+  else if(fmt==='json') text=JSON.stringify(lines,null,1);
+  else if(fmt==='srt') text=lines.map((l,i)=>{ const e=Math.min(l.end>l.start?l.end:l.start+2, lines[i+1]?lines[i+1].start:1e9); const f=t=>{const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(Math.floor(s)).padStart(2,'0')},${String(Math.round(s%1*1000)).padStart(3,'0')}`}; return `${i+1}\n${f(l.start)} --> ${f(e)}\n${l.text}\n`; }).join('\n');
+  else { alert('ASS는 서버 내보내기만 지원(수정 전 값)'); location.href=`${API}/api/jobs/${job}/export?fmt=ass`; return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'})); a.download=`lyrics.${fmt==='elrc'?'lrc':fmt}`; a.click();
+});
+</script>
+<footer style="max-width:1080px;margin:0 auto;padding:8px 22px 40px;font-size:12px;color:var(--mut)">
+  직접 만들었거나 사용 허락을 받은 음원만 올려 주세요. 올린 파일은 싱크 처리에만 쓰이고 30분 안에 삭제돼요.
+  · <a href="/privacy/lyricsync.html" style="color:var(--mut)">개인정보처리방침</a>
+  · <a href="/apps/" style="color:var(--mut)">Dotorio Labs</a>
+</footer>
+</body>
+</html>
